@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Destinasi;
 use App\Models\JadwalKeberangkatan;
+use App\Models\KodePromo;
 use App\Models\PaketWisata;
 use App\Models\Petugas;
 use App\Models\User;
@@ -147,6 +148,14 @@ class DatabaseSeeder extends Seeder
                     'sisa_kuota' => 20,
                 ]);
             }
+        }
+
+        foreach ([
+            ['kode' => 'HEMAT10', 'tipe' => 'persen', 'nilai' => 10, 'min_transaksi' => 0, 'maks_diskon' => 750000, 'kuota' => 100, 'aktif' => true, 'berlaku_hingga' => now()->addMonths(6)],
+            ['kode' => 'NANTA500', 'tipe' => 'nominal', 'nilai' => 500000, 'min_transaksi' => 3000000, 'maks_diskon' => null, 'kuota' => 50, 'aktif' => true, 'berlaku_hingga' => now()->addMonths(3)],
+            ['kode' => 'WEEKEND15', 'tipe' => 'persen', 'nilai' => 15, 'min_transaksi' => 2000000, 'maks_diskon' => 1000000, 'kuota' => 20, 'aktif' => true, 'berlaku_hingga' => now()->addMonth()],
+        ] as $promo) {
+            KodePromo::create($promo);
         }
 
         foreach ([

@@ -21,7 +21,7 @@ class BookingService
      *
      * @param  array<int, array{nama_peserta:string, jenis_identitas:string, no_identitas:string, file_identitas:UploadedFile}>  $pesertaData
      */
-    public function buat(User $user, int $idJadwal, array $pesertaData): Pemesanan
+    public function buat(User $user, int $idJadwal, array $pesertaData, array $promo = []): Pemesanan
     {
         $jumlah = count($pesertaData);
 
@@ -29,7 +29,7 @@ class BookingService
             throw ValidationException::withMessages(['peserta' => 'Minimal satu peserta harus diisi.']);
         }
 
-        return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah) {
+        return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo) {
             /** @var JadwalKeberangkatan $jadwal */
             $jadwal = JadwalKeberangkatan::whereKey($idJadwal)->lockForUpdate()->firstOrFail();
 
@@ -43,7 +43,9 @@ class BookingService
             }
 
             $paket = $jadwal->paket;
-            $total = $paket->tarif * $jumlah;
+            $subtotal = $paket->tarif * $jumlah;
+            $diskon = (float) ($promo['diskon'] ?? 0);
+            $total = max(0, $subtotal - $diskon);
 
             $pemesanan = Pemesanan::create([
                 'id_user' => $user->id,
@@ -51,6 +53,8 @@ class BookingService
                 'kode_pemesanan' => $this->generateKode(),
                 'jumlah_peserta' => $jumlah,
                 'total_bayar' => $total,
+                'kode_promo' => $promo['promo']->kode ?? null,
+                'diskon' => $diskon,
                 'status_pemesanan' => 'menunggu_pembayaran',
                 'catatan_status' => 'Selesaikan pembayaran dalam 1 jam dan unggah bukti transfer.',
                 'tanggal_pemesanan' => now(),

@@ -61,6 +61,12 @@
             <td class="lbl">Jumlah peserta</td>
             <td>{{ $pemesanan->jumlah_peserta }} orang</td>
         </tr>
+        @if($pemesanan->diskon > 0)
+        <tr>
+            <td class="lbl">Diskon promo</td>
+            <td>-Rp {{ number_format($pemesanan->diskon, 0, ',', '.') }} ({{ $pemesanan->kode_promo }})</td>
+        </tr>
+        @endif
         <tr>
             <td class="lbl">Total dibayar</td>
             <td>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</td>

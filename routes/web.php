@@ -30,6 +30,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::middleware('auth')->group(function () {
     Route::get('/jadwal/{jadwal}/pesan', [PemesananController::class, 'form'])->name('pemesanan.form');
     Route::post('/jadwal/{jadwal}/pesan', [PemesananController::class, 'store'])->name('pemesanan.store');
+    Route::post('/promo/cek', [PemesananController::class, 'cekPromo'])->name('promo.cek');
 
     Route::get('/pemesanan', [PemesananController::class, 'index'])->name('pemesanan.index');
     Route::get('/pemesanan/{pemesanan}', [PemesananController::class, 'show'])->name('pemesanan.show');

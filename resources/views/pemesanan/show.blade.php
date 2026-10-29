@@ -46,6 +46,12 @@
                         <dt>Tanggal berangkat</dt><dd>{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('d F Y') }}</dd>
                         <dt>Tanggal kembali</dt><dd>{{ $pemesanan->jadwal->tanggal_kembali?->translatedFormat('d F Y') ?? '-' }}</dd>
                         <dt>Jumlah peserta</dt><dd>{{ $pemesanan->jumlah_peserta }} orang</dd>
+                        @if($pemesanan->diskon > 0)
+                            <dt>Diskon promo</dt>
+                            <dd style="color:#15803d">-Rp {{ number_format($pemesanan->diskon, 0, ',', '.') }}
+                                @if($pemesanan->kode_promo)<span class="badge badge-success">{{ $pemesanan->kode_promo }}</span>@endif
+                            </dd>
+                        @endif
                         <dt>Total bayar</dt><dd style="color:var(--primary-dark)">Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</dd>
                     </dl>
                 </div>

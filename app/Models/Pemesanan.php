@@ -39,10 +39,12 @@ class Pemesanan extends Model
     protected $fillable = [
         'id_user', 'id_jadwal', 'kode_pemesanan', 'jumlah_peserta', 'total_bayar',
         'status_pemesanan', 'catatan_status', 'tanggal_pemesanan', 'batas_pembayaran',
+        'kode_promo', 'diskon',
     ];
 
     protected $casts = [
         'total_bayar' => 'decimal:2',
+        'diskon' => 'decimal:2',
         'tanggal_pemesanan' => 'datetime',
         'batas_pembayaran' => 'datetime',
     ];

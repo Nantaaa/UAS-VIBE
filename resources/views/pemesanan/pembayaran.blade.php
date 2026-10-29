@@ -122,6 +122,11 @@
                     <div class="summary-line"><span class="muted">Jumlah peserta</span><span>{{ $pemesanan->jumlah_peserta }}x</span></div>
                     <div class="summary-line"><span class="muted">Subtotal</span><span>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</span></div>
                     <div class="summary-line"><span class="muted">Pajak &amp; biaya</span><span>Rp 0</span></div>
+                    @if($pemesanan->diskon > 0)
+                        <div class="summary-line"><span class="muted">Diskon promo{{ $pemesanan->kode_promo ? ' ('.$pemesanan->kode_promo.')' : '' }}</span>
+                            <span style="color:#15803d">-Rp {{ number_format($pemesanan->diskon, 0, ',', '.') }}</span>
+                        </div>
+                    @endif
                     <div class="summary-line total"><span>Total Pembayaran</span><span>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</span></div>
                 </div>
                 </div>

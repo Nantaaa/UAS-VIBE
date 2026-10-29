@@ -8,7 +8,7 @@
 <div class="auth-card">
     <div class="auth-anim auth-d2">
         <div class="auth-eyebrow">Akses Akun Travel</div>
-        <h2>Selamat Datang di Nanta</h2>
+        <h2>Selamat Datang di Nanta Travel</h2>
         <p class="lead">Buat akun baru untuk mulai menjelajah atau masuk jika sudah memiliki akun.</p>
     </div>
 
