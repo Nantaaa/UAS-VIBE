@@ -69,3 +69,19 @@
 @media (prefers-reduced-motion: reduce) {
   .auth-anim { animation: none; opacity: 1; }
 }
+
+
+/* ===== Pusatkan vertikal di viewport ===== */
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 28px;
+  padding-bottom: 28px;
+}
+.auth-shell .auth-wrap { padding: 0; }
+
+@media (max-height: 760px) {
+  .auth-shell { min-height: auto; padding-top: 20px; padding-bottom: 32px; }
+}

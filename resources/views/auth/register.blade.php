@@ -4,7 +4,7 @@
 @section('minimal', 'true')
 
 @section('content')
-<div class="container">
+<div class="container auth-shell">
     <div class="auth-wrap">
         <section class="hero-card auth-hero">
             @include('partials.auth-hero')
