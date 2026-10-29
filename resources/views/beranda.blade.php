@@ -2,144 +2,237 @@
 
 @section('title', 'Beranda')
 
-@section('content')
-<section class="hero">
-    <div class="container">
-        <div class="hero-inner">
-            <div class="hero-badge">★ Biro perjalanan terpercaya sejak 2015</div>
-            <h1>Temukan perjalanan yang pantas untuk Anda ceritakan.</h1>
-            <p>Pilih paket, cek sisa kuota secara real-time, unggah berkas, dan terima e-voucher ber-QR Code — semuanya dalam satu sistem.</p>
+@php($user = auth()->user())
 
-            <form method="GET" action="{{ route('beranda') }}" class="searchbar">
-                <div class="field">
-                    <label>Cari paket / destinasi</label>
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Bali, Bromo, Komodo...">
-                </div>
-                <div class="field">
-                    <label>Destinasi</label>
-                    <select name="destinasi">
-                        <option value="">Semua destinasi</option>
+@section('content')
+<div class="container">
+    <div class="crumb">
+        <span><a href="{{ route('beranda') }}">Beranda</a> / <strong>Paket Wisata</strong></span>
+        <span class="tiny muted">Tersimpan di halaman: Beranda</span>
+    </div>
+
+    {{-- HERO --}}
+    <section class="catalog-hero">
+        <div class="catalog-hero-inner">
+            <span class="hero-badge">✦ PILIHAN PAKET WISATA TERBAIK</span>
+            <h1>Temukan Paket Wisata Impianmu</h1>
+            <p>Jelajahi keindahan nusantara dengan paket wisata terbaik, harga terjangkau, dan pengalaman yang tak terlupakan.</p>
+
+            <form method="GET" action="{{ route('beranda') }}" class="hero-search">
+                <span class="hs-ico">🔍</span>
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari destinasi, paket, atau aktivitas...">
+                <button type="button" class="btn hs-secondary" onclick="this.form.q.value='';this.form.submit()">Cari Sekarang</button>
+                <button type="submit" class="btn btn-primary">Cari Paket</button>
+            </form>
+
+            <div class="hero-chips">
+                @foreach($destinasi->take(6) as $d)
+                    <a class="hero-chip {{ in_array($d->id, (array) request('destinasi', [])) ? 'active' : '' }}"
+                       href="{{ route('beranda', ['destinasi' => [$d->id]]) }}">{{ $d->nama_destinasi }}</a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- BODY: filter + hasil --}}
+    <div class="catalog-body">
+        <aside class="filter-card">
+            <div class="filter-head">
+                <strong>⚙ Filter Pencarian</strong>
+                <a href="{{ route('beranda') }}" class="tiny" style="color:#2563eb;font-weight:700">Reset</a>
+            </div>
+
+            <form method="GET" action="{{ route('beranda') }}" id="formFilter">
+                <div class="filter-block">
+                    <div class="filter-title">Destinasi</div>
+                    <input type="text" placeholder="Cari destinasi..." class="filter-search" oninput="filterDestinasi(this.value)">
+                    <div class="checklist" id="listDestinasi">
                         @foreach($destinasi as $d)
-                            <option value="{{ $d->id }}" @selected(request('destinasi') == $d->id)>{{ $d->nama_destinasi }}</option>
+                            <label class="check">
+                                <input type="checkbox" name="destinasi[]" value="{{ $d->id }}"
+                                       @checked(in_array($d->id, (array) request('destinasi', [])))>
+                                <span>{{ $d->nama_destinasi }}</span>
+                            </label>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
-                <div class="field">
-                    <label>Tanggal berangkat</label>
+
+                <div class="filter-block">
+                    <div class="filter-title">Tipe Perjalanan</div>
+                    <div class="checklist">
+                        @foreach($tipeTrip as $tipe)
+                            <label class="check">
+                                <input type="checkbox" name="tipe[]" value="{{ $tipe }}"
+                                       @checked(in_array($tipe, (array) request('tipe', [])))>
+                                <span>{{ $tipe }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="filter-block">
+                    <div class="filter-title">Rentang Harga (per orang)</div>
+                    <input type="range" min="0" max="10000000" step="250000" id="rangeHarga"
+                           value="{{ request('harga_max', 5000000) }}" oninput="syncHarga(this.value)">
+                    <div class="row between tiny muted" style="margin-top:2px">
+                        <span>Rp 0</span><span>Rp 10.000.000</span>
+                    </div>
+                    <div class="row" style="gap:8px;margin-top:8px">
+                        <input type="number" name="harga_min" id="hargaMin" value="{{ request('harga_min', 0) }}" placeholder="Min">
+                        <input type="number" name="harga_max" id="hargaMax" value="{{ request('harga_max', 5000000) }}" placeholder="Max">
+                    </div>
+                </div>
+
+                <div class="filter-block">
+                    <div class="filter-title">Tanggal Keberangkatan</div>
                     <input type="date" name="tanggal" value="{{ request('tanggal') }}">
                 </div>
-                <button class="btn btn-primary" type="submit" style="align-self:center;margin:4px">Cari</button>
-            </form>
-        </div>
-    </div>
-</section>
 
-<div class="container" style="margin-top:-34px;position:relative;z-index:3">
-    <div class="grid grid-4">
-        @foreach([
-            ['ico' => '🗺', 'val' => $paket->total().'+', 'lbl' => 'Paket wisata aktif'],
-            ['ico' => '👥', 'val' => '20', 'lbl' => 'Kuota per keberangkatan'],
-            ['ico' => '⏱', 'val' => '1 jam', 'lbl' => 'Batas konfirmasi bayar'],
-            ['ico' => '🎫', 'val' => 'QR', 'lbl' => 'E-voucher tervalidasi'],
-        ] as $s)
-            <div class="card stat">
-                <div class="ico">{{ $s['ico'] }}</div>
+                <div class="filter-block">
+                    <div class="filter-title">Durasi Trip</div>
+                    <div class="row" style="gap:8px">
+                        @foreach([2, 3, 4, 5] as $durasi)
+                            <label class="durasi-box">
+                                <input type="checkbox" name="durasi[]" value="{{ $durasi }}"
+                                       @checked(in_array($durasi, (array) request('durasi', [])))>
+                                <span>{{ $durasi }} Hari</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <input type="hidden" name="urutkan" value="{{ request('urutkan') }}">
+                <button class="btn btn-teal btn-block" type="submit">✓ Terapkan Filter</button>
+            </form>
+        </aside>
+
+        <div>
+            <div class="results-head">
                 <div>
-                    <div class="val">{{ $s['val'] }}</div>
-                    <div class="lbl">{{ $s['lbl'] }}</div>
+                    <h2 style="margin:0;font-size:17px">Menampilkan {{ $paket->total() }} dari {{ $totalPaket }} Paket Wisata</h2>
+                    <div class="tiny muted">Jelajahi paket wisata terbaik dengan harga terbaik</div>
+                </div>
+                <div class="row" style="gap:8px">
+                    <form method="GET" id="formUrut">
+                        @foreach(request()->except(['urutkan', 'page']) as $k => $v)
+                            @if(is_array($v))
+                                @foreach($v as $vv)<input type="hidden" name="{{ $k }}[]" value="{{ $vv }}">@endforeach
+                            @else
+                                <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                            @endif
+                        @endforeach
+                        <select name="urutkan" onchange="this.form.submit()" style="font-size:12px;padding:8px 10px">
+                            <option value="">Urutkan: Rekomendasi Terbaik</option>
+                            <option value="termurah" @selected(request('urutkan') === 'termurah')>Harga Termurah</option>
+                            <option value="termahal" @selected(request('urutkan') === 'termahal')>Harga Tertinggi</option>
+                            <option value="terbaru" @selected(request('urutkan') === 'terbaru')>Terbaru</option>
+                        </select>
+                    </form>
+                    <div class="view-toggle">
+                        <button class="active" type="button">▦</button>
+                        <button type="button">☰</button>
+                    </div>
                 </div>
             </div>
-        @endforeach
-    </div>
-</div>
 
-<div class="container" style="padding:44px 20px 0">
-    <div class="section-head">
-        <div>
-            <h2>Paket wisata pilihan</h2>
-            <p class="muted mb-0">Harga transparan, kuota ditampilkan langsung dari basis data.</p>
-        </div>
-        <div class="chips">
-            <a class="chip {{ request('destinasi') ? '' : 'active' }}" href="{{ route('beranda') }}">Semua</a>
-            @foreach($destinasi->take(4) as $d)
-                <a class="chip {{ request('destinasi') == $d->id ? 'active' : '' }}"
-                   href="{{ route('beranda', ['destinasi' => $d->id]) }}">{{ $d->nama_destinasi }}</a>
-            @endforeach
-        </div>
-    </div>
-
-    @if($paket->isEmpty())
-        <div class="card empty">
-            <div class="big">🧭</div>
-            <h3>Data paket belum tersedia</h3>
-            <p class="mb-0">Coba ubah kata kunci pencarian atau filter destinasi.</p>
-        </div>
-    @else
-        <div class="grid grid-3">
-            @foreach($paket as $p)
-                @php($jadwal = $p->jadwalTersedia->first())
-                <article class="card paket-card">
-                    <a href="{{ route('paket.detail', $p) }}" class="paket-thumb">
-                        @if($p->foto)
-                            <img src="{{ Storage::disk('public')->url($p->foto) }}" alt="{{ $p->nama_paket }}">
-                        @endif
-                        <span class="tag">{{ $p->destinasi->nama_destinasi }}</span>
-                        <span class="durasi">{{ $p->durasi_hari }} Hari</span>
-                    </a>
-                    <div class="paket-body">
-                        <a href="{{ route('paket.detail', $p) }}" class="paket-title">{{ $p->nama_paket }}</a>
-                        <div class="paket-loc">📍 {{ $p->destinasi->lokasi }}</div>
-                        <div class="tiny muted">
-                            @if($jadwal)
-                                Berangkat {{ $jadwal->tanggal_berangkat->translatedFormat('d M Y') }}
-                                · sisa {{ $jadwal->sisa_kuota }} kursi
-                            @else
-                                Belum ada jadwal tersedia
-                            @endif
-                        </div>
-                        <div class="paket-price">
-                            <div>
-                                <div class="harga">Rp {{ number_format($p->tarif, 0, ',', '.') }}</div>
-                                <div class="tiny muted">per peserta</div>
+            @if($paket->isEmpty())
+                <div class="card empty">
+                    <div class="big">🧭</div>
+                    <h3>Paket tidak ditemukan</h3>
+                    <p class="mb-0">Coba longgarkan filter atau ubah kata kunci pencarian.</p>
+                </div>
+            @else
+                <div class="grid grid-3">
+                    @foreach($paket as $p)
+                        <article class="katalog-card">
+                            <a href="{{ route('paket.detail', $p) }}" class="katalog-thumb">
+                                @if($p->foto)
+                                    <img src="{{ Storage::disk('public')->url($p->foto) }}" alt="{{ $p->nama_paket }}">
+                                @endif
+                                @if($p->is_bestseller)
+                                    <span class="badge-seller">Best Seller</span>
+                                @elseif($p->diskonPersen())
+                                    <span class="badge-seller" style="background:#0d9488">-{{ $p->diskonPersen() }}%</span>
+                                @endif
+                                <span class="heart">♡</span>
+                                @if(($p->jadwalTersedia->first()->sisa_kuota ?? 0) > 0)
+                                    <span class="pill-tersedia">● Tersedia</span>
+                                @else
+                                    <span class="pill-tersedia" style="background:#fee2e2;color:#b91c1c">● Penuh</span>
+                                @endif
+                            </a>
+                            <div class="katalog-body">
+                                <a href="{{ route('paket.detail', $p) }}" class="katalog-title">{{ $p->nama_paket }}</a>
+                                <div class="katalog-loc">📍 {{ $p->destinasi->lokasi }}</div>
+                                <div class="katalog-meta">{{ $p->highlight ?? ($p->durasi_hari.' Hari '.($p->durasi_hari-1).' Malam') }}</div>
+                                <div class="katalog-price">
+                                    <div>
+                                        <div class="now">Rp {{ number_format($p->tarif, 0, ',', '.') }}</div>
+                                        @if($p->harga_asli)
+                                            <div class="was">Rp {{ number_format($p->harga_asli, 0, ',', '.') }}</div>
+                                        @endif
+                                    </div>
+                                    <a href="{{ route('paket.detail', $p) }}" class="btn btn-soft btn-sm">Detail</a>
+                                </div>
                             </div>
-                            <a href="{{ route('paket.detail', $p) }}" class="btn btn-soft btn-sm">Detail</a>
-                        </div>
+                        </article>
+                    @endforeach
+                </div>
+
+                <div class="results-foot">
+                    <span class="tiny muted">
+                        Menampilkan {{ $paket->firstItem() }} - {{ $paket->lastItem() }} dari {{ $paket->total() }} paket
+                    </span>
+                    <div class="pagination" style="margin:0">
+                        @if($paket->onFirstPage()) <span class="disabled">‹</span> @else <a href="{{ $paket->previousPageUrl() }}">‹</a> @endif
+                        @foreach($paket->getUrlRange(1, min(4, $paket->lastPage())) as $page => $url)
+                            <a href="{{ $url }}" class="{{ $page == $paket->currentPage() ? 'active' : '' }}">{{ $page }}</a>
+                        @endforeach
+                        @if($paket->lastPage() > 4)<span>…</span><a href="{{ $paket->url($paket->lastPage()) }}">{{ $paket->lastPage() }}</a>@endif
+                        @if($paket->hasMorePages()) <a href="{{ $paket->nextPageUrl() }}">›</a> @else <span class="disabled">›</span> @endif
                     </div>
-                </article>
-            @endforeach
-        </div>
-
-        <div class="pagination">
-            @if($paket->onFirstPage())
-                <span class="disabled">‹</span>
-            @else
-                <a href="{{ $paket->previousPageUrl() }}">‹</a>
-            @endif
-            @foreach($paket->getUrlRange(max(1, $paket->currentPage() - 2), min($paket->lastPage(), $paket->currentPage() + 2)) as $page => $url)
-                <a href="{{ $url }}" class="{{ $page == $paket->currentPage() ? 'active' : '' }}">{{ $page }}</a>
-            @endforeach
-            @if($paket->hasMorePages())
-                <a href="{{ $paket->nextPageUrl() }}">›</a>
-            @else
-                <span class="disabled">›</span>
+                    <form method="GET" class="row" style="gap:6px">
+                        @foreach(request()->except(['per_halaman', 'page']) as $k => $v)
+                            @if(is_array($v))
+                                @foreach($v as $vv)<input type="hidden" name="{{ $k }}[]" value="{{ $vv }}">@endforeach
+                            @else
+                                <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                            @endif
+                        @endforeach
+                        <select name="per_halaman" onchange="this.form.submit()" style="font-size:11.5px;padding:6px 8px">
+                            @foreach([6, 9, 12] as $n)
+                                <option value="{{ $n }}" @selected(request('per_halaman', 6) == $n)>Tampilkan: {{ $n }} per halaman</option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
             @endif
         </div>
-    @endif
-</div>
-
-<div class="container" style="padding:52px 20px 0">
-    <div class="grid grid-3">
-        @foreach([
-            ['n' => '01', 't' => 'Pesan & unggah berkas', 'd' => 'Pilih jadwal, isi data peserta, unggah KTP/Paspor. Kuota langsung ditahan untuk Anda.'],
-            ['n' => '02', 't' => 'Bayar dalam 1 jam', 'd' => 'Transfer sesuai tagihan lalu unggah bukti. Lewat dari 1 jam, pesanan kedaluwarsa otomatis.'],
-            ['n' => '03', 't' => 'Verifikasi & e-voucher', 'd' => 'Admin memverifikasi dokumen, lalu voucher PDF ber-QR Code terbit otomatis.'],
-        ] as $step)
-            <div class="card card-pad">
-                <div style="font-size:13px;font-weight:800;color:var(--primary)">{{ $step['n'] }}</div>
-                <h3 class="mt-8">{{ $step['t'] }}</h3>
-                <p class="muted mb-0" style="font-size:13.5px">{{ $step['d'] }}</p>
-            </div>
-        @endforeach
     </div>
+
+    {{-- CTA --}}
+    <section class="cta-banner">
+        <div>
+            <span class="hero-badge">BUTUH ITINERARY PRIVATE?</span>
+            <h2>Buat Itinerary Custom atau Private Group?</h2>
+            <p>Tim Nanta Travel siap membantu merancang perjalanan impian Anda. Konsultasi gratis, itinerary personal, dan harga terbaik untuk grup.</p>
+        </div>
+        <div class="row" style="gap:10px">
+            <a href="https://wa.me/6281234567890" class="btn btn-primary">Hubungi via WhatsApp</a>
+            <a href="{{ route('beranda') }}#katalog" class="btn btn-ghost" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Request Itinerary</a>
+        </div>
+    </section>
 </div>
+
+<script>
+function syncHarga(v) {
+    document.getElementById('hargaMax').value = v;
+}
+function filterDestinasi(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll('#listDestinasi .check').forEach(el => {
+        el.style.display = el.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+</script>
 @endsection

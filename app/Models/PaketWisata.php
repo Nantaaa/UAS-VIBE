@@ -12,14 +12,26 @@ class PaketWisata extends Model
     protected $table = 'paket_wisata';
 
     protected $fillable = [
-        'id_destinasi', 'nama_paket', 'deskripsi', 'fasilitas',
-        'itinerary', 'durasi_hari', 'tarif', 'foto', 'is_active',
+        'id_destinasi', 'nama_paket', 'deskripsi', 'highlight', 'fasilitas',
+        'itinerary', 'durasi_hari', 'tipe_trip', 'tarif', 'harga_asli',
+        'foto', 'is_active', 'is_bestseller',
     ];
 
     protected $casts = [
         'tarif' => 'decimal:2',
+        'harga_asli' => 'decimal:2',
         'is_active' => 'boolean',
+        'is_bestseller' => 'boolean',
     ];
+
+    public function diskonPersen(): ?int
+    {
+        if (! $this->harga_asli || $this->harga_asli <= $this->tarif) {
+            return null;
+        }
+
+        return (int) round((1 - ($this->tarif / $this->harga_asli)) * 100);
+    }
 
     public function destinasi()
     {

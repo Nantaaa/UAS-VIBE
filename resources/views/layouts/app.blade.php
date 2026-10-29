@@ -4,47 +4,52 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'JavaTrip Travel') — Sistem Informasi Travel & Agen Wisata</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>@yield('title', 'Nanta Travel') — Sistem Informasi Travel &amp; Agen Wisata</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/katalog.css') }}">
 </head>
 <body>
-<header class="topbar">
+@hasSection('minimal')
+@else
+<header class="site-header">
     <div class="container">
-        <a href="{{ route('beranda') }}" class="brand">
-            <span class="brand-mark">✈</span>
-            <span>JavaTrip</span>
+        <a href="{{ route('beranda') }}" class="brand-h">
+            <span class="brand-mark">N</span>
+            <span class="brand-name">Nanta <strong>Travel</strong></span>
         </a>
 
-        <nav class="nav-links">
+        <nav class="nav-pills">
             <a href="{{ route('beranda') }}" class="{{ request()->routeIs('beranda') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('beranda') }}" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}">Paket Wisata</a>
-            @auth
-                <a href="{{ route('pemesanan.index') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}">Pemesanan Saya</a>
-                @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}">Panel Admin</a>
-                @endif
-            @endauth
+            <a href="{{ route('beranda') }}#katalog" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}">Paket Wisata</a>
+            <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}">Pesanan Saya</a>
+            <a href="{{ route('beranda') }}#katalog">Wishlist</a>
         </nav>
 
-        <div class="actions">
+        <div class="header-right">
             @auth
-                <a href="{{ route('profil.edit') }}" class="btn btn-ghost btn-sm hide-sm">
-                    <span class="avatar" style="width:26px;height:26px;font-size:11px">{{ strtoupper(substr(auth()->user()->nama_lengkap, 0, 1)) }}</span>
-                    {{ Str::limit(auth()->user()->nama_lengkap, 14) }}
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-sm hide-sm">Panel Admin</a>
+                @endif
+                <a href="{{ route('profil.edit') }}" class="user-chip">
+                    <span class="avatar" style="width:32px;height:32px;font-size:12px">{{ strtoupper(substr(auth()->user()->nama_lengkap, 0, 1)) }}</span>
+                    <span class="user-meta">
+                        <span class="user-name">{{ Str::limit(auth()->user()->nama_lengkap, 16) }}</span>
+                        <span class="user-role">Pemilik Akun</span>
+                    </span>
+                    <span class="chev">⌄</span>
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="btn btn-primary btn-sm" type="submit">Keluar</button>
+                    <button class="btn-masuk" type="submit">Keluar</button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="btn btn-ghost btn-sm">Masuk</a>
-                <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Daftar</a>
+                <a href="{{ route('login') }}" class="btn-masuk">Masuk</a>
+                <a href="{{ route('register') }}" class="btn btn-ghost btn-sm hide-sm">Daftar</a>
             @endauth
         </div>
     </div>
 </header>
+@endif
 
 <main>
     @if(session('sukses'))
@@ -71,29 +76,62 @@
     @yield('content')
 </main>
 
-<footer style="border-top:1px solid var(--line);background:#fff;margin-top:48px">
-    <div class="container" style="padding:26px 20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap">
-        <div>
-            <strong>JavaTrip Travel</strong>
-            <div class="muted tiny">Sistem Informasi Travel &amp; Agen Wisata — UAS Proyek Sistem Aplikasi</div>
+@hasSection('minimal')
+@else
+<footer class="site-footer" id="bantuan">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <a href="{{ route('beranda') }}" class="brand-h" style="margin-bottom:10px">
+                    <span class="brand-mark">N</span>
+                    <span class="brand-name">Nanta <strong>Travel</strong></span>
+                </a>
+                <p>Menciptakan pengalaman perjalanan terbaik dengan destinasi pilihan di seluruh Indonesia.</p>
+            </div>
+
+            <div>
+                <h4>Layanan</h4>
+                <ul>
+                    <li><a href="{{ route('beranda') }}#katalog">Paket Wisata</a></li>
+                    <li><a href="{{ route('beranda') }}#katalog">Private Trip</a></li>
+                    <li><a href="{{ route('beranda') }}#katalog">Open Trip</a></li>
+                    <li><a href="{{ route('beranda') }}#katalog">Custom Itinerary</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Bantuan</h4>
+                <ul>
+                    <li><a href="#">Syarat &amp; Ketentuan</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Pusat Bantuan</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Kontak &amp; Alamat</h4>
+                <ul>
+                    <li>Jl. Jenderal Sudirman No. 88, Jakarta</li>
+                    <li>+62 812-3456-7890</li>
+                    <li><a href="mailto:hello@nantatravel.com">hello@nantatravel.com</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="muted tiny">Universitas Duta Bangsa Surakarta · 2026</div>
+
+        <div class="footer-legal">
+            <span>© {{ date('Y') }} Nanta Travel. Seluruh hak cipta dilindungi.</span>
+            <span>Syarat &amp; Ketentuan | Kebijakan Privasi</span>
+        </div>
     </div>
 </footer>
+@endif
 
 <nav class="bottom-nav">
-    <a href="{{ route('beranda') }}" class="{{ request()->routeIs('beranda') ? 'active' : '' }}">
-        <span class="ico">🏠</span> Beranda
-    </a>
-    <a href="{{ route('beranda') }}" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}">
-        <span class="ico">🧭</span> Paket
-    </a>
-    <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}">
-        <span class="ico">🎫</span> Pesanan
-    </a>
-    <a href="{{ auth()->check() ? route('profil.edit') : route('login') }}" class="{{ request()->routeIs('profil.*') ? 'active' : '' }}">
-        <span class="ico">👤</span> Profil
-    </a>
+    <a href="{{ route('beranda') }}" class="{{ request()->routeIs('beranda') ? 'active' : '' }}"><span class="ico">🏠</span> Beranda</a>
+    <a href="{{ route('beranda') }}#katalog" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}"><span class="ico">🧭</span> Paket</a>
+    <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}"><span class="ico">🎫</span> Pesanan</a>
+    <a href="{{ auth()->check() ? route('profil.edit') : route('login') }}" class="{{ request()->routeIs('profil.*') ? 'active' : '' }}"><span class="ico">👤</span> Profil</a>
 </nav>
 </body>
 </html>

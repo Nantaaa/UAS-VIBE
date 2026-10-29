@@ -16,13 +16,20 @@ class BerandaController extends Controller
         if ($cari = $request->string('q')->trim()->toString()) {
             $query->where(function ($q) use ($cari) {
                 $q->where('nama_paket', 'like', "%{$cari}%")
+                    ->orWhere('highlight', 'like', "%{$cari}%")
                     ->orWhereHas('destinasi', fn ($d) => $d->where('nama_destinasi', 'like', "%{$cari}%")
                         ->orWhere('lokasi', 'like', "%{$cari}%"));
             });
         }
 
-        if ($idDestinasi = $request->integer('destinasi')) {
-            $query->where('id_destinasi', $idDestinasi);
+        $destinasiDipilih = array_filter((array) $request->input('destinasi', []));
+        if (! empty($destinasiDipilih)) {
+            $query->whereIn('id_destinasi', $destinasiDipilih);
+        }
+
+        $tipeDipilih = array_filter((array) $request->input('tipe', []));
+        if (! empty($tipeDipilih)) {
+            $query->whereIn('tipe_trip', $tipeDipilih);
         }
 
         if ($request->filled('harga_min')) {
@@ -33,15 +40,29 @@ class BerandaController extends Controller
             $query->where('tarif', '<=', (float) $request->input('harga_max'));
         }
 
+        if ($durasi = array_filter((array) $request->input('durasi', []))) {
+            $query->whereIn('durasi_hari', array_map('intval', $durasi));
+        }
+
         if ($tanggal = $request->input('tanggal')) {
             $query->whereHas('jadwal', fn ($j) => $j->whereDate('tanggal_berangkat', $tanggal));
         }
 
-        $paket = $query->orderBy('nama_paket')->paginate(9)->withQueryString();
+        $query = match ($request->input('urutkan')) {
+            'termurah' => $query->orderBy('tarif'),
+            'termahal' => $query->orderByDesc('tarif'),
+            'terbaru' => $query->latest(),
+            default => $query->orderByDesc('is_bestseller')->orderBy('nama_paket'),
+        };
+
+        $perHalaman = (int) $request->input('per_halaman', 6);
+        $perHalaman = in_array($perHalaman, [6, 9, 12], true) ? $perHalaman : 6;
 
         return view('beranda', [
-            'paket' => $paket,
-            'destinasi' => Destinasi::orderBy('nama_destinasi')->get(),
+            'paket' => $query->paginate($perHalaman)->withQueryString(),
+            'destinasi' => Destinasi::withCount('paket')->orderBy('nama_destinasi')->get(),
+            'tipeTrip' => PaketWisata::query()->distinct()->orderBy('tipe_trip')->pluck('tipe_trip'),
+            'totalPaket' => PaketWisata::where('is_active', true)->count(),
         ]);
     }
 
