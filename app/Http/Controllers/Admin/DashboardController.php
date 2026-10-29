@@ -17,8 +17,16 @@ class DashboardController extends Controller
         return view('admin.dashboard', [
             'menungguVerifikasi' => Pemesanan::where('status_pemesanan', 'menunggu_verifikasi')->count(),
             'perluPerbaikan' => Pemesanan::where('status_pemesanan', 'perlu_perbaikan')->count(),
-            'terkonfirmasiBulanIni' => $bulanIni['pemesanan_terkonfirmasi'],
-            'pendapatanBulanIni' => $bulanIni['pendapatan'],
+            // Pendapatan dihitung dari transaksi yang masuk bulan ini (uang diterima),
+            // bukan dari tanggal keberangkatan — laporan perjalanan tetap per tanggal berangkat.
+            'terkonfirmasiBulanIni' => Pemesanan::where('status_pemesanan', 'terkonfirmasi')
+                ->whereYear('tanggal_pemesanan', now()->year)
+                ->whereMonth('tanggal_pemesanan', now()->month)
+                ->count(),
+            'pendapatanBulanIni' => (float) Pemesanan::where('status_pemesanan', 'terkonfirmasi')
+                ->whereYear('tanggal_pemesanan', now()->year)
+                ->whereMonth('tanggal_pemesanan', now()->month)
+                ->sum('total_bayar'),
             'totalDestinasi' => Destinasi::count(),
             'keberangkatanTerdekat' => JadwalKeberangkatan::with(['paket.destinasi'])
                 ->whereDate('tanggal_berangkat', '>=', now()->toDateString())
