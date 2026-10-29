@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('css/pages.css') }}">
     <link rel="stylesheet" href="{{ asset('css/ticket-profil.css') }}">
     <link rel="stylesheet" href="{{ asset('css/polish.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fixes.css') }}">
 </head>
 <body>
 @hasSection('minimal')
@@ -136,5 +137,26 @@
     <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}"><span class="ico">🎫</span> Pesanan</a>
     <a href="{{ auth()->check() ? route('profil.edit') : route('login') }}" class="{{ request()->routeIs('profil.*') ? 'active' : '' }}"><span class="ico">👤</span> Profil</a>
 </nav>
+
+<script>
+// Tampilkan nama berkas terpilih (ganti teks native "No file chosen")
+document.addEventListener('change', function (e) {
+    const el = e.target;
+    if (!el || el.type !== 'file') return;
+    let out = el.parentElement.querySelector('.file-name');
+    if (!out) {
+        out = document.createElement('span');
+        out.className = 'file-name';
+        el.insertAdjacentElement('afterend', out);
+    }
+    if (el.files && el.files.length) {
+        out.textContent = '📎 ' + el.files[0].name + ' (' + Math.round(el.files[0].size / 1024) + ' KB)';
+        out.classList.remove('empty');
+    } else {
+        out.textContent = 'Belum ada berkas dipilih';
+        out.classList.add('empty');
+    }
+});
+</script>
 </body>
 </html>

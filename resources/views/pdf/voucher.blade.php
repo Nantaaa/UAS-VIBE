@@ -33,7 +33,7 @@
             <div class="val">{{ $pemesanan->kode_pemesanan }}</div>
         </div>
         <h1>E-VOUCHER PERJALANAN</h1>
-        <div class="sub">JavaTrip Travel — Sistem Informasi Travel &amp; Agen Wisata</div>
+        <div class="sub">Nanta Travel — Sistem Informasi Travel &amp; Agen Wisata</div>
     </div>
 
     <table>

@@ -92,17 +92,23 @@
                     <div class="card-head"><h3>Unggah bukti pembayaran</h3></div>
                     <div class="card-body">
                         <div class="alert alert-info">
-                            Transfer ke <strong>Bank BCA 1234567890</strong> a.n. <strong>JavaTrip Travel</strong>
-                            sebesar <strong>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</strong>.
+                            <span style="font-size:15px">ℹ️</span>
+                            <span>
+                                Transfer ke <strong>Bank BCA 1234567890</strong> a.n. <strong>Nanta Travel</strong>
+                                sebesar <strong>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</strong>
+                            </span>
                         </div>
 
                         <form method="POST" action="{{ route('pemesanan.bayar', $pemesanan) }}" enctype="multipart/form-data">
                             @csrf
-                            <div class="field">
-                                <label for="bukti">Bukti transfer (JPG/PNG/PDF, maks 2 MB)</label>
-                                <input id="bukti" type="file" name="bukti" accept=".jpg,.jpeg,.png,.pdf" required>
-                            </div>
-                            <button class="btn btn-primary mt-16" type="submit">Kirim bukti pembayaran</button>
+                            <label class="dropzone" for="bukti" style="display:block;cursor:pointer">
+                                <div class="ico">☁</div>
+                                <div class="cap">Tarik berkas ke sini atau klik untuk memilih</div>
+                                <div class="sub">Format JPG, PNG, atau PDF — maksimal 2 MB</div>
+                            </label>
+                            <input id="bukti" type="file" name="bukti" accept=".jpg,.jpeg,.png,.pdf" required style="display:none"
+                                   onchange="const c=this.closest('form').querySelector('.dropzone .cap'); c.textContent = this.files[0] ? '📎 '+this.files[0].name : 'Tarik berkas ke sini atau klik untuk memilih'; c.style.color = this.files[0] ? '#1d4ed8' : '';">
+                            <button class="btn btn-primary btn-block mt-16" type="submit">Kirim Bukti Pembayaran</button>
                         </form>
                     </div>
                 </div>
@@ -138,8 +144,9 @@
         </div>
 
         <div class="stack" style="position:sticky;top:88px">
-            <div class="card card-pad">
-                <h3 style="font-size:14px">Status pemesanan</h3>
+            <div class="card">
+                <div class="card-head"><h3>Status pemesanan</h3></div>
+                <div class="card-body">
                 @php
                     $tahap = [
                         'menunggu_pembayaran' => 'Pemesanan dibuat & kuota ditahan',
@@ -152,7 +159,7 @@
                     $urut = array_keys($tahap);
                     $posisi = array_search($pemesanan->status_pemesanan, $urut, true);
                 @endphp
-                <ul class="timeline mt-16">
+                <ul class="timeline">
                     @foreach($tahap as $key => $label)
                         @php($idx = array_search($key, $urut, true))
                         <li class="{{ $idx < $posisi ? 'done' : ($idx === $posisi ? 'current' : '') }}">
@@ -164,33 +171,40 @@
                         </li>
                     @endforeach
                 </ul>
+                </div>
             </div>
 
             @if($pemesanan->status_pemesanan === 'terkonfirmasi')
-                <div class="card card-pad">
-                    <h3 style="font-size:14px">E-Voucher siap</h3>
-                    <p class="tiny muted">Tunjukkan QR Code voucher saat keberangkatan.</p>
-                    <a href="{{ route('pemesanan.voucher', $pemesanan) }}" class="btn btn-primary btn-block">Lihat E-Voucher</a>
-                    <a href="{{ route('pemesanan.voucher.unduh', $pemesanan) }}" class="btn btn-ghost btn-block mt-8">Unduh PDF</a>
+                <div class="card">
+                    <div class="card-head"><h3>E-Voucher siap</h3></div>
+                    <div class="card-body">
+                        <p class="tiny muted">Tunjukkan QR Code voucher saat keberangkatan.</p>
+                        <a href="{{ route('pemesanan.voucher', $pemesanan) }}" class="btn btn-primary btn-block">Lihat E-Voucher</a>
+                        <a href="{{ route('pemesanan.voucher.unduh', $pemesanan) }}" class="btn btn-ghost btn-block mt-8">Unduh PDF</a>
+                    </div>
                 </div>
             @endif
 
             @if($pemesanan->bisaDibatalkan())
-                <div class="card card-pad">
-                    <h3 style="font-size:14px">Batalkan pemesanan</h3>
-                    <p class="tiny muted">Kuota yang ditahan akan dilepas kembali ke jadwal.</p>
-                    <form method="POST" action="{{ route('pemesanan.batal', $pemesanan) }}"
-                          onsubmit="return confirm('Batalkan pemesanan ini?')">
-                        @csrf
-                        <button class="btn btn-danger-soft btn-block" type="submit">Batalkan pemesanan</button>
-                    </form>
+                <div class="card">
+                    <div class="card-head"><h3>Batalkan pemesanan</h3></div>
+                    <div class="card-body">
+                        <p class="tiny muted">Kuota yang ditahan akan dilepas kembali ke jadwal.</p>
+                        <form method="POST" action="{{ route('pemesanan.batal', $pemesanan) }}"
+                              onsubmit="return confirm('Batalkan pemesanan ini?')">
+                            @csrf
+                            <button class="btn btn-danger-soft btn-block" type="submit">Batalkan pemesanan</button>
+                        </form>
+                    </div>
                 </div>
             @endif
 
             @if($pemesanan->catatan_status)
-                <div class="card card-pad">
-                    <h3 style="font-size:14px">Catatan admin</h3>
-                    <p class="tiny muted mb-0">{{ $pemesanan->catatan_status }}</p>
+                <div class="card">
+                    <div class="card-head"><h3>Catatan admin</h3></div>
+                    <div class="card-body">
+                        <p class="tiny muted mb-0">{{ $pemesanan->catatan_status }}</p>
+                    </div>
                 </div>
             @endif
         </div>

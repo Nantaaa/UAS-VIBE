@@ -67,9 +67,9 @@
                         <div class="tiny muted">Nomor Virtual Account</div>
                         <div class="num" id="vaNum">8808 0812 3456 7890</div>
                     </div>
-                    <button type="button" class="btn btn-teal btn-sm" onclick="salinVA()">Salin</button>
+                    <button type="button" class="btn btn-ghost btn-sm" onclick="salinVA()">Salin</button>
                 </div>
-                <div class="tiny muted mt-8">a.n. PT Nanta Ekspedisi Nusantara · Nominal harus sama persis dengan total tagihan.</div>
+                <div class="tiny muted mt-8">a.n. PT Nanta Ekspedisi Nusantara — nominal harus sama persis dengan total tagihan.</div>
 
                 <div class="mt-16" style="background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px 16px">
                     <div class="tiny" style="font-weight:800;margin-bottom:8px">Cara Bayar</div>
@@ -115,14 +115,15 @@
         </div>
 
         <aside>
-            <div class="card card-pad" style="position:sticky;top:88px">
-                <h3 style="font-size:13.5px">Rincian Harga</h3>
-                <div class="mt-8">
+            <div class="card" style="position:sticky;top:88px">
+                <div class="card-head"><h3>Rincian Harga</h3></div>
+                <div class="card-body">
                     <div class="summary-line"><span class="muted">Harga per orang</span><span>Rp {{ number_format($pemesanan->jadwal->paket->tarif, 0, ',', '.') }}</span></div>
                     <div class="summary-line"><span class="muted">Jumlah peserta</span><span>{{ $pemesanan->jumlah_peserta }}x</span></div>
                     <div class="summary-line"><span class="muted">Subtotal</span><span>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</span></div>
                     <div class="summary-line"><span class="muted">Pajak &amp; biaya</span><span>Rp 0</span></div>
                     <div class="summary-line total"><span>Total Pembayaran</span><span>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</span></div>
+                </div>
                 </div>
             </div>
 

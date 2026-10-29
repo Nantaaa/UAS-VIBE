@@ -1,0 +1,56 @@
+/* ===== Perbaikan inkonsistensi komponen ===== */
+
+/* Grid: cegah anak grid meluber (kartu sticky terpotong) */
+.grid > * { min-width: 0; }
+.grid > aside { min-width: 0; }
+
+/* Input file: buang tampilan native (English "No file chosen") */
+input[type=file] {
+  color: transparent;
+  cursor: pointer;
+  padding: 9px 12px;
+  background: #f8fafc;
+  border: 1px dashed #c7d2e3;
+}
+input[type=file]:hover { border-color: var(--teal); background: #f4fbfa; }
+input[type=file]::file-selector-button {
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--teal);
+  border: 0;
+  border-radius: 7px;
+  padding: 7px 13px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+input[type=file]::file-selector-button:hover { background: var(--teal-dark); }
+.file-name {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin-top: 5px;
+  word-break: break-all;
+}
+.file-name.empty { color: var(--muted); font-weight: 600; }
+
+/* Dropzone: ikon proporsional + CTA tidak terlalu lebar */
+.dropzone { padding: 26px 18px; }
+.dropzone .ico { font-size: 30px; line-height: 1; }
+.dropzone + .btn-block { max-width: 340px; margin-left: auto; margin-right: auto; }
+
+/* Callout info: ikon sejajar teks */
+.alert { align-items: flex-start; line-height: 1.55; }
+.alert > span:first-child { flex: 0 0 auto; }
+
+/* Header kartu seragam */
+.card-head h3 { font-size: 14.5px; letter-spacing: -.01em; }
+.card-pad > h3:first-child { margin-top: 0; }
+
+/* Badge status: ukuran konsisten */
+.badge { min-height: 20px; }
+
+/* Tombol kecil sejajar vertikal di tabel */
+table.data .btn-sm { padding: 6px 11px; }

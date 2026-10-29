@@ -19,7 +19,7 @@
 </head>
 <body>
     <h1>MANIFES PESERTA KEBERANGKATAN</h1>
-    <div class="sub">JavaTrip Travel — Sistem Informasi Travel &amp; Agen Wisata</div>
+    <div class="sub">Nanta Travel — Sistem Informasi Travel &amp; Agen Wisata</div>
 
     <table class="meta">
         <tr><td class="lbl">Paket wisata</td><td><strong>{{ $jadwal->paket->nama_paket }}</strong></td></tr>

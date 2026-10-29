@@ -20,7 +20,7 @@
 </head>
 <body>
     <h1>LAPORAN PERJALANAN BULANAN</h1>
-    <div class="sub">Periode {{ $rekap['periode'] }} · JavaTrip Travel</div>
+    <div class="sub">Periode {{ $rekap['periode'] }} · Nanta Travel</div>
 
     <table class="cards">
         <tr>

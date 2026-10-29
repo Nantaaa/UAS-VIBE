@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Panel Admin') — JavaTrip Travel</title>
+    <title>@yield('title', 'Panel Admin') — Nanta Travel</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
@@ -12,7 +12,7 @@
     <aside class="sidebar">
         <a href="{{ route('admin.dashboard') }}" class="brand">
             <span class="brand-mark">✈</span>
-            <span>JavaTrip<span style="opacity:.6;font-weight:600"> Admin</span></span>
+            <span>Nanta Travel<span style="opacity:.6;font-weight:600"> Admin</span></span>
         </a>
 
         <div class="side-label">Utama</div>
