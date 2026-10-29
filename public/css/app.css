@@ -30,7 +30,7 @@ html, body {
   margin: 0; padding: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
   font-size: 14.5px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
