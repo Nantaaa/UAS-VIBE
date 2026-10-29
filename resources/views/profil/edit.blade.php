@@ -46,9 +46,9 @@
         {{-- Sidebar --}}
         <aside class="card" style="padding:12px">
             <div class="side-label" style="color:var(--muted)">Pengaturan Akun</div>
-            <a href="{{ route('profil.edit') }}" class="profil-link active">👤 Profil Saya</a>
-            <a href="{{ route('pemesanan.index') }}" class="profil-link">🎫 Pesanan Saya</a>
-            <a href="{{ route('profil.edit') }}#keamanan" class="profil-link">🔒 Keamanan Akun</a>
+            <a href="{{ route('profil.edit') }}" class="profil-link active">{!! view('partials.icon', ['name' => 'user', 'size' => 15])->render() !!} Profil Saya</a>
+            <a href="{{ route('pemesanan.index') }}" class="profil-link">{!! view('partials.icon', ['name' => 'ticket', 'size' => 15])->render() !!} Pesanan Saya</a>
+            <a href="{{ route('profil.edit') }}#keamanan" class="profil-link">{!! view('partials.icon', ['name' => 'lock', 'size' => 15])->render() !!} Keamanan Akun</a>
             <a href="#" class="profil-link">📄 Dokumen &amp; Paspor</a>
             <a href="#" class="profil-link">💳 Metode Pembayaran</a>
             <a href="#" class="profil-link">🔔 Notifikasi</a>
@@ -56,7 +56,7 @@
             <form method="POST" action="{{ route('logout') }}" class="mt-8">
                 @csrf
                 <button type="submit" class="profil-link danger" style="width:100%;background:none;border:0;text-align:left;font-family:inherit;cursor:pointer">
-                    ⏻ Keluar
+                    {!! view('partials.icon', ['name' => 'logout', 'size' => 15])->render() !!} Keluar
                 </button>
             </form>
 
@@ -133,7 +133,7 @@
             {{-- Keamanan --}}
             <div class="card" id="keamanan">
                 <div class="card-head">
-                    <h3>🔒 Keamanan &amp; Ganti Password</h3>
+                    <h3>{!! view('partials.icon', ['name' => 'lock', 'size' => 15])->render() !!} Keamanan &amp; Ganti Password</h3>
                 </div>
                 <div class="card-body">
                     <p class="tiny muted">Jaga keamanan akun Anda dengan memperbarui kata sandi secara berkala.</p>

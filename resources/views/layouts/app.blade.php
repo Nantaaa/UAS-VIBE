@@ -133,10 +133,10 @@
 @endif
 
 <nav class="bottom-nav">
-    <a href="{{ route('beranda') }}" class="{{ request()->routeIs('beranda') ? 'active' : '' }}"><span class="ico">🏠</span> Beranda</a>
-    <a href="{{ route('beranda') }}#katalog" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}"><span class="ico">🧭</span> Paket</a>
-    <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}"><span class="ico">🎫</span> Pesanan</a>
-    <a href="{{ auth()->check() ? route('profil.edit') : route('login') }}" class="{{ request()->routeIs('profil.*') ? 'active' : '' }}"><span class="ico">👤</span> Profil</a>
+    <a href="{{ route('beranda') }}" class="{{ request()->routeIs('beranda') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'home', 'size' => 15])->render() !!}</span> Beranda</a>
+    <a href="{{ route('beranda') }}#katalog" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'compass', 'size' => 15])->render() !!}</span> Paket</a>
+    <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'ticket', 'size' => 15])->render() !!}</span> Pesanan</a>
+    <a href="{{ auth()->check() ? route('profil.edit') : route('login') }}" class="{{ request()->routeIs('profil.*') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'user', 'size' => 15])->render() !!}</span> Profil</a>
 </nav>
 
 <script>
@@ -151,7 +151,7 @@ document.addEventListener('change', function (e) {
         el.insertAdjacentElement('afterend', out);
     }
     if (el.files && el.files.length) {
-        out.textContent = '📎 ' + el.files[0].name + ' (' + Math.round(el.files[0].size / 1024) + ' KB)';
+        out.textContent = '{!! view('partials.icon', ['name' => 'paperclip', 'size' => 15])->render() !!} ' + el.files[0].name + ' (' + Math.round(el.files[0].size / 1024) + ' KB)';
         out.classList.remove('empty');
     } else {
         out.textContent = 'Belum ada berkas dipilih';

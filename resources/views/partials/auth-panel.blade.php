@@ -125,9 +125,9 @@
     @endif
 
     <div class="auth-trust auth-anim auth-d7">
-        <span>🔒 256-bit Enkripsi Data</span>
-        <span>🛡 ISO &amp; AITB Certified</span>
-        <span>☎ Layanan Concierge 24 Jam</span>
+        <span>{!! view('partials.icon', ['name' => 'lock', 'size' => 15])->render() !!} 256-bit Enkripsi Data</span>
+        <span>{!! view('partials.icon', ['name' => 'shield', 'size' => 15])->render() !!} ISO &amp; AITB Certified</span>
+        <span>{!! view('partials.icon', ['name' => 'phone', 'size' => 15])->render() !!} Layanan Concierge 24 Jam</span>
     </div>
 </div>
 

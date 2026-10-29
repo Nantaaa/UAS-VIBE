@@ -1,5 +1,5 @@
 <div class="hero-top">
-    <span class="pill-dark">◈ NANTA TRAVEL · ATLETIK NUSANTARA</span>
+    <span class="pill-dark">{!! view('partials.icon', ['name' => 'sparkle', 'size' => 15])->render() !!} NANTA TRAVEL · ATLETIK NUSANTARA</span>
     <span class="pill-dark">✓ Official Concierge</span>
 </div>
 
@@ -24,9 +24,9 @@
     <div class="row" style="gap:12px">
         <div class="avatars"><i></i><i></i><i></i></div>
         <div>
-            <div class="stars">4.9 ★★★★★</div>
+            <div class="stars">4.9 {!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!}{!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!}{!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!}{!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!}{!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!}</div>
             <div class="cap">Dipercaya oleh 10.000+ wisatawan nusantara</div>
         </div>
     </div>
-    <div class="emblem">◈ PINISI HERITAGE</div>
+    <div class="emblem">{!! view('partials.icon', ['name' => 'sparkle', 'size' => 15])->render() !!} PINISI HERITAGE</div>
 </div>

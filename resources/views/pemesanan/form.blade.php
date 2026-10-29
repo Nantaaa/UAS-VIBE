@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="warn-box mt-16">
-                        ⚠ Pastikan seluruh data peserta sesuai dengan KTP/Paspor. Data yang tidak sesuai dapat menyebabkan pemesanan dikembalikan untuk diperbaiki.
+                        {!! view('partials.icon', ['name' => 'alert', 'size' => 15])->render() !!} Pastikan seluruh data peserta sesuai dengan KTP/Paspor. Data yang tidak sesuai dapat menyebabkan pemesanan dikembalikan untuk diperbaiki.
                     </div>
 
                     <div class="navy-box mt-16">
@@ -109,7 +109,7 @@
                 <div class="help-card mt-16">
                     <h4>Butuh Bantuan?</h4>
                     <p>Tim concierge kami siap membantu penyusunan itinerary dan pertanyaan paket.</p>
-                    <a href="https://wa.me/6281234567890" class="btn-wa">💬 Chat WhatsApp</a>
+                    <a href="https://wa.me/6281234567890" class="btn-wa">{!! view('partials.icon', ['name' => 'chat', 'size' => 15])->render() !!} Chat WhatsApp</a>
                 </div>
             </aside>
         </div>
@@ -117,13 +117,13 @@
 
     <div class="benefit-strip">
         @foreach([
-            ['ico' => '🔒', 't' => 'Pembayaran Aman', 'd' => 'Verifikasi bukti transfer oleh admin'],
-            ['ico' => '↩', 't' => 'Pembatalan Mudah', 'd' => 'Selama belum terkonfirmasi'],
-            ['ico' => '☎', 't' => 'Layanan 24 Jam', 'd' => 'Concierge siap membantu'],
-            ['ico' => '🏷', 't' => 'Harga Terbaik', 'd' => 'Tanpa biaya tersembunyi'],
+            ['ico' => 'lock', 't' => 'Pembayaran Aman', 'd' => 'Verifikasi bukti transfer oleh admin'],
+            ['ico' => 'refresh', 't' => 'Pembatalan Mudah', 'd' => 'Selama belum terkonfirmasi'],
+            ['ico' => 'phone', 't' => 'Layanan 24 Jam', 'd' => 'Concierge siap membantu'],
+            ['ico' => 'tag', 't' => 'Harga Terbaik', 'd' => 'Tanpa biaya tersembunyi'],
         ] as $b)
             <div class="benefit">
-                <div class="ico">{{ $b['ico'] }}</div>
+                <div class="ico">@include('partials.icon', ['name' => $b['ico'], 'size' => 16])</div>
                 <div><strong>{{ $b['t'] }}</strong><span>{{ $b['d'] }}</span></div>
             </div>
         @endforeach

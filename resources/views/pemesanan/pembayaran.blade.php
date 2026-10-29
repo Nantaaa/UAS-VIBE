@@ -19,7 +19,7 @@
     @if($pemesanan->status_pemesanan === 'menunggu_pembayaran' && $pemesanan->sisaDetikPembayaran() > 0)
         <div class="deadline">
             <div>
-                <div class="ttl">⚠ Selesaikan Pembayaran Anda Sebelum Waktu Berakhir</div>
+                <div class="ttl">{!! view('partials.icon', ['name' => 'alert', 'size' => 15])->render() !!} Selesaikan Pembayaran Anda Sebelum Waktu Berakhir</div>
                 <div class="tiny" style="color:#b45309">Batas pembayaran {{ $pemesanan->batas_pembayaran->translatedFormat('d M Y H:i') }} WIB</div>
             </div>
             <div class="clock" id="clock" data-sisa="{{ $pemesanan->sisaDetikPembayaran() }}">
@@ -97,7 +97,7 @@
                 <form method="POST" action="{{ route('pemesanan.bayar', $pemesanan) }}" enctype="multipart/form-data" class="mt-8">
                     @csrf
                     <label class="dropzone" for="bukti" style="display:block;cursor:pointer">
-                        <div class="ico">☁</div>
+                        <div class="ico">{!! view('partials.icon', ['name' => 'cloud-up', 'size' => 15])->render() !!}</div>
                         <div class="cap">Tarik berkas ke sini atau klik untuk memilih</div>
                         <div class="sub">Format JPG, PNG, atau PDF · maksimal 2 MB</div>
                         <div class="tiny mt-8" id="namaFile" style="color:#1d4ed8;font-weight:700"></div>
@@ -130,12 +130,12 @@
             <div class="help-card mt-16">
                 <h4>Butuh Bantuan?</h4>
                 <p>Hubungi concierge kami bila ada kendala pembayaran atau dokumen.</p>
-                <a href="https://wa.me/6281234567890" class="btn-wa">💬 Hubungi Kami</a>
+                <a href="https://wa.me/6281234567890" class="btn-wa">{!! view('partials.icon', ['name' => 'chat', 'size' => 15])->render() !!} Hubungi Kami</a>
             </div>
 
             <div class="card card-pad mt-16">
                 <div class="tiny muted">
-                    🔒 Transaksi aman · dokumen identitas disimpan di penyimpanan privat dan hanya dapat diakses pemilik serta admin.
+                    {!! view('partials.icon', ['name' => 'lock', 'size' => 15])->render() !!} Transaksi aman · dokumen identitas disimpan di penyimpanan privat dan hanya dapat diakses pemilik serta admin.
                 </div>
             </div>
         </aside>

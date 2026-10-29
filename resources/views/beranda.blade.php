@@ -22,7 +22,7 @@
             <p>Jelajahi keindahan nusantara dengan paket wisata terbaik, harga terjangkau, dan pengalaman yang tak terlupakan.</p>
 
             <form method="GET" action="{{ route('beranda') }}" class="hero-search">
-                <span class="hs-ico">🔍</span>
+                <span class="hs-ico">{!! view('partials.icon', ['name' => 'search', 'size' => 15])->render() !!}</span>
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari destinasi, paket, atau aktivitas...">
                 <button type="button" class="btn hs-secondary" onclick="this.form.q.value='';this.form.submit()">Cari Sekarang</button>
                 <button type="submit" class="btn btn-primary">Cari Paket</button>
@@ -132,15 +132,15 @@
                         </select>
                     </form>
                     <div class="view-toggle">
-                        <button class="active" type="button">▦</button>
-                        <button type="button">☰</button>
+                        <button class="active" type="button">{!! view('partials.icon', ['name' => 'grid', 'size' => 15])->render() !!}</button>
+                        <button type="button">{!! view('partials.icon', ['name' => 'list', 'size' => 15])->render() !!}</button>
                     </div>
                 </div>
             </div>
 
             @if($paket->isEmpty())
                 <div class="card empty">
-                    <div class="big">🧭</div>
+                    <div class="big">{!! view('partials.icon', ['name' => 'compass', 'size' => 15])->render() !!}</div>
                     <h3>Paket tidak ditemukan</h3>
                     <p class="mb-0">Coba longgarkan filter atau ubah kata kunci pencarian.</p>
                 </div>
@@ -157,7 +157,7 @@
                                 @elseif($p->diskonPersen())
                                     <span class="badge-seller" style="background:#0d9488">-{{ $p->diskonPersen() }}%</span>
                                 @endif
-                                <span class="heart">♡</span>
+                                <span class="heart">{!! view('partials.icon', ['name' => 'heart', 'size' => 15])->render() !!}</span>
                                 <span class="thumb-shade"></span>
                                 @if(($p->jadwalTersedia->first()->sisa_kuota ?? 0) > 0)
                                     <span class="pill-tersedia">● Tersedia</span>
@@ -167,10 +167,10 @@
                             </a>
                             <div class="katalog-body">
                                 <a href="{{ route('paket.detail', $p) }}" class="katalog-title">{{ $p->nama_paket }}</a>
-                                <div class="katalog-loc">📍 {{ $p->destinasi->lokasi }}</div>
+                                <div class="katalog-loc">{!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} {{ $p->destinasi->lokasi }}</div>
                                 <div class="row between" style="gap:6px">
                                     <div class="katalog-meta">{{ $p->highlight ?? ($p->durasi_hari.' Hari '.($p->durasi_hari-1).' Malam') }}</div>
-                                    <div class="card-rating">★ 4.9</div>
+                                    <div class="card-rating">{!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!} 4.9</div>
                                 </div>
                                 <div class="katalog-price">
                                     <div>

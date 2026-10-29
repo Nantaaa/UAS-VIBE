@@ -34,13 +34,13 @@
     <div class="pdp-gallery">
         <div class="pdp-main">
             @if($paket->foto)<img src="{{ '/storage/'.$paket->foto }}" alt="{{ $paket->nama_paket }}">@endif
-            <span class="pdp-gallery-btn">📷 Lihat semua foto</span>
+            <span class="pdp-gallery-btn">{!! view('partials.icon', ['name' => 'camera', 'size' => 15])->render() !!} Lihat semua foto</span>
         </div>
         <div class="pdp-side">
             @foreach($galeri as $i => $g)
                 <div>
                     <img src="{{ '/storage/'.$g->foto }}" alt="{{ $g->nama_paket }}">
-                    <span class="pdp-gallery-btn" style="font-size:10px">📷 {{ $i + 2 }}/12</span>
+                    <span class="pdp-gallery-btn" style="font-size:10px">{!! view('partials.icon', ['name' => 'camera', 'size' => 15])->render() !!} {{ $i + 2 }}/12</span>
                 </div>
             @endforeach
         </div>
@@ -54,18 +54,18 @@
             </div>
 
             <h1 class="pdp-title">{{ $paket->nama_paket }}</h1>
-            <div class="pdp-loc">📍 {{ $paket->destinasi->lokasi }}</div>
+            <div class="pdp-loc">{!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} {{ $paket->destinasi->lokasi }}</div>
 
             <div class="row" style="gap:16px;margin-top:10px">
-                <div class="pdp-rating">★ 4.9 <span class="muted" style="font-weight:600">(1.2rb ulasan)</span></div>
+                <div class="pdp-rating">{!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!} 4.9 <span class="muted" style="font-weight:600">(1.2rb ulasan)</span></div>
                 <div class="tiny muted">{{ $paket->tipe_trip }}</div>
             </div>
 
             <div class="pdp-meta">
-                <div>🗓 {{ $paket->durasi_hari }} Hari {{ $paket->durasi_hari - 1 }} Malam</div>
-                <div>👥 Min. 2 Peserta</div>
-                <div>🏷 {{ $paket->tipe_trip }}</div>
-                <div>✅ Kuota {{ $jadwalPertama->sisa_kuota ?? 0 }} kursi tersisa</div>
+                <div>{!! view('partials.icon', ['name' => 'calendar', 'size' => 15])->render() !!} {{ $paket->durasi_hari }} Hari {{ $paket->durasi_hari - 1 }} Malam</div>
+                <div>{!! view('partials.icon', ['name' => 'users', 'size' => 15])->render() !!} Min. 2 Peserta</div>
+                <div>{!! view('partials.icon', ['name' => 'tag', 'size' => 15])->render() !!} {{ $paket->tipe_trip }}</div>
+                <div>{!! view('partials.icon', ['name' => 'check-circle', 'size' => 15])->render() !!} Kuota {{ $jadwalPertama->sisa_kuota ?? 0 }} kursi tersisa</div>
             </div>
 
             {{-- Tab --}}
@@ -124,7 +124,7 @@
 
             <h3 style="font-size:15px;margin:24px 0 10px">Peta Lokasi &amp; Meeting Point</h3>
             <div class="map-box">
-                📍 Lokasi akan dikonfirmasi admin
+                {!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} Lokasi akan dikonfirmasi admin
                 <span class="tag">Lihat Peta</span>
             </div>
         </div>
@@ -191,8 +191,8 @@
                         <button class="btn btn-primary btn-block" disabled>Belum ada jadwal</button>
                     @endif
 
-                    <a href="https://wa.me/6281234567890" class="btn btn-ghost btn-block mt-8" style="font-size:12px">💬 Tanya via WhatsApp</a>
-                    <div class="book-trust">🔒 Pembayaran aman · Konfirmasi cepat setelah verifikasi</div>
+                    <a href="https://wa.me/6281234567890" class="btn btn-ghost btn-block mt-8" style="font-size:12px">{!! view('partials.icon', ['name' => 'chat', 'size' => 15])->render() !!} Tanya via WhatsApp</a>
+                    <div class="book-trust">{!! view('partials.icon', ['name' => 'lock', 'size' => 15])->render() !!} Pembayaran aman · Konfirmasi cepat setelah verifikasi</div>
                 </form>
             </div>
         </aside>

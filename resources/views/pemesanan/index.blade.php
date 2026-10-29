@@ -45,7 +45,7 @@
 
     @if($daftar->isEmpty())
         <div class="card empty mt-16">
-            <div class="big">🎫</div>
+            <div class="big">{!! view('partials.icon', ['name' => 'ticket', 'size' => 15])->render() !!}</div>
             <h3>Belum ada pesanan pada kategori ini</h3>
             <p class="mb-0">Mulai jelajahi paket wisata dan buat pemesanan pertama Anda.</p>
             <a href="{{ route('beranda') }}#katalog" class="btn btn-primary mt-16">Lihat Paket Wisata</a>
@@ -78,10 +78,10 @@
                         <div class="order-title">{{ $p->jadwal->paket->nama_paket }}</div>
 
                         <div class="order-meta">
-                            <span>📍 {{ $p->jadwal->paket->destinasi->nama_destinasi }}</span>
-                            <span>🗓 {{ $p->jadwal->tanggal_berangkat->translatedFormat('d M Y') }}</span>
-                            <span>👥 {{ $p->jumlah_peserta }} peserta</span>
-                            <span>⏳ {{ $p->jadwal->paket->durasi_hari }} hari</span>
+                            <span>{!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} {{ $p->jadwal->paket->destinasi->nama_destinasi }}</span>
+                            <span>{!! view('partials.icon', ['name' => 'calendar', 'size' => 15])->render() !!} {{ $p->jadwal->tanggal_berangkat->translatedFormat('d M Y') }}</span>
+                            <span>{!! view('partials.icon', ['name' => 'users', 'size' => 15])->render() !!} {{ $p->jumlah_peserta }} peserta</span>
+                            <span>{!! view('partials.icon', ['name' => 'clock', 'size' => 15])->render() !!} {{ $p->jadwal->paket->durasi_hari }} hari</span>
                         </div>
 
                         @if($p->status_pemesanan === 'menunggu_pembayaran' && $p->sisaDetikPembayaran() > 0)
@@ -89,7 +89,7 @@
                                 ⏱ Selesaikan pembayaran dalam <span class="cd">{{ gmdate('H:i:s', $p->sisaDetikPembayaran()) }}</span>
                             </div>
                         @elseif($p->status_pemesanan === 'perlu_perbaikan')
-                            <div class="status-strip red">✎ {{ Str::limit($p->catatan_status, 90) }}</div>
+                            <div class="status-strip red">{!! view('partials.icon', ['name' => 'edit', 'size' => 15])->render() !!} {{ Str::limit($p->catatan_status, 90) }}</div>
                         @endif
 
                         <div class="order-foot">

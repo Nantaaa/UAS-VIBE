@@ -11,24 +11,24 @@
 <div class="admin-shell">
     <aside class="sidebar">
         <a href="{{ route('admin.dashboard') }}" class="brand">
-            <span class="brand-mark">✈</span>
+            <span class="brand-mark">{!! view('partials.icon', ['name' => 'plane', 'size' => 15])->render() !!}</span>
             <span>Nanta Travel<span style="opacity:.6;font-weight:600"> Admin</span></span>
         </a>
 
         <div class="side-label">Utama</div>
         <a href="{{ route('admin.dashboard') }}" class="side-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <span class="ico">▦</span> Dashboard
+            <span class="ico">{!! view('partials.icon', ['name' => 'grid', 'size' => 15])->render() !!}</span> Dashboard
         </a>
 
         <div class="side-label">Data Master</div>
         <a href="{{ route('admin.destinasi.index') }}" class="side-link {{ request()->routeIs('admin.destinasi.*') ? 'active' : '' }}">
-            <span class="ico">◈</span> Destinasi
+            <span class="ico">{!! view('partials.icon', ['name' => 'sparkle', 'size' => 15])->render() !!}</span> Destinasi
         </a>
         <a href="{{ route('admin.paket.index') }}" class="side-link {{ request()->routeIs('admin.paket.*') ? 'active' : '' }}">
             <span class="ico">▤</span> Paket Wisata
         </a>
         <a href="{{ route('admin.jadwal.index') }}" class="side-link {{ request()->routeIs('admin.jadwal.*') ? 'active' : '' }}">
-            <span class="ico">🗓</span> Jadwal &amp; Kuota
+            <span class="ico">{!! view('partials.icon', ['name' => 'calendar', 'size' => 15])->render() !!}</span> Jadwal &amp; Kuota
         </a>
 
         <div class="side-label">Operasional</div>
@@ -40,7 +40,7 @@
             @endif
         </a>
         <a href="{{ route('admin.manifes.index') }}" class="side-link {{ request()->routeIs('admin.manifes.*') ? 'active' : '' }}">
-            <span class="ico">☰</span> Manifes Peserta
+            <span class="ico">{!! view('partials.icon', ['name' => 'list', 'size' => 15])->render() !!}</span> Manifes Peserta
         </a>
         <a href="{{ route('admin.voucher.index') }}" class="side-link {{ request()->routeIs('admin.voucher.*') ? 'active' : '' }}">
             <span class="ico">◫</span> Validasi Voucher
@@ -54,7 +54,7 @@
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="side-link" style="background:none;border:0;width:100%;cursor:pointer;font-family:inherit">
-                    <span class="ico">⏻</span> Keluar
+                    <span class="ico">{!! view('partials.icon', ['name' => 'logout', 'size' => 15])->render() !!}</span> Keluar
                 </button>
             </form>
         </div>

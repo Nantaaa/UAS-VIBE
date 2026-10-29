@@ -30,7 +30,7 @@
 
     @if($pemesanan->status_pemesanan === 'perlu_perbaikan')
         <div class="alert alert-error">
-            ✎ <div><strong>Perlu perbaikan:</strong> {{ $pemesanan->catatan_status }}<br>
+            {!! view('partials.icon', ['name' => 'edit', 'size' => 15])->render() !!} <div><strong>Perlu perbaikan:</strong> {{ $pemesanan->catatan_status }}<br>
             <span class="tiny">Unggah ulang berkas yang benar di bawah, lalu admin akan memeriksa kembali.</span></div>
         </div>
     @endif
@@ -92,7 +92,7 @@
                     <div class="card-head"><h3>Unggah bukti pembayaran</h3></div>
                     <div class="card-body">
                         <div class="alert alert-info">
-                            <span style="font-size:15px">ℹ️</span>
+                            <span style="font-size:15px">{!! view('partials.icon', ['name' => 'info', 'size' => 15])->render() !!}</span>
                             <span>
                                 Transfer ke <strong>Bank BCA 1234567890</strong> a.n. <strong>Nanta Travel</strong>
                                 sebesar <strong>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</strong>
@@ -102,12 +102,12 @@
                         <form method="POST" action="{{ route('pemesanan.bayar', $pemesanan) }}" enctype="multipart/form-data">
                             @csrf
                             <label class="dropzone" for="bukti" style="display:block;cursor:pointer">
-                                <div class="ico">☁</div>
+                                <div class="ico">{!! view('partials.icon', ['name' => 'cloud-up', 'size' => 15])->render() !!}</div>
                                 <div class="cap">Tarik berkas ke sini atau klik untuk memilih</div>
                                 <div class="sub">Format JPG, PNG, atau PDF — maksimal 2 MB</div>
                             </label>
                             <input id="bukti" type="file" name="bukti" accept=".jpg,.jpeg,.png,.pdf" required style="display:none"
-                                   onchange="const c=this.closest('form').querySelector('.dropzone .cap'); c.textContent = this.files[0] ? '📎 '+this.files[0].name : 'Tarik berkas ke sini atau klik untuk memilih'; c.style.color = this.files[0] ? '#1d4ed8' : '';">
+                                   onchange="const c=this.closest('form').querySelector('.dropzone .cap'); c.textContent = this.files[0] ? '{!! view('partials.icon', ['name' => 'paperclip', 'size' => 15])->render() !!} '+this.files[0].name : 'Tarik berkas ke sini atau klik untuk memilih'; c.style.color = this.files[0] ? '#1d4ed8' : '';">
                             <button class="btn btn-primary btn-block mt-16" type="submit">Kirim Bukti Pembayaran</button>
                         </form>
                     </div>

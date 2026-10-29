@@ -30,8 +30,8 @@
             <p class="muted mb-0" style="font-size:12.5px">Tunjukkan e-tiket ini kepada petugas saat keberangkatan.</p>
         </div>
         <div class="row" style="gap:8px">
-            <button type="button" class="btn btn-ghost btn-sm" onclick="window.print()">🖨 Cetak Dokumen</button>
-            <a href="{{ route('pemesanan.voucher.unduh', $pemesanan) }}" class="btn btn-primary btn-sm">⬇ Unduh PDF</a>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="window.print()">{!! view('partials.icon', ['name' => 'print', 'size' => 15])->render() !!} Cetak Dokumen</button>
+            <a href="{{ route('pemesanan.voucher.unduh', $pemesanan) }}" class="btn btn-primary btn-sm">{!! view('partials.icon', ['name' => 'download', 'size' => 15])->render() !!} Unduh PDF</a>
         </div>
     </div>
 
