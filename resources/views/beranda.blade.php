@@ -12,7 +12,10 @@
     </div>
 
     {{-- HERO --}}
-    <section class="catalog-hero">
+    <section class="catalog-hero" style="background-image:
+        linear-gradient(115deg, rgba(6,20,36,.94) 0%, rgba(8,32,52,.82) 45%, rgba(8,42,44,.70) 100%),
+        url('/storage/paket/raja_ampat.jpg');
+        background-size: cover; background-position: center;">
         <div class="catalog-hero-inner">
             <span class="hero-badge">✦ PILIHAN PAKET WISATA TERBAIK</span>
             <h1>Temukan Paket Wisata Impianmu</h1>
@@ -147,7 +150,7 @@
                         <article class="katalog-card">
                             <a href="{{ route('paket.detail', $p) }}" class="katalog-thumb">
                                 @if($p->foto)
-                                    <img src="{{ Storage::disk('public')->url($p->foto) }}" alt="{{ $p->nama_paket }}">
+                                    <img src="{{ '/storage/'.$p->foto }}" alt="{{ $p->nama_paket }}">
                                 @endif
                                 @if($p->is_bestseller)
                                     <span class="badge-seller">Best Seller</span>
@@ -155,6 +158,7 @@
                                     <span class="badge-seller" style="background:#0d9488">-{{ $p->diskonPersen() }}%</span>
                                 @endif
                                 <span class="heart">♡</span>
+                                <span class="thumb-shade"></span>
                                 @if(($p->jadwalTersedia->first()->sisa_kuota ?? 0) > 0)
                                     <span class="pill-tersedia">● Tersedia</span>
                                 @else
@@ -164,7 +168,10 @@
                             <div class="katalog-body">
                                 <a href="{{ route('paket.detail', $p) }}" class="katalog-title">{{ $p->nama_paket }}</a>
                                 <div class="katalog-loc">📍 {{ $p->destinasi->lokasi }}</div>
-                                <div class="katalog-meta">{{ $p->highlight ?? ($p->durasi_hari.' Hari '.($p->durasi_hari-1).' Malam') }}</div>
+                                <div class="row between" style="gap:6px">
+                                    <div class="katalog-meta">{{ $p->highlight ?? ($p->durasi_hari.' Hari '.($p->durasi_hari-1).' Malam') }}</div>
+                                    <div class="card-rating">★ 4.9</div>
+                                </div>
                                 <div class="katalog-price">
                                     <div>
                                         <div class="now">Rp {{ number_format($p->tarif, 0, ',', '.') }}</div>

@@ -44,7 +44,8 @@ class DatabaseSeeder extends Seeder
             ['nama_destinasi' => 'Sumba', 'lokasi' => 'Nusa Tenggara Timur', 'deskripsi' => 'Desa adat Wae Rebo, savana, dan pantai liar Sumba.'],
         ];
 
-        foreach ($destinasi as $d) {
+        foreach ($destinasi as $i => $d) {
+            $d['foto'] = 'destinasi/dest-'.($i + 1).'.jpg';
             Destinasi::create($d);
         }
 
@@ -131,7 +132,8 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
-        foreach ($paket as $p) {
+        foreach ($paket as $i => $p) {
+            $p['foto'] = 'paket/paket-'.($i + 1).'.jpg';
             $model = PaketWisata::create($p);
 
             foreach ([1, 2, 3] as $offset) {

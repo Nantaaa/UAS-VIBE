@@ -66,7 +66,7 @@
                 <article class="order-card">
                     <div class="order-thumb">
                         @if($p->jadwal->paket->foto)
-                            <img src="{{ Storage::disk('public')->url($p->jadwal->paket->foto) }}" alt="">
+                            <img src="{{ '/storage/'.$p->jadwal->paket->foto }}" alt="">
                         @endif
                     </div>
                     <div class="order-body">

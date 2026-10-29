@@ -147,3 +147,35 @@ input[type=range] { width: 100%; accent-color: #2563eb; }
   .hero-search input { flex: 1 1 100%; }
   .user-meta { display: none; }
 }
+
+/* ===== Polish: kartu katalog ===== */
+.katalog-thumb { aspect-ratio: 4 / 3; }
+.katalog-thumb img { transition: transform .5s ease; }
+.katalog-card:hover .katalog-thumb img { transform: scale(1.06); }
+.thumb-shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(6,20,36,.34) 0%, rgba(6,20,36,0) 38%, rgba(6,20,36,.55) 100%);
+}
+.badge-seller { box-shadow: 0 4px 12px -4px rgba(249,115,22,.8); }
+.pill-tersedia { backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.heart { transition: transform .18s, background .18s; }
+.katalog-card:hover .heart { transform: scale(1.08); }
+.card-rating { font-size: 10.5px; font-weight: 800; color: #b45309; white-space: nowrap; }
+.katalog-title { min-height: 38px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.katalog-price .now { font-size: 16px; letter-spacing: -.02em; }
+.katalog-price .was { display: block; margin-top: -2px; }
+
+/* ===== Polish: hero ===== */
+.catalog-hero { padding: 40px 38px 34px; box-shadow: 0 26px 60px -34px rgba(6,20,36,.85); }
+.catalog-hero h1 { font-size: 38px; text-shadow: 0 2px 18px rgba(0,0,0,.35); }
+.hero-search { box-shadow: 0 24px 48px -22px rgba(0,0,0,.65); }
+.hero-chip { backdrop-filter: blur(6px); }
+
+/* ===== Polish: filter & results ===== */
+.filter-card { box-shadow: 0 12px 30px -24px rgba(17,24,39,.4); }
+.results-head h2 { letter-spacing: -.02em; }
+.view-toggle button:hover { background: #f5f8ff; color: #2563eb; }
+
+/* ===== Polish: kartu paket beranda (grid) ===== */
+.paket-thumb img { transition: transform .5s ease; }
+.paket-card:hover .paket-thumb img { transform: scale(1.05); }

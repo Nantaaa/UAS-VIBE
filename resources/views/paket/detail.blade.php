@@ -33,12 +33,16 @@
     {{-- Galeri --}}
     <div class="pdp-gallery">
         <div class="pdp-main">
-            @if($paket->foto)<img src="{{ Storage::disk('public')->url($paket->foto) }}" alt="{{ $paket->nama_paket }}">@endif
+            @if($paket->foto)<img src="{{ '/storage/'.$paket->foto }}" alt="{{ $paket->nama_paket }}">@endif
             <span class="pdp-gallery-btn">📷 Lihat semua foto</span>
         </div>
         <div class="pdp-side">
-            <div><span class="pdp-gallery-btn" style="font-size:10px">📷 1/12</span></div>
-            <div><span class="pdp-gallery-btn" style="font-size:10px">📷 2/12</span></div>
+            @foreach($galeri as $i => $g)
+                <div>
+                    <img src="{{ '/storage/'.$g->foto }}" alt="{{ $g->nama_paket }}">
+                    <span class="pdp-gallery-btn" style="font-size:10px">📷 {{ $i + 2 }}/12</span>
+                </div>
+            @endforeach
         </div>
     </div>
 

@@ -72,6 +72,13 @@ class BerandaController extends Controller
 
         $paket->load(['destinasi', 'jadwalTersedia']);
 
-        return view('paket.detail', compact('paket'));
+        $galeri = \App\Models\PaketWisata::where('id', '!=', $paket->id)
+            ->whereNotNull('foto')
+            ->where('is_active', true)
+            ->inRandomOrder()
+            ->limit(2)
+            ->get(['foto', 'nama_paket']);
+
+        return view('paket.detail', compact('paket', 'galeri'));
     }
 }
