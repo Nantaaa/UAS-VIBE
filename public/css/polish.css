@@ -1,0 +1,50 @@
+/* ===== Polish pass: konsistensi visual ===== */
+
+/* Tombol: lift halus + fokus keyboard yang jelas */
+.btn { transition: background .16s, box-shadow .18s, transform .12s; }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-primary:hover { box-shadow: 0 10px 22px -10px rgba(217, 119, 6, .75); }
+.btn-teal:hover { box-shadow: 0 10px 22px -10px rgba(13, 148, 136, .7); }
+.btn-ghost:hover { box-shadow: 0 8px 18px -12px rgba(17, 24, 39, .35); }
+.btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #2563eb; outline-offset: 2px;
+}
+
+/* Tabel admin: zebra + header menempel */
+table.data thead th { position: sticky; top: 0; z-index: 2; }
+table.data tbody tr:nth-child(even) { background: #fcfdff; }
+table.data tbody tr:hover { background: #f6f9ff; }
+table.data td strong { color: var(--ink); }
+
+/* Kartu: bayangan lebih lembut dan konsisten */
+.card { transition: box-shadow .2s; }
+.card:hover { box-shadow: 0 10px 28px -20px rgba(17, 24, 39, .35); }
+
+/* Empty state seragam */
+.empty h3 { font-size: 15px; margin-bottom: 6px; }
+.empty .big { filter: saturate(.6); opacity: .8; }
+
+/* Footer: pemisah lebih tegas + ruang napas */
+.site-footer { margin-top: 64px; background: linear-gradient(180deg, #ffffff 0%, #fafbfd 100%); }
+.footer-grid { padding: 46px 0 34px; }
+.footer-grid h4 { margin-bottom: 14px; }
+.footer-legal { padding: 18px 0 22px; }
+
+/* Badge & chip: sedikit lebih tegas */
+.badge { letter-spacing: .01em; }
+.chip { transition: .15s; }
+.chip:hover { border-color: var(--teal); color: var(--teal-dark); }
+
+/* Hero beranda: teks lebih terbaca */
+.catalog-hero p { text-shadow: 0 1px 12px rgba(0, 0, 0, .35); }
+.hero-badge { backdrop-filter: blur(6px); }
+
+/* Halaman detail: judul & harga lebih tegas */
+.pdp-title { letter-spacing: -.035em; }
+.book-card { box-shadow: 0 20px 44px -30px rgba(17, 24, 39, .55); }
+
+/* Scrollbar halus (Chromium) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #d5dbe6; border-radius: 999px; border: 2px solid #fff; }
+::-webkit-scrollbar-thumb:hover { background: #bcc6d6; }

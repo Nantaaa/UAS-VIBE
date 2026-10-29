@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset('css/katalog.css') }}">
     <link rel="stylesheet" href="{{ asset('css/pages.css') }}">
     <link rel="stylesheet" href="{{ asset('css/ticket-profil.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/polish.css') }}">
 </head>
 <body>
 @hasSection('minimal')
