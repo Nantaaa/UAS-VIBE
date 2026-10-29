@@ -63,8 +63,16 @@ class BookingService
                 Peserta::create([
                     'id_pemesanan' => $pemesanan->id,
                     'nama_peserta' => $p['nama_peserta'],
+                    'tempat_lahir' => $p['tempat_lahir'] ?? null,
+                    'tanggal_lahir' => $p['tanggal_lahir'] ?? null,
+                    'jenis_kelamin' => $p['jenis_kelamin'] ?? null,
                     'jenis_identitas' => $p['jenis_identitas'],
                     'no_identitas' => $p['no_identitas'],
+                    'no_hp' => $p['no_hp'] ?? null,
+                    'email' => $p['email'] ?? null,
+                    'alamat' => $p['alamat'] ?? null,
+                    'kota' => $p['kota'] ?? null,
+                    'provinsi' => $p['provinsi'] ?? null,
                     'file_identitas' => $path,
                     'status' => 'menunggu',
                 ]);

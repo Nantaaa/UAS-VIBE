@@ -7,6 +7,7 @@
     <title>@yield('title', 'Nanta Travel') — Sistem Informasi Travel &amp; Agen Wisata</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/katalog.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/pages.css') }}">
 </head>
 <body>
 @hasSection('minimal')

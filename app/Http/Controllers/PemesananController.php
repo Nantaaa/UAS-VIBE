@@ -88,14 +88,34 @@ class PemesananController extends Controller
 
     public function index(Request $request)
     {
-        $daftar = Pemesanan::with(['jadwal.paket.destinasi', 'tiket'])
+        $tab = $request->input('tab', 'semua');
+
+        $daftar = Pemesanan::with(['jadwal.paket.destinasi', 'tiket', 'pembayaranTerakhir'])
             ->where('id_user', $request->user()->id)
-            ->when($request->filled('status'), fn ($q) => $q->where('status_pemesanan', $request->input('status')))
-            ->latest('tanggal_pemesanan')
-            ->paginate(8)
+            ->when($tab === 'menunggu_pembayaran', fn ($q) => $q->where('status_pemesanan', 'menunggu_pembayaran'))
+            ->when($tab === 'diproses', fn ($q) => $q->whereIn('status_pemesanan', ['menunggu_verifikasi', 'perlu_perbaikan']))
+            ->when($tab === 'selesai', fn ($q) => $q->where('status_pemesanan', 'terkonfirmasi'))
+            ->when($tab === 'dibatalkan', fn ($q) => $q->whereIn('status_pemesanan', ['dibatalkan', 'kedaluwarsa']))
+            ->when($request->filled('q'), fn ($q) => $q->where(function ($w) use ($request) {
+                $cari = $request->input('q');
+                $w->where('kode_pemesanan', 'like', "%{$cari}%")
+                    ->orWhereHas('jadwal.paket', fn ($p) => $p->where('nama_paket', 'like', "%{$cari}%"));
+            }))
+            ->when($request->filled('urut'), fn ($q) => $request->input('urut') === 'terlama'
+                ? $q->oldest('tanggal_pemesanan')
+                : $q->latest('tanggal_pemesanan'), fn ($q) => $q->latest('tanggal_pemesanan'))
+            ->paginate(6)
             ->withQueryString();
 
-        return view('pemesanan.index', compact('daftar'));
+        $hitung = [
+            'semua' => Pemesanan::where('id_user', $request->user()->id)->count(),
+            'menunggu_pembayaran' => Pemesanan::where('id_user', $request->user()->id)->where('status_pemesanan', 'menunggu_pembayaran')->count(),
+            'diproses' => Pemesanan::where('id_user', $request->user()->id)->whereIn('status_pemesanan', ['menunggu_verifikasi', 'perlu_perbaikan'])->count(),
+            'selesai' => Pemesanan::where('id_user', $request->user()->id)->where('status_pemesanan', 'terkonfirmasi')->count(),
+            'dibatalkan' => Pemesanan::where('id_user', $request->user()->id)->whereIn('status_pemesanan', ['dibatalkan', 'kedaluwarsa'])->count(),
+        ];
+
+        return view('pemesanan.index', compact('daftar', 'tab', 'hitung'));
     }
 
     public function show(Request $request, Pemesanan $pemesanan)
@@ -105,6 +125,15 @@ class PemesananController extends Controller
         $pemesanan->load(['jadwal.paket.destinasi', 'peserta', 'pembayaran', 'tiket']);
 
         return view('pemesanan.show', compact('pemesanan'));
+    }
+
+    public function pembayaran(Request $request, Pemesanan $pemesanan)
+    {
+        $this->authorizeOwner($request, $pemesanan);
+
+        $pemesanan->load(['jadwal.paket.destinasi', 'pembayaran']);
+
+        return view('pemesanan.pembayaran', compact('pemesanan'));
     }
 
     public function unggahPembayaran(Request $request, Pemesanan $pemesanan)

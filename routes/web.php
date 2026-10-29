@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/pemesanan', [PemesananController::class, 'index'])->name('pemesanan.index');
     Route::get('/pemesanan/{pemesanan}', [PemesananController::class, 'show'])->name('pemesanan.show');
+    Route::get('/pemesanan/{pemesanan}/pembayaran', [PemesananController::class, 'pembayaran'])->name('pemesanan.pembayaran');
     Route::post('/pemesanan/{pemesanan}/bayar', [PemesananController::class, 'unggahPembayaran'])->name('pemesanan.bayar');
     Route::post('/pemesanan/{pemesanan}/batal', [PemesananController::class, 'batal'])->name('pemesanan.batal');
     Route::get('/pemesanan/{pemesanan}/voucher', [PemesananController::class, 'lihatVoucher'])->name('pemesanan.voucher');
