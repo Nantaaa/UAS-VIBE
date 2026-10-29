@@ -55,13 +55,29 @@ class PemesananController extends Controller
             'peserta.*.file_identitas.max' => 'Ukuran berkas identitas maksimal 2 MB.',
         ]);
 
-        $data = $request->input('peserta');
+        $input = $request->input('peserta', []);
+        $files = $request->file('peserta', []);
+
+        $data = [];
+        foreach ($input as $i => $row) {
+            $row['file_identitas'] = $files[$i]['file_identitas'] ?? null;
+            $data[$i] = $row;
+        }
+
         $data = array_slice($data, 0, (int) $request->input('jumlah_peserta'), true);
 
         if (count($data) < (int) $request->input('jumlah_peserta')) {
             throw ValidationException::withMessages([
                 'peserta' => 'Data peserta belum lengkap sesuai jumlah peserta.',
             ]);
+        }
+
+        foreach ($data as $row) {
+            if (! $row['file_identitas'] instanceof \Illuminate\Http\UploadedFile) {
+                throw ValidationException::withMessages([
+                    'peserta' => 'Berkas KTP/Paspor setiap peserta wajib diunggah.',
+                ]);
+            }
         }
 
         $pemesanan = $this->booking->buat($request->user(), $jadwal->id, array_values($data));
