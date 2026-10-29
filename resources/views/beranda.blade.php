@@ -183,7 +183,11 @@
                                 <div class="katalog-loc">{!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} {{ $p->destinasi->lokasi }}</div>
                                 <div class="row between" style="gap:6px">
                                     <div class="katalog-meta">{{ $p->highlight ?? ($p->durasi_hari.' Hari '.($p->durasi_hari-1).' Malam') }}</div>
-                                    <div class="card-rating">{!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!} 4.9</div>
+                                    @if(($p->peserta_terkonfirmasi ?? 0) > 0)
+                                    <div class="card-rating" style="color:var(--teal-dark)">{!! view('partials.icon', ['name' => 'users', 'size' => 11])->render() !!} {{ (int) $p->peserta_terkonfirmasi }} peserta</div>
+                                @else
+                                    <div class="card-rating" style="color:var(--muted)">Jadwal baru</div>
+                                @endif
                                 </div>
                                 <div class="katalog-price">
                                     <div>

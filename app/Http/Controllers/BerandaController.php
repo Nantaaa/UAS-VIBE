@@ -11,6 +11,7 @@ class BerandaController extends Controller
     public function index(Request $request)
     {
         $query = PaketWisata::with(['destinasi', 'jadwalTersedia'])
+            ->withSum(['pemesanan as peserta_terkonfirmasi' => fn ($q) => $q->where('status_pemesanan', 'terkonfirmasi')], 'jumlah_peserta')
             ->where('is_active', true);
 
         if ($cari = $request->string('q')->trim()->toString()) {
@@ -76,6 +77,7 @@ class BerandaController extends Controller
         abort_unless($paket->is_active, 404);
 
         $paket->load(['destinasi', 'jadwalTersedia']);
+        $paket->loadSum(['pemesanan as peserta_terkonfirmasi' => fn ($q) => $q->where('status_pemesanan', 'terkonfirmasi')], 'jumlah_peserta');
 
         $galeri = \App\Models\PaketWisata::where('id', '!=', $paket->id)
             ->whereNotNull('foto')

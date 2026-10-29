@@ -68,7 +68,14 @@
             <div class="pdp-loc">{!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} {{ $paket->destinasi->lokasi }}</div>
 
             <div class="row" style="gap:16px;margin-top:10px">
-                <div class="pdp-rating">{!! view('partials.icon', ['name' => 'star', 'size' => 15])->render() !!} 4.9 <span class="muted" style="font-weight:600">(1.2rb ulasan)</span></div>
+                <div class="pdp-rating" style="color:var(--teal-dark)">
+                    {!! view('partials.icon', ['name' => 'users', 'size' => 15])->render() !!}
+                    @if(($paket->peserta_terkonfirmasi ?? 0) > 0)
+                        {{ (int) $paket->peserta_terkonfirmasi }} peserta sudah berangkat
+                    @else
+                        Jadwal baru dibuka
+                    @endif
+                </div>
                 <div class="tiny muted">{{ $paket->tipe_trip }}</div>
             </div>
 

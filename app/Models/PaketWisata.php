@@ -43,6 +43,16 @@ class PaketWisata extends Model
         return $this->hasMany(JadwalKeberangkatan::class, 'id_paket');
     }
 
+    public function pemesanan()
+    {
+        return $this->hasManyThrough(
+            Pemesanan::class,
+            JadwalKeberangkatan::class,
+            'id_paket',
+            'id_jadwal'
+        );
+    }
+
     public function jadwalTersedia()
     {
         return $this->jadwal()
