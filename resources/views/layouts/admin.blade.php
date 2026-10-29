@@ -7,73 +7,91 @@
     <title>@yield('title', 'Panel Admin') — Nanta Travel</title>
     <link rel="stylesheet" href="{{ asset('css/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
-<body>
-<div class="admin-shell">
-    <aside class="sidebar">
-        <a href="{{ route('admin.dashboard') }}" class="brand">
-            <span class="brand-mark">{!! view('partials.icon', ['name' => 'plane', 'size' => 15])->render() !!}</span>
-            <span>Nanta Travel<span style="opacity:.6;font-weight:600"> Admin</span></span>
+<body class="adm">
+@php
+    $nVerif = \App\Models\Pemesanan::where('status_pemesanan', 'menunggu_verifikasi')->count();
+    $nPerbaikan = \App\Models\Pemesanan::where('status_pemesanan', 'perlu_perbaikan')->count();
+@endphp
+<div class="adm-shell">
+    <aside class="adm-side">
+        <a href="{{ route('admin.dashboard') }}" class="adm-brand">
+            <span class="mark">N</span>
+            <span>
+                <span class="nm">Nanta Travel</span>
+                <span class="sub">Archipelago Concierge</span>
+            </span>
         </a>
 
-        <div class="side-label">Utama</div>
-        <a href="{{ route('admin.dashboard') }}" class="side-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <span class="ico">{!! view('partials.icon', ['name' => 'grid', 'size' => 15])->render() !!}</span> Dashboard
+        <div class="adm-label">Navigasi Operasional</div>
+
+        <a href="{{ route('admin.dashboard') }}" class="adm-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            @include('partials.icon', ['name' => 'grid', 'size' => 14]) Dashboard
+        </a>
+        <a href="{{ route('admin.destinasi.index') }}" class="adm-link {{ request()->routeIs('admin.destinasi.*') ? 'active' : '' }}">
+            @include('partials.icon', ['name' => 'map-pin', 'size' => 14]) Destinasi
+        </a>
+        <a href="{{ route('admin.paket.index') }}" class="adm-link {{ request()->routeIs('admin.paket.*') ? 'active' : '' }}">
+            @include('partials.icon', ['name' => 'compass', 'size' => 14]) Paket Wisata
+        </a>
+        <a href="{{ route('admin.jadwal.index') }}" class="adm-link {{ request()->routeIs('admin.jadwal.*') ? 'active' : '' }}">
+            @include('partials.icon', ['name' => 'calendar', 'size' => 14]) Jadwal Keberangkatan
+        </a>
+        <a href="{{ route('admin.verifikasi.index') }}" class="adm-link {{ request()->routeIs('admin.verifikasi.*') ? 'active' : '' }}">
+            @include('partials.icon', ['name' => 'check-circle', 'size' => 14]) Verifikasi Pemesanan
+            @if($nVerif > 0)<span class="badge-n">{{ $nVerif }}</span>@endif
+        </a>
+        <a href="{{ route('admin.manifes.index') }}" class="adm-link {{ request()->routeIs('admin.manifes.*') ? 'active' : '' }}">
+            @include('partials.icon', ['name' => 'users', 'size' => 14]) Manifes Peserta
+        </a>
+        <a href="{{ route('admin.voucher.index') }}" class="adm-link {{ request()->routeIs('admin.voucher.*') ? 'active' : '' }}">
+            @include('partials.icon', ['name' => 'ticket', 'size' => 14]) Validasi Voucher
+        </a>
+        <a href="{{ route('admin.laporan.index') }}" class="adm-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
+            @include('partials.icon', ['name' => 'chart', 'size' => 14]) Laporan Bulanan
         </a>
 
-        <div class="side-label">Data Master</div>
-        <a href="{{ route('admin.destinasi.index') }}" class="side-link {{ request()->routeIs('admin.destinasi.*') ? 'active' : '' }}">
-            <span class="ico">{!! view('partials.icon', ['name' => 'sparkle', 'size' => 15])->render() !!}</span> Destinasi
-        </a>
-        <a href="{{ route('admin.paket.index') }}" class="side-link {{ request()->routeIs('admin.paket.*') ? 'active' : '' }}">
-            <span class="ico">▤</span> Paket Wisata
-        </a>
-        <a href="{{ route('admin.jadwal.index') }}" class="side-link {{ request()->routeIs('admin.jadwal.*') ? 'active' : '' }}">
-            <span class="ico">{!! view('partials.icon', ['name' => 'calendar', 'size' => 15])->render() !!}</span> Jadwal &amp; Kuota
-        </a>
-
-        <div class="side-label">Operasional</div>
-        <a href="{{ route('admin.verifikasi.index') }}" class="side-link {{ request()->routeIs('admin.verifikasi.*') ? 'active' : '' }}">
-            <span class="ico">✓</span> Verifikasi
-            @php($nVerif = \App\Models\Pemesanan::where('status_pemesanan', 'menunggu_verifikasi')->count())
-            @if($nVerif)
-                <span class="badge badge-warning" style="margin-left:auto">{{ $nVerif }}</span>
-            @endif
-        </a>
-        <a href="{{ route('admin.manifes.index') }}" class="side-link {{ request()->routeIs('admin.manifes.*') ? 'active' : '' }}">
-            <span class="ico">{!! view('partials.icon', ['name' => 'list', 'size' => 15])->render() !!}</span> Manifes Peserta
-        </a>
-        <a href="{{ route('admin.voucher.index') }}" class="side-link {{ request()->routeIs('admin.voucher.*') ? 'active' : '' }}">
-            <span class="ico">◫</span> Validasi Voucher
-        </a>
-        <a href="{{ route('admin.laporan.index') }}" class="side-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
-            <span class="ico">▧</span> Laporan
-        </a>
-
-        <div class="side-foot">
-            <a href="{{ route('beranda') }}" class="side-link"><span class="ico">↗</span> Lihat Situs</a>
+        <div class="adm-side-foot">
+            <a href="{{ route('beranda') }}" class="adm-link">@include('partials.icon', ['name' => 'arrow-right', 'size' => 14]) Lihat Situs</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="side-link" style="background:none;border:0;width:100%;cursor:pointer;font-family:inherit">
-                    <span class="ico">{!! view('partials.icon', ['name' => 'logout', 'size' => 15])->render() !!}</span> Keluar
+                <button type="submit" class="adm-link" style="width:100%;background:none;border:0;font-family:inherit;cursor:pointer">
+                    @include('partials.icon', ['name' => 'logout', 'size' => 14]) Keluar Panel
                 </button>
             </form>
         </div>
     </aside>
 
-    <div class="admin-main">
-        <div class="admin-top">
-            <h1>@yield('heading', 'Dashboard')</h1>
-            <div class="row" style="margin-left:auto;gap:10px">
-                <div class="avatar">{{ strtoupper(substr(auth()->user()->nama_lengkap, 0, 1)) }}</div>
-                <div>
-                    <div style="font-size:13px;font-weight:700;line-height:1.2">{{ auth()->user()->nama_lengkap }}</div>
-                    <div class="tiny muted">Admin Travel</div>
+    <div class="adm-main">
+        <div class="adm-top">
+            <div class="date">
+                @include('partials.icon', ['name' => 'calendar', 'size' => 15])
+                <span>
+                    {{ now()->translatedFormat('l, d F Y') }}
+                    <small>Operasional Travel &amp; Reservasi</small>
+                </span>
+            </div>
+
+            <form class="adm-search" method="GET" action="{{ route('admin.verifikasi.index') }}">
+                @include('partials.icon', ['name' => 'search', 'size' => 13])
+                <input type="text" name="q" placeholder="Cari booking, armada, peserta...">
+            </form>
+
+            <div class="adm-top-right">
+                <span class="adm-online"><span class="dot-green"></span> Sistem Online</span>
+                <span class="adm-bell">@include('partials.icon', ['name' => 'bell', 'size' => 16])</span>
+                <div class="adm-user">
+                    <span class="ava">{{ strtoupper(substr(auth()->user()->nama_lengkap, 0, 1)) }}</span>
+                    <span>
+                        <span class="nm">{{ auth()->user()->nama_lengkap }}</span>
+                        <span class="rl">Head of Operations</span>
+                    </span>
                 </div>
             </div>
         </div>
 
-        <div class="admin-body">
+        <div class="adm-body">
             @if(session('sukses'))
                 <div class="alert alert-success">✓ {{ session('sukses') }}</div>
             @endif
