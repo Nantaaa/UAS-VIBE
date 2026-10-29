@@ -1,0 +1,71 @@
+/* ===== Auth: micro-interaction & polish (struktur tetap sesuai Figma) ===== */
+
+@keyframes authFadeIn {
+  from { opacity: 0; filter: blur(6px); transform: translateY(10px); }
+  to   { opacity: 1; filter: blur(0);    transform: translateY(0); }
+}
+
+.auth-anim { opacity: 0; animation: authFadeIn .55s cubic-bezier(.22, .61, .36, 1) forwards; }
+.auth-d1 { animation-delay: .04s; }
+.auth-d2 { animation-delay: .10s; }
+.auth-d3 { animation-delay: .16s; }
+.auth-d4 { animation-delay: .22s; }
+.auth-d5 { animation-delay: .28s; }
+.auth-d6 { animation-delay: .34s; }
+.auth-d7 { animation-delay: .40s; }
+
+/* Input: fokus halus, bukan cuma border */
+.auth-card input[type=text],
+.auth-card input[type=email],
+.auth-card input[type=tel],
+.auth-card input[type=password] {
+  transition: border-color .18s, box-shadow .18s, background .18s;
+}
+.auth-card input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, .14);
+  background: #fff;
+}
+.auth-card input:hover:not(:focus) { border-color: #cfd6e0; }
+
+/* Tombol mata pada field kata sandi */
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 40px; }
+.eye-btn {
+  position: absolute; top: 0; right: 0; height: 100%; width: 38px;
+  display: grid; place-items: center; border: 0; background: none; cursor: pointer;
+  color: var(--muted); border-radius: 8px;
+}
+.eye-btn:hover { color: var(--teal-dark); }
+.eye-btn svg { width: 16px; height: 16px; }
+
+/* Google button: logo asli + state */
+.btn-google { transition: border-color .18s, box-shadow .18s, background .18s; }
+.btn-google:hover { border-color: #c9d2e0; box-shadow: 0 8px 20px -14px rgba(17, 24, 39, .5); background: #fcfdff; }
+.btn-google svg { width: 16px; height: 16px; flex: 0 0 auto; }
+
+/* Tab aktif: transisi lembut */
+.auth-tabs a { transition: .18s; }
+.auth-tabs a:hover { border-color: #d6dbe4; color: var(--ink-soft); }
+
+/* CTA: sedikit lebih hidup */
+.auth-card .btn-primary { transition: background .18s, box-shadow .2s, transform .12s; }
+.auth-card .btn-primary:hover { box-shadow: 0 14px 26px -16px rgba(217, 119, 6, .85); transform: translateY(-1px); }
+.auth-card .btn-primary:active { transform: translateY(0); }
+
+/* Checkbox aksen teal */
+.auth-card input[type=checkbox] { accent-color: var(--teal); width: 14px; height: 14px; }
+
+/* Trust strip: pemisah titik */
+.auth-trust span + span::before {
+  content: '•'; color: #c9d2e0; margin-right: 8px; margin-left: -2px;
+}
+
+/* Hero: fitur kartu naik halus saat hover */
+.hero-feature { transition: background .2s, transform .2s; }
+.hero-feature:hover { background: rgba(255, 255, 255, .14); transform: translateY(-2px); }
+
+/* Kurangi animasi bila pengguna minta */
+@media (prefers-reduced-motion: reduce) {
+  .auth-anim { animation: none; opacity: 1; }
+}

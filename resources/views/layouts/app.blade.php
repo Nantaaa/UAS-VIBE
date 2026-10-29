@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/ticket-profil.css') }}">
     <link rel="stylesheet" href="{{ asset('css/polish.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fixes.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 </head>
 <body>
 @hasSection('minimal')
