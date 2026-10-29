@@ -157,7 +157,7 @@
                                 @elseif($p->diskonPersen())
                                     <span class="badge-seller" style="background:#0d9488">-{{ $p->diskonPersen() }}%</span>
                                 @endif
-                                <span class="heart">{!! view('partials.icon', ['name' => 'heart', 'size' => 15])->render() !!}</span>
+
                                 <span class="thumb-shade"></span>
                                 @if(($p->jadwalTersedia->first()->sisa_kuota ?? 0) > 0)
                                     <span class="pill-tersedia">● Tersedia</span>
@@ -165,6 +165,19 @@
                                     <span class="pill-tersedia" style="background:#fee2e2;color:#b91c1c">● Penuh</span>
                                 @endif
                             </a>
+                            @auth
+                                <form method="POST" action="{{ route('wishlist.toggle', $p) }}" class="heart-form">
+                                    @csrf
+                                    <button type="submit" class="heart {{ in_array($p->id, $wishlistIds ?? []) ? 'active' : '' }}"
+                                            title="{{ in_array($p->id, $wishlistIds ?? []) ? 'Hapus dari wishlist' : 'Simpan ke wishlist' }}">
+                                        {!! view('partials.icon', ['name' => 'heart', 'size' => 15])->render() !!}
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="heart" title="Masuk untuk menyimpan">
+                                    {!! view('partials.icon', ['name' => 'heart', 'size' => 15])->render() !!}
+                                </a>
+                            @endauth
                             <div class="katalog-body">
                                 <a href="{{ route('paket.detail', $p) }}" class="katalog-title">{{ $p->nama_paket }}</a>
                                 <div class="katalog-loc">{!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} {{ $p->destinasi->lokasi }}</div>

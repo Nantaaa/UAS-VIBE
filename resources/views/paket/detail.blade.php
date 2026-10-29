@@ -48,9 +48,20 @@
 
     <div class="grid" style="grid-template-columns: 1fr 372px; align-items:start">
         <div>
-            <div class="pdp-badges">
-                <span class="pdp-badge">Nanta Exclusive</span>
-                @if($paket->is_bestseller)<span class="pdp-badge orange">Best Seller</span>@endif
+            <div class="row between" style="gap:12px;align-items:flex-start">
+                <div class="pdp-badges">
+                    <span class="pdp-badge">Nanta Exclusive</span>
+                    @if($paket->is_bestseller)<span class="pdp-badge orange">Best Seller</span>@endif
+                </div>
+                @auth
+                    <form method="POST" action="{{ route('wishlist.toggle', $paket) }}" style="margin:0">
+                        @csrf
+                        <button type="submit" class="btn btn-ghost btn-sm">
+                            {!! view('partials.icon', ['name' => 'heart', 'size' => 14])->render() !!}
+                            {{ in_array($paket->id, \App\Models\Wishlist::where('id_user', auth()->id())->pluck('id_paket')->all()) ? 'Tersimpan' : 'Simpan' }}
+                        </button>
+                    </form>
+                @endauth
             </div>
 
             <h1 class="pdp-title">{{ $paket->nama_paket }}</h1>

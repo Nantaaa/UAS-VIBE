@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
@@ -38,6 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/pemesanan/{pemesanan}/voucher', [PemesananController::class, 'lihatVoucher'])->name('pemesanan.voucher');
     Route::get('/pemesanan/{pemesanan}/voucher/unduh', [PemesananController::class, 'unduhVoucher'])->name('pemesanan.voucher.unduh');
     Route::get('/pemesanan/{pemesanan}/berkas/{jenis}/{id}', [PemesananController::class, 'berkas'])->name('pemesanan.berkas');
+
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/{paket}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');

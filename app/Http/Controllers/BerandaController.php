@@ -58,8 +58,13 @@ class BerandaController extends Controller
         $perHalaman = (int) $request->input('per_halaman', 6);
         $perHalaman = in_array($perHalaman, [6, 9, 12], true) ? $perHalaman : 6;
 
+        $wishlistIds = auth()->check()
+            ? \App\Models\Wishlist::where('id_user', auth()->id())->pluck('id_paket')->all()
+            : [];
+
         return view('beranda', [
             'paket' => $query->paginate($perHalaman)->withQueryString(),
+            'wishlistIds' => $wishlistIds,
             'destinasi' => Destinasi::withCount('paket')->orderBy('nama_destinasi')->get(),
             'tipeTrip' => PaketWisata::query()->distinct()->orderBy('tipe_trip')->pluck('tipe_trip'),
             'totalPaket' => PaketWisata::where('is_active', true)->count(),

@@ -28,7 +28,7 @@
             <a href="{{ route('beranda') }}" class="{{ request()->routeIs('beranda') ? 'active' : '' }}">Beranda</a>
             <a href="{{ route('beranda') }}#katalog" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}">Paket Wisata</a>
             <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}">Pesanan Saya</a>
-            <a href="{{ route('beranda') }}#katalog">Wishlist</a>
+            <a href="{{ auth()->check() ? route('wishlist.index') : route('login') }}" class="{{ request()->routeIs('wishlist.*') ? 'active' : '' }}">Wishlist</a>
         </nav>
 
         <div class="header-right">

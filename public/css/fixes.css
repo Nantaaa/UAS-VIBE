@@ -54,3 +54,16 @@ input[type=file]::file-selector-button:hover { background: var(--teal-dark); }
 
 /* Tombol kecil sejajar vertikal di tabel */
 table.data .btn-sm { padding: 6px 11px; }
+
+
+/* ===== Wishlist heart ===== */
+.katalog-card { position: relative; }
+.heart-form { position: absolute; top: 8px; right: 8px; z-index: 4; margin: 0; }
+.heart {
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255, 255, 255, .95); color: #ef4444; border: 0; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12); transition: .16s;
+}
+a.heart { position: absolute; top: 8px; right: 8px; z-index: 4; }
+.heart:hover { transform: scale(1.08); }
+.heart.active { background: #ef4444; color: #fff; }
