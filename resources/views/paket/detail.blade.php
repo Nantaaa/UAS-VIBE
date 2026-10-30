@@ -82,7 +82,6 @@
             <div class="pdp-meta">
                 <div>{!! view('partials.icon', ['name' => 'calendar', 'size' => 15])->render() !!} {{ $paket->durasi_hari }} Hari {{ $paket->durasi_hari - 1 }} Malam</div>
                 <div>{!! view('partials.icon', ['name' => 'users', 'size' => 15])->render() !!} Min. 2 Peserta</div>
-                <div>{!! view('partials.icon', ['name' => 'tag', 'size' => 15])->render() !!} {{ $paket->tipe_trip }}</div>
                 <div>{!! view('partials.icon', ['name' => 'check-circle', 'size' => 15])->render() !!} Kuota {{ $jadwalPertama->sisa_kuota ?? 0 }} kursi tersisa</div>
             </div>
 
