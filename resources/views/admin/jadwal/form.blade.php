@@ -68,6 +68,37 @@
                 </div>
             </div>
 
+            <div class="adm-card-head" style="padding:16px 0 10px;border:0">
+                <div>
+                    <h3 style="font-size:12.5px">Titik Kumpul Keberangkatan</h3>
+                    <p>Informasi ini tampil di halaman paket, e-ticket, dan manifes peserta.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="kota_kumpul">Kota Kumpul</label>
+                    <input id="kota_kumpul" type="text" name="kota_kumpul"
+                           value="{{ old('kota_kumpul', $jadwal->kota_kumpul) }}" placeholder="Labuan Bajo">
+                </div>
+                <div class="field">
+                    <label for="jam_kumpul">Jam Kumpul</label>
+                    <input id="jam_kumpul" type="time" name="jam_kumpul"
+                           value="{{ old('jam_kumpul', $jadwal->jam_kumpul?->format('H:i')) }}">
+                </div>
+                <div class="field full">
+                    <label for="titik_kumpul">Titik Kumpul Lengkap</label>
+                    <input id="titik_kumpul" type="text" name="titik_kumpul"
+                           value="{{ old('titik_kumpul', $jadwal->titik_kumpul) }}"
+                           placeholder="Bandara Komodo (LBJ) — area penjemputan, depan gerbang kedatangan">
+                </div>
+                <div class="field full">
+                    <label for="catatan_keberangkatan">Catatan Keberangkatan</label>
+                    <textarea id="catatan_keberangkatan" name="catatan_keberangkatan" rows="2"
+                              placeholder="Penerbangan dari kota asal belum termasuk. Peserta disarankan tiba H-1.">{{ old('catatan_keberangkatan', $jadwal->catatan_keberangkatan) }}</textarea>
+                </div>
+            </div>
+
             <div class="row mt-24" style="gap:10px">
                 <button class="btn-adm orange" type="submit">@include('partials.icon', ['name' => 'check', 'size' => 13]) Simpan Perubahan</button>
                 <a href="{{ route('admin.jadwal.index') }}" class="btn-adm ghost">Batal</a>

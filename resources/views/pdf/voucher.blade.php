@@ -54,6 +54,10 @@
             <td>{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('l, d F Y') }}</td>
         </tr>
         <tr>
+            <td class="lbl">Titik kumpul</td>
+            <td colspan="3">{{ $pemesanan->jadwal->kota_kumpul ?? '-' }}{{ $pemesanan->jadwal->titik_kumpul ? ' — '.$pemesanan->jadwal->titik_kumpul : '' }}{{ $pemesanan->jadwal->jam_kumpul ? ' ('.$pemesanan->jadwal->jam_kumpul->format('H:i').')' : '' }}</td>
+        </tr>
+        <tr>
             <td class="lbl">Tanggal kembali</td>
             <td>{{ $pemesanan->jadwal->tanggal_kembali?->translatedFormat('l, d F Y') ?? '-' }}</td>
         </tr>

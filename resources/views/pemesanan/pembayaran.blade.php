@@ -55,6 +55,14 @@
                     <dt>Destinasi</dt><dd>{{ $pemesanan->jadwal->paket->destinasi->nama_destinasi }}</dd>
                     <dt>Keberangkatan</dt><dd>{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('d F Y') }}</dd>
                     <dt>Jumlah peserta</dt><dd>{{ $pemesanan->jumlah_peserta }} orang</dd>
+                    <dt>Titik kumpul</dt>
+                    <dd>
+                        {{ $pemesanan->jadwal->kota_kumpul ?? 'Dikonfirmasi admin' }}
+                        @if($pemesanan->jadwal->jam_kumpul) · {{ $pemesanan->jadwal->jam_kumpul->format('H:i') }} @endif
+                        @if($pemesanan->jadwal->titik_kumpul)
+                            <div class="tiny muted">{{ $pemesanan->jadwal->titik_kumpul }}</div>
+                        @endif
+                    </dd>
                     <dt>Kode</dt><dd>{{ $pemesanan->kode_pemesanan }}</dd>
                 </dl>
             </div>

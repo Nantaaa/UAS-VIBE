@@ -35,6 +35,9 @@
             <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--adm-muted);font-weight:800;margin-bottom:6px">Jadwal Pelayaran</div>
             <div class="nm" style="font-size:12.5px">{{ $jadwal->paket->destinasi->nama_destinasi }}</div>
             <div class="sub">{{ $jadwal->paket->destinasi->lokasi }}</div>
+            <div class="sub" style="margin-top:6px">
+                <strong>Titik kumpul:</strong> {{ $jadwal->kota_kumpul ?? '—' }}{{ $jadwal->titik_kumpul ? ' — '.$jadwal->titik_kumpul : '' }}{{ $jadwal->jam_kumpul ? ' ('.$jadwal->jam_kumpul->format('H:i').')' : '' }}
+            </div>
             <div class="bar mt-8"><i class="{{ $persen >= 90 ? 'err' : ($persen >= 70 ? 'warn' : '') }}" style="width:{{ $persen }}%"></i></div>
             <div class="sub" style="margin-top:5px">{{ $terisi }}/{{ $jadwal->kuota_peserta }} kursi terisi ({{ $persen }}%)</div>
         </div>

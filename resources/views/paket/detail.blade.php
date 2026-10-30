@@ -118,14 +118,42 @@
             </div>
 
             <div class="tab-panel" id="tab-fasilitas">
-                <div class="grid grid-2">
-                    @foreach($paket->fasilitasList() as $f)
-                        <div class="card card-pad row" style="gap:10px">
-                            <span style="color:var(--green);font-weight:800">✓</span>
-                            <span style="font-size:12.5px">{{ $f }}</span>
-                        </div>
-                    @endforeach
+                <div class="grid grid-2" style="gap:14px;align-items:start">
+                    <div class="card card-body">
+                        <h4 style="margin:0 0 10px;font-size:13px;color:#15803d">Sudah Termasuk</h4>
+                        <ul class="include-list">
+                            @forelse(preg_split('/\r\n|\r|\n/', (string) $paket->termasuk) as $t)
+                                @continue(trim($t) === '')
+                                <li><span class="ico-ok">✓</span><span>{{ trim($t) }}</span></li>
+                            @empty
+                                <li class="muted">Belum diisi admin.</li>
+                            @endforelse
+                        </ul>
+                    </div>
+                    <div class="card card-body">
+                        <h4 style="margin:0 0 10px;font-size:13px;color:#b91c1c">Belum Termasuk</h4>
+                        <ul class="include-list">
+                            @forelse(preg_split('/\r\n|\r|\n/', (string) $paket->tidak_termasuk) as $t)
+                                @continue(trim($t) === '')
+                                <li><span class="ico-no">×</span><span>{{ trim($t) }}</span></li>
+                            @empty
+                                <li class="muted">Belum diisi admin.</li>
+                            @endforelse
+                        </ul>
+                    </div>
                 </div>
+
+                @if($paket->fasilitasList())
+                    <h4 style="margin:18px 0 10px;font-size:13px">Fasilitas Tambahan</h4>
+                    <div class="grid grid-2">
+                        @foreach($paket->fasilitasList() as $f)
+                            <div class="card card-pad row" style="gap:10px">
+                                <span style="color:var(--green);font-weight:800">✓</span>
+                                <span style="font-size:12.5px">{{ $f }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             <div class="tab-panel" id="tab-syarat">
@@ -140,10 +168,44 @@
                 </div>
             </div>
 
-            <h3 style="font-size:15px;margin:24px 0 10px">Peta Lokasi &amp; Meeting Point</h3>
-            <div class="map-box">
-                {!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} Lokasi akan dikonfirmasi admin
-                <span class="tag">Lihat Peta</span>
+            <h3 style="font-size:15px;margin:24px 0 10px">Titik Kumpul &amp; Meeting Point</h3>
+            @php($jadwalKumpul = $paket->jadwalTersedia->first())
+            <div class="meet-card">
+                <div class="meet-head">
+                    <span class="meet-ico">{!! view('partials.icon', ['name' => 'map-pin', 'size' => 16])->render() !!}</span>
+                    <div>
+                        <div class="meet-kota">{{ $jadwalKumpul->kota_kumpul ?? $paket->destinasi->lokasi }}</div>
+                        <div class="meet-titik">{{ $jadwalKumpul->titik_kumpul ?? 'Titik kumpul dikonfirmasi admin menjelang keberangkatan.' }}</div>
+                    </div>
+                </div>
+
+                <div class="meet-grid">
+                    <div>
+                        <div class="meet-lbl">Jam Kumpul</div>
+                        <div class="meet-val">{{ $jadwalKumpul?->jam_kumpul?->format('H:i') ?? '—' }} waktu setempat</div>
+                    </div>
+                    <div>
+                        <div class="meet-lbl">Tiket Pesawat</div>
+                        <div class="meet-val">
+                            @if($paket->include_penerbangan)
+                                <span class="pill-ok">Termasuk</span>
+                            @else
+                                <span class="pill-no">Tidak termasuk</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div>
+                        <div class="meet-lbl">Titik Awal Paket</div>
+                        <div class="meet-val">{{ $jadwalKumpul->kota_kumpul ?? $paket->destinasi->lokasi }}</div>
+                    </div>
+                </div>
+
+                @if($jadwalKumpul?->catatan_keberangkatan)
+                    <div class="meet-note">
+                        {!! view('partials.icon', ['name' => 'alert', 'size' => 13])->render() !!}
+                        {{ $jadwalKumpul->catatan_keberangkatan }}
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -161,7 +223,10 @@
                         <label>Pilih Tanggal</label>
                         <select name="jadwal" id="pilihJadwal" required>
                             @forelse($paket->jadwalTersedia as $j)
-                                <option value="{{ $j->id }}" data-sisa="{{ $j->sisa_kuota }}">
+                                <option value="{{ $j->id }}" data-sisa="{{ $j->sisa_kuota }}"
+                                        data-kumpul="{{ $j->kota_kumpul }}"
+                                        data-titik="{{ $j->titik_kumpul }}"
+                                        data-jam="{{ $j->jam_kumpul?->format('H:i') }}">
                                     {{ $j->tanggal_berangkat->translatedFormat('d M Y') }} — sisa {{ $j->sisa_kuota }} kursi
                                 </option>
                             @empty
@@ -176,6 +241,11 @@
                             <option>{{ $paket->tipe_trip }} — {{ $paket->durasi_hari }} Hari</option>
                             <option>Private Group</option>
                         </select>
+                    </div>
+
+                    <div class="book-meet" id="bookMeet">
+                        {!! view('partials.icon', ['name' => 'map-pin', 'size' => 12])->render() !!}
+                        <span id="txtMeet">Kumpul di {{ $jadwalKumpul->kota_kumpul ?? $paket->destinasi->lokasi }}{{ $jadwalKumpul?->jam_kumpul ? ', '.$jadwalKumpul->jam_kumpul->format('H:i') : '' }}</span>
                     </div>
 
                     <div class="book-row">
@@ -230,6 +300,14 @@ function render() {
     document.getElementById('inputJumlah').value = dewasa + anak;
     segarkanTombol();
     const sel = document.getElementById('pilihJadwal');
+    const infoMeet = document.getElementById('txtMeet');
+    if (sel && infoMeet && sel.selectedOptions.length) {
+        const opt = sel.selectedOptions[0];
+        const kota = opt.dataset.kumpul || '';
+        const jam = opt.dataset.jam || '';
+        infoMeet.textContent = 'Kumpul di ' + kota + (jam ? ', ' + jam : '');
+        infoMeet.title = opt.dataset.titik || '';
+    }
     const btn = document.getElementById('btnPesan');
     if (sel && btn && sel.value && btn.tagName === 'A') {
         const tpl = @json(auth()->check() ? route('pemesanan.form', ['jadwal' => 'JADWAL_ID']) : null);

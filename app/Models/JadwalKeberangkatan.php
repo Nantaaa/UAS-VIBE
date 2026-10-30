@@ -13,9 +13,11 @@ class JadwalKeberangkatan extends Model
 
     protected $fillable = [
         'id_paket', 'tanggal_berangkat', 'tanggal_kembali', 'kuota_peserta', 'sisa_kuota',
+        'kota_kumpul', 'titik_kumpul', 'jam_kumpul', 'catatan_keberangkatan',
     ];
 
     protected $casts = [
+        'jam_kumpul' => 'datetime:H:i',
         'tanggal_berangkat' => 'date',
         'tanggal_kembali' => 'date',
     ];

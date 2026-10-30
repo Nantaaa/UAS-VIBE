@@ -13,11 +13,13 @@ class PaketWisata extends Model
 
     protected $fillable = [
         'id_destinasi', 'nama_paket', 'deskripsi', 'highlight', 'fasilitas',
-        'itinerary', 'durasi_hari', 'tipe_trip', 'tarif', 'harga_asli',
+        'itinerary', 'durasi_hari', 'tipe_trip', 'include_penerbangan',
+        'termasuk', 'tidak_termasuk', 'tarif', 'harga_asli',
         'foto', 'is_active', 'is_bestseller',
     ];
 
     protected $casts = [
+        'include_penerbangan' => 'boolean',
         'tarif' => 'decimal:2',
         'harga_asli' => 'decimal:2',
         'is_active' => 'boolean',

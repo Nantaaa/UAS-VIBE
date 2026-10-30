@@ -26,6 +26,7 @@
         <tr><td class="lbl">Destinasi</td><td>{{ $jadwal->paket->destinasi->nama_destinasi }} — {{ $jadwal->paket->destinasi->lokasi }}</td></tr>
         <tr><td class="lbl">Tanggal berangkat</td><td>{{ $jadwal->tanggal_berangkat->translatedFormat('l, d F Y') }}</td></tr>
         <tr><td class="lbl">Tanggal kembali</td><td>{{ $jadwal->tanggal_kembali?->translatedFormat('l, d F Y') ?? '-' }}</td></tr>
+        <tr><td class="lbl">Titik kumpul</td><td>{{ $jadwal->kota_kumpul ?? '-' }}{{ $jadwal->titik_kumpul ? ' — '.$jadwal->titik_kumpul : '' }}{{ $jadwal->jam_kumpul ? ' ('.$jadwal->jam_kumpul->format('H:i').')' : '' }}</td></tr>
         <tr><td class="lbl">Kuota / peserta</td><td>{{ $jadwal->kuota_peserta }} / {{ $totalPeserta }}</td></tr>
         <tr>
             <td class="lbl">Petugas</td>

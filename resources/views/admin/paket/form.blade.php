@@ -70,6 +70,14 @@
                     <textarea id="fasilitas" name="fasilitas" rows="4" placeholder="Hotel bintang 3&#10;Transport AC">{{ old('fasilitas', $paket->fasilitas) }}</textarea>
                 </div>
                 <div class="field full">
+                    <label for="termasuk">Sudah Termasuk (satu per baris)</label>
+                    <textarea id="termasuk" name="termasuk" rows="4" placeholder="Hotel 3 malam&#10;Transport AC + driver&#10;Guide lokal">{{ old('termasuk', $paket->termasuk) }}</textarea>
+                </div>
+                <div class="field full">
+                    <label for="tidak_termasuk">Belum Termasuk (satu per baris)</label>
+                    <textarea id="tidak_termasuk" name="tidak_termasuk" rows="4" placeholder="Tiket pesawat PP&#10;Hotel H-1&#10;Pengeluaran pribadi">{{ old('tidak_termasuk', $paket->tidak_termasuk) }}</textarea>
+                </div>
+                <div class="field full">
                     <label for="itinerary">Itinerary (satu hari per baris)</label>
                     <textarea id="itinerary" name="itinerary" rows="4" placeholder="Hari 1: ...&#10;Hari 2: ...">{{ old('itinerary', $paket->itinerary) }}</textarea>
                 </div>
@@ -87,6 +95,10 @@
                     <label class="row" style="gap:8px;font-weight:600;font-size:12px">
                         <input type="checkbox" name="is_bestseller" value="1" style="width:auto" @checked(old('is_bestseller', $paket->is_bestseller ?? false))>
                         Tandai Best Seller
+                    </label>
+                    <label class="row" style="gap:8px;font-weight:600;font-size:12px">
+                        <input type="checkbox" name="include_penerbangan" value="1" style="width:auto" @checked(old('include_penerbangan', $paket->include_penerbangan ?? false))>
+                        Tiket pesawat sudah termasuk
                     </label>
                 </div>
             </div>

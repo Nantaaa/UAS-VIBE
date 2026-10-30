@@ -111,6 +111,10 @@ class JadwalController extends Controller
             'tanggal_berangkat' => ['required', 'date'],
             'tanggal_kembali' => ['nullable', 'date', 'after_or_equal:tanggal_berangkat'],
             'kuota_peserta' => ['required', 'integer', 'min:1', 'max:200'],
+            'kota_kumpul' => ['nullable', 'string', 'max:80'],
+            'titik_kumpul' => ['nullable', 'string', 'max:160'],
+            'jam_kumpul' => ['nullable', 'date_format:H:i'],
+            'catatan_keberangkatan' => ['nullable', 'string', 'max:500'],
         ], [
             'id_paket.required' => 'Paket wajib dipilih.',
             'tanggal_berangkat.required' => 'Tanggal berangkat wajib diisi.',

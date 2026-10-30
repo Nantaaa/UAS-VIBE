@@ -34,6 +34,9 @@ class PaketController extends Controller
     {
         $data = $this->validasi($request);
         $data['is_active'] = $request->boolean('is_active');
+        $data['is_bestseller'] = $request->boolean('is_bestseller');
+        $data['include_penerbangan'] = $request->boolean('include_penerbangan');
+        $data['harga_asli'] = $request->filled('harga_asli') ? $request->input('harga_asli') : null;
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('paket', 'public');
@@ -56,6 +59,9 @@ class PaketController extends Controller
     {
         $data = $this->validasi($request);
         $data['is_active'] = $request->boolean('is_active');
+        $data['is_bestseller'] = $request->boolean('is_bestseller');
+        $data['include_penerbangan'] = $request->boolean('include_penerbangan');
+        $data['harga_asli'] = $request->filled('harga_asli') ? $request->input('harga_asli') : null;
 
         if ($request->hasFile('foto')) {
             if ($paket->foto) {
@@ -87,9 +93,16 @@ class PaketController extends Controller
             'nama_paket' => ['required', 'string', 'max:150'],
             'deskripsi' => ['nullable', 'string'],
             'fasilitas' => ['nullable', 'string'],
+            'termasuk' => ['nullable', 'string'],
+            'tidak_termasuk' => ['nullable', 'string'],
             'itinerary' => ['nullable', 'string'],
+            'highlight' => ['nullable', 'string', 'max:150'],
+            'tipe_trip' => ['nullable', 'string', 'max:40'],
             'durasi_hari' => ['required', 'integer', 'min:1', 'max:30'],
             'tarif' => ['required', 'numeric', 'min:0'],
+            'harga_asli' => ['nullable', 'numeric', 'min:0'],
+            'include_penerbangan' => ['nullable', 'boolean'],
+            'is_bestseller' => ['nullable', 'boolean'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
         ], [
             'id_destinasi.required' => 'Destinasi wajib dipilih.',
