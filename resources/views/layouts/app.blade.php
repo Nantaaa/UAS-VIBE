@@ -49,8 +49,8 @@
                     <button class="btn-masuk" type="submit">Keluar</button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="btn-masuk">Masuk</a>
-                <a href="{{ route('register') }}" class="btn btn-ghost btn-sm hide-sm">Daftar</a>
+                <a href="{{ route('login') }}" class="btn btn-ghost btn-sm">Masuk</a>
+                <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Daftar</a>
             @endauth
         </div>
     </div>

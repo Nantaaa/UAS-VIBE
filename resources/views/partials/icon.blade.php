@@ -8,6 +8,15 @@
      fill="none" stroke="currentColor" stroke-width="{{ $stroke }}" stroke-linecap="round" stroke-linejoin="round"
      class="ico {{ $cls }}" aria-hidden="true" style="flex:0 0 auto;vertical-align:-2px">
     @switch($name)
+        @case('filter')
+            <path d="M3 5h18"/><path d="M6 12h12"/><path d="M10 19h4"/>
+            @break
+        @case('chevron-up')
+            <path d="m6 15 6-6 6 6"/>
+            @break
+        @case('close')
+            <path d="M6 6l12 12"/><path d="M18 6 6 18"/>
+            @break
         @case('search')
             <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
             @break

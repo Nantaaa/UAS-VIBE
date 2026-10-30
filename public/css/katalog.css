@@ -179,3 +179,96 @@ input[type=range] { width: 100%; accent-color: #2563eb; }
 /* ===== Polish: kartu paket beranda (grid) ===== */
 .paket-thumb img { transition: transform .5s ease; }
 .paket-card:hover .paket-thumb img { transform: scale(1.05); }
+
+/* ============ REVISI AUDIT BERANDA ============ */
+
+/* 1. Navigasi: warna brand, bukan biru */
+.nav-pills a:hover { color: var(--teal-dark); }
+.nav-pills a.active { color: var(--teal-dark); border-color: #99e6db; background: var(--teal-soft); font-weight: 800; }
+
+/* 2. Hero search: satu tombol aksi */
+.hero-search .hs-submit { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+
+/* 3. Quick chip destinasi: kontras tinggi di atas foto */
+.hero-chip {
+  background: rgba(255, 255, 255, .94);
+  color: #0b1b33;
+  border: 1px solid rgba(255, 255, 255, .7);
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px -6px rgba(0, 0, 0, .6);
+}
+.hero-chip:hover, .hero-chip.active { background: var(--orange); border-color: var(--orange); color: #23140a; }
+
+/* 4. Filter lanjutan: toggle + label jelas */
+.filter-head strong { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; }
+.filter-reset { font-size: 10.5px; font-weight: 800; color: var(--teal-dark); }
+.filter-collapse {
+  display: inline-grid; place-items: center; width: 26px; height: 26px;
+  border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink-soft);
+  cursor: pointer; transition: .16s;
+}
+.filter-collapse:hover { border-color: #cfd6e2; color: var(--teal-dark); }
+.filter-collapse svg { transition: transform .22s; }
+.filter-card.collapsed .filter-collapse svg { transform: rotate(-90deg); }
+.filter-card.collapsed form { display: none; }
+.filter-card.collapsed .filter-head { border-bottom: 0; padding-bottom: 0; }
+
+/* 5. Chip filter aktif */
+.active-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+.af-label { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.af-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--teal-soft); color: var(--teal-dark);
+  border: 1px solid #b8e8e0; border-radius: 999px;
+  padding: 4px 9px; font-size: 10.5px; font-weight: 700;
+}
+.af-chip:hover { background: #d5f2ec; }
+.af-chip span { font-size: 12px; line-height: 1; opacity: .7; }
+.af-clear { font-size: 10.5px; font-weight: 800; color: var(--muted); text-decoration: underline; }
+
+/* 6. Tombol Detail: kontras dengan badge Tersedia */
+.btn-detail {
+  background: #0d1b2a; color: #fff; border: 1px solid #0d1b2a;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-detail:hover { background: #14293d; border-color: #14293d; color: #fff; }
+
+/* 7. Rentang harga: input dengan awalan Rp */
+.rp-input { display: flex; align-items: center; gap: 5px; flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 0 8px; background: #fff; }
+.rp-input span { font-size: 10.5px; font-weight: 800; color: var(--muted); }
+.rp-input input { border: 0 !important; padding: 8px 0 !important; width: 100%; font-size: 11.5px; background: transparent; }
+.rp-input input:focus { outline: none; box-shadow: none !important; }
+
+/* 8. Slider sesuai palet brand */
+#rangeHarga { accent-color: var(--teal); }
+
+/* 9. Badge Best Seller: kontras teks memadai */
+.badge-seller { background: #c2410c !important; box-shadow: 0 4px 12px -4px rgba(194, 65, 12, .75) !important; }
+
+/* 10. Toggle filter: arah chevron sesuai state */
+.filter-card .filter-collapse svg { transform: rotate(180deg); }
+.filter-card.collapsed .filter-collapse svg { transform: rotate(0deg); }
+
+/* 11. Meta kartu seragam (peserta & jadwal baru) */
+.card-rating {
+  background: #f4f6fa; border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 8px; font-size: 10px;
+}
+
+/* 12. Checklist destinasi: tidak terpotong di tengah baris */
+#listDestinasi { max-height: none; overflow: visible; }
+.checklist { scrollbar-width: thin; }
+
+/* 13. Input rentang harga: cegah nilai terpotong */
+.rp-input { min-width: 0; padding: 0 6px; }
+.rp-input span { font-size: 10px; }
+.rp-input input { min-width: 0; font-size: 10.5px !important; font-variant-numeric: tabular-nums; }
+
+/* 14. Meta kartu lebih terbaca */
+.card-rating { color: #475569 !important; background: #f1f5f9; border-color: #e2e8f0; }
+.pill-tersedia { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+
+/* 15. Ukuran teks badge/meta dinaikkan sedikit untuk keterbacaan */
+.pill-tersedia { font-size: 10px !important; }
+.card-rating { font-size: 10.5px !important; }

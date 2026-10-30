@@ -8,7 +8,6 @@
 <div class="container">
     <div class="crumb">
         <span><a href="{{ route('beranda') }}">Beranda</a> / <strong>Paket Wisata</strong></span>
-        <span class="tiny muted">Tersimpan di halaman: Beranda</span>
     </div>
 
     {{-- HERO --}}
@@ -24,8 +23,9 @@
             <form method="GET" action="{{ route('beranda') }}" class="hero-search">
                 <span class="hs-ico">{!! view('partials.icon', ['name' => 'search', 'size' => 15])->render() !!}</span>
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari destinasi, paket, atau aktivitas...">
-                <button type="button" class="btn hs-secondary" onclick="this.form.q.value='';this.form.submit()">Cari Sekarang</button>
-                <button type="submit" class="btn btn-primary">Cari Paket</button>
+                <button type="submit" class="btn btn-primary hs-submit">
+                    {!! view('partials.icon', ['name' => 'search', 'size' => 14])->render() !!} Cari Paket
+                </button>
             </form>
 
             <div class="hero-chips">
@@ -41,8 +41,13 @@
     <div class="catalog-body">
         <aside class="filter-card">
             <div class="filter-head">
-                <strong>⚙ Filter Pencarian</strong>
-                <a href="{{ route('beranda') }}" class="tiny" style="color:#2563eb;font-weight:700">Reset</a>
+                <strong>{!! view('partials.icon', ['name' => 'filter', 'size' => 14])->render() !!} Filter Lanjutan</strong>
+                <div class="row" style="gap:8px;align-items:center">
+                    <a href="{{ route('beranda') }}" class="filter-reset">Reset</a>
+                    <button type="button" class="filter-collapse" id="filterToggle" aria-label="Sembunyikan filter">
+                        {!! view('partials.icon', ['name' => 'chevron-down', 'size' => 14])->render() !!}
+                    </button>
+                </div>
             </div>
 
             <form method="GET" action="{{ route('beranda') }}" id="formFilter">
@@ -76,13 +81,17 @@
                 <div class="filter-block">
                     <div class="filter-title">Rentang Harga (per orang)</div>
                     <input type="range" min="0" max="10000000" step="250000" id="rangeHarga"
-                           value="{{ request('harga_max', 5000000) }}" oninput="syncHarga(this.value)">
+                           value="{{ request('harga_max', 10000000) }}" oninput="syncHarga(this.value)">
                     <div class="row between tiny muted" style="margin-top:2px">
                         <span>Rp 0</span><span>Rp 10.000.000</span>
                     </div>
                     <div class="row" style="gap:8px;margin-top:8px">
-                        <input type="number" name="harga_min" id="hargaMin" value="{{ request('harga_min', 0) }}" placeholder="Min">
-                        <input type="number" name="harga_max" id="hargaMax" value="{{ request('harga_max', 5000000) }}" placeholder="Max">
+                        <label class="rp-input"><span>Rp</span>
+                            <input type="number" name="harga_min" id="hargaMin" value="{{ request('harga_min', 0) }}" placeholder="0">
+                        </label>
+                        <label class="rp-input"><span>Rp</span>
+                            <input type="number" name="harga_max" id="hargaMax" value="{{ request('harga_max', 10000000) }}" placeholder="10.000.000">
+                        </label>
                     </div>
                 </div>
 
@@ -105,14 +114,38 @@
                 </div>
 
                 <input type="hidden" name="urutkan" value="{{ request('urutkan') }}">
-                <button class="btn btn-teal btn-block" type="submit">✓ Terapkan Filter</button>
+                <button class="btn btn-primary btn-block" type="submit">{!! view('partials.icon', ['name' => 'check', 'size' => 14])->render() !!} Terapkan Filter</button>
             </form>
         </aside>
 
         <div>
+            <?php
+                $aktif = [];
+                foreach ((array) request('destinasi', []) as $idD) {
+                    $d = $destinasi->firstWhere('id', $idD);
+                    if ($d) $aktif[] = ['label' => $d->nama_destinasi, 'key' => 'destinasi', 'val' => $idD];
+                }
+                foreach ((array) request('tipe', []) as $t) $aktif[] = ['label' => $t, 'key' => 'tipe', 'val' => $t];
+                foreach ((array) request('durasi', []) as $du) $aktif[] = ['label' => $du.' Hari', 'key' => 'durasi', 'val' => $du];
+                if (request('q')) $aktif[] = ['label' => '“'.request('q').'”', 'key' => 'q', 'val' => null];
+                if (request('tanggal')) $aktif[] = ['label' => \Carbon\Carbon::parse(request('tanggal'))->translatedFormat('d M Y'), 'key' => 'tanggal', 'val' => null];
+            ?>
+
+            @if(count($aktif))
+                <div class="active-filters">
+                    <span class="af-label">Filter aktif:</span>
+                    @foreach($aktif as $f)
+                        <a class="af-chip" href="{{ route('beranda', request()->except([$f['key']])) }}">
+                            {{ $f['label'] }} <span aria-hidden="true">×</span>
+                        </a>
+                    @endforeach
+                    <a class="af-clear" href="{{ route('beranda') }}">Hapus semua</a>
+                </div>
+            @endif
+
             <div class="results-head">
                 <div>
-                    <h2 style="margin:0;font-size:17px">Menampilkan {{ $paket->total() }} dari {{ $totalPaket }} Paket Wisata</h2>
+                    <h2 style="margin:0;font-size:17px">{{ $paket->total() }} Paket Wisata Ditemukan</h2>
                     <div class="tiny muted">Jelajahi paket wisata terbaik dengan harga terbaik</div>
                 </div>
                 <div class="row" style="gap:8px">
@@ -196,7 +229,7 @@
                                             <div class="was">Rp {{ number_format($p->harga_asli, 0, ',', '.') }}</div>
                                         @endif
                                     </div>
-                                    <a href="{{ route('paket.detail', $p) }}" class="btn btn-soft btn-sm">Detail</a>
+                                    <a href="{{ route('paket.detail', $p) }}" class="btn btn-detail btn-sm">Detail</a>
                                 </div>
                             </div>
                         </article>
@@ -258,5 +291,14 @@ function filterDestinasi(q) {
         el.style.display = el.innerText.toLowerCase().includes(q) ? '' : 'none';
     });
 }
+
+// Filter lanjutan bisa dilipat — di layar kecil default tertutup
+(() => {
+    const btn = document.getElementById('filterToggle');
+    const card = document.querySelector('.filter-card');
+    if (!btn || !card) return;
+    if (window.matchMedia('(max-width: 900px)').matches) card.classList.add('collapsed');
+    btn.addEventListener('click', () => card.classList.toggle('collapsed'));
+})();
 </script>
 @endsection
