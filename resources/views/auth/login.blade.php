@@ -13,12 +13,7 @@
         <div>
             @include('partials.auth-panel', ['mode' => 'masuk'])
 
-            <div class="card card-pad mt-16">
-                <div class="tiny muted mb-0">
-                    <strong style="color:var(--ink)">Akun demo:</strong>
-                    admin@nanta.id · wisatawan@nanta.id — kata sandi <strong>password</strong>
-                </div>
-            </div>
+            @include('partials.demo-akun')
         </div>
     </div>
 </div>

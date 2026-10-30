@@ -84,6 +84,27 @@ class AuthController extends Controller
         return redirect()->route('beranda')->with('sukses', 'Akun berhasil dibuat. Selamat datang!');
     }
 
+    /**
+     * Login instan akun demo (khusus presentasi UAS).
+     * Kredensial tidak lagi ditampilkan mentah di halaman login.
+     */
+    public function demoLogin(Request $request, string $peran)
+    {
+        abort_unless(in_array($peran, ['admin', 'wisatawan'], true), 404);
+
+        $email = $peran === 'admin' ? 'admin@nanta.id' : 'wisatawan@nanta.id';
+        $user = User::where('email', $email)->first();
+
+        if (! $user) {
+            return back()->withErrors(['email' => 'Akun demo belum tersedia di database.']);
+        }
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route($user->isAdmin() ? 'admin.dashboard' : 'beranda');
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();

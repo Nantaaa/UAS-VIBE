@@ -85,3 +85,293 @@
 @media (max-height: 760px) {
   .auth-shell { min-height: auto; padding-top: 20px; padding-bottom: 32px; }
 }
+
+/* ============ PENYEMPURNAAN AUTH (revisi audit UX) ============ */
+
+/* 1. Segmented control: satu kapsul, indikator geser */
+.auth-card .auth-tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: 4px;
+  background: #eef1f6;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.auth-card .auth-tabs .ind {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .10), 0 3px 8px -4px rgba(16, 24, 40, .22);
+  transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+}
+.auth-card .auth-tabs.mode-daftar .ind { transform: translateX(100%); }
+.auth-card .auth-tabs a {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 0;
+  border: 0 !important;
+  background: none !important;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color .2s;
+}
+.auth-card .auth-tabs a:hover { color: var(--ink-soft); border: 0 !important; }
+.auth-card .auth-tabs a.active { color: var(--ink) !important; font-weight: 800; }
+
+/* 2. Tombol Google: tinggi seragam, ikon resmi, alignment rapi */
+.auth-card .btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+.auth-card .btn-google svg { width: 18px; height: 18px; }
+.auth-card .btn-google:hover { background: #fbfcfe; border-color: #cfd6e2; }
+
+/* 3. CTA: teks & panah sejajar */
+.auth-card .btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.auth-card .btn-primary .arw {
+  display: inline-block;
+  line-height: 1;
+  transform: translateY(-.5px);
+  transition: transform .18s;
+}
+.auth-card .btn-primary:hover .arw { transform: translate(3px, -.5px); }
+
+/* 4. Trust strip: kontras & ukuran lebih terbaca */
+.auth-trust span {
+  font-size: 9.8px;
+  font-weight: 700;
+  color: #5b6472;
+}
+.auth-trust span + span::before { color: #c2cad8; }
+
+/* 5. Password strength meter */
+.pw-meter {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+.pw-meter i {
+  height: 4px;
+  flex: 1;
+  border-radius: 999px;
+  background: #e8ecf3;
+  transition: background .22s;
+}
+.pw-meter.s1 i:nth-child(1) { background: #dc2626; }
+.pw-meter.s2 i:nth-child(-n+2) { background: #f59e0b; }
+.pw-meter.s3 i { background: #16a34a; }
+.pw-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* 6. Akses demo sekali klik */
+.demo-akun {
+  margin-top: 14px;
+  background: #fff;
+  border: 1px dashed #cfd6e2;
+  border-radius: 12px;
+  padding: 12px;
+}
+.demo-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--muted);
+  margin-bottom: 9px;
+}
+.demo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, .16);
+}
+.demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.demo-row form { display: contents; }
+.demo-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: .16s;
+}
+.demo-btn:hover {
+  border-color: var(--orange);
+  background: var(--orange-soft);
+  transform: translateY(-1px);
+}
+.demo-btn strong { font-size: 10.5px; font-weight: 800; color: var(--ink); }
+.demo-btn span { font-size: 9.5px; color: var(--muted); }
+
+@media (max-width: 460px) {
+  .demo-row { grid-template-columns: 1fr; }
+}
+
+
+/* 7. Toolbar atas: link tidak lagi biru default */
+.auth-toolbar a {
+  color: var(--ink-soft);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color .16s;
+}
+.auth-toolbar a:hover { color: var(--orange); }
+.auth-toolbar .esc {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #8b95a6;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+  background: #fff;
+}
+
+/* 8. Trust strip: titik pemisah diganti jarak agar tetap center saat wrap */
+.auth-trust { gap: 6px 16px; }
+.auth-trust span + span::before { content: none; }
+
+/* 9. Meter kosong sebagai penyeimbang baseline kolom konfirmasi */
+.pw-meter.ghost i { background: transparent; }
+
+/* 10. Toolbar: sejajarkan tepi kiri/kanan dengan kartu */
+.auth-card ~ .auth-toolbar, .auth-toolbar {
+  padding: 0 3px;
+  align-items: center;
+}
+.auth-toolbar a { padding: 0; margin: 0; }
+
+/* 11. Tinggi kartu seragam antar tab Masuk/Daftar — hilangkan layout jump */
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 836px;
+}
+.auth-card > form { flex: 0 0 auto; }
+.auth-card .auth-trust { margin-top: auto; padding-top: 14px; }
+/* rapatkan sedikit form daftar agar muat tanpa menambah tinggi kartu */
+.auth-card form.stack { gap: 8px !important; }
+.auth-card .form-grid { gap: 8px !important; }
+
+/* 12. Rapatkan ritme vertikal kartu agar tinggi daftar = masuk */
+.auth-card h2 { margin: 4px 0 5px; }
+.auth-card .lead { margin-bottom: 11px; line-height: 1.5; }
+.auth-card .divider-label { margin: 10px 0; }
+.auth-card .field .hint,
+.auth-card .pw-label { font-size: 9.5px; line-height: 1.4; }
+.auth-card label.row { line-height: 1.45; }
+.auth-card .btn-primary { height: 44px; }
+.auth-card .btn-google { height: 42px; }
+.auth-card .auth-tabs { margin-bottom: 12px; }
+
+.auth-card .field input { height: 40px; padding-top: 0; padding-bottom: 0; }
+.auth-card form.stack { gap: 6px !important; }
+
+/* 13. Blok keuntungan pada kartu masuk — isi ruang agar seimbang */
+.auth-perks {
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1px solid var(--line);
+}
+.perks-title {
+  font-size: 8.8px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--muted);
+  margin-bottom: 9px;
+}
+.auth-perks ul { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.auth-perks li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 10.3px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.auth-perks li svg { flex: 0 0 auto; color: var(--teal); margin-top: 1px; }
+
+/* 14. Trust footer jadi grid 3 kolom rata — tidak wrap asimetris */
+.auth-trust {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  text-align: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.auth-trust span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 8.8px;
+  line-height: 1.35;
+  letter-spacing: .01em;
+}
+.auth-trust span svg { color: #8b95a6; }
+.auth-perks { margin-top: 14px; }
+
+
+/* 15. Focus ring konsisten dengan brand (bukan biru default) */
+.auth-card input:focus,
+.auth-card textarea:focus,
+.auth-card select:focus {
+  outline: none;
+  border-color: var(--teal) !important;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, .14) !important;
+}
+
+/* 16. Kontras label trust */
+.auth-trust span { font-size: 9.2px; color: #55606f; }
