@@ -187,7 +187,7 @@
                         </div>
                     </div>
                     <div class="book-row" style="border-bottom:0">
-                        <span class="lbl">Anak</span>
+                        <span class="lbl">Anak <small style="color:var(--muted);font-weight:600">({{ \App\Models\Pemesanan::persenTarifAnak() }}%)</small></span>
                         <div class="stepper">
                             <button type="button" onclick="ubahAnak(-1)">−</button>
                             <span class="n" id="nAnak">0</span>
@@ -203,7 +203,7 @@
                     <input type="hidden" name="jumlah" id="inputJumlah" value="2">
 
                     @if($jadwalPertama)
-                        <a href="{{ auth()->check() ? route('pemesanan.form', ['jadwal' => $jadwalPertama, 'jumlah' => 2]) : route('login') }}"
+                        <a href="{{ auth()->check() ? route('pemesanan.form', ['jadwal' => $jadwalPertama, 'dewasa' => 2, 'anak' => 0]) : route('login') }}"
                            class="btn btn-primary btn-block" id="btnPesan">Pesan Sekarang</a>
                     @else
                         <button class="btn btn-primary btn-block" disabled>Belum ada jadwal</button>
@@ -219,23 +219,32 @@
 
 <script>
 const TARIF = {{ (int) $paket->tarif }};
+const TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $paket->tarif, 'anak') }};
 let dewasa = 2, anak = 0;
 const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
 
 function render() {
     document.getElementById('nDewasa').textContent = dewasa;
     document.getElementById('nAnak').textContent = anak;
-    document.getElementById('totalHarga').textContent = fmt(TARIF * dewasa);
-    document.getElementById('inputJumlah').value = dewasa;
+    document.getElementById('totalHarga').textContent = fmt(TARIF * dewasa + TARIF_ANAK * anak);
+    document.getElementById('inputJumlah').value = dewasa + anak;
+    segarkanTombol();
     const sel = document.getElementById('pilihJadwal');
     const btn = document.getElementById('btnPesan');
     if (sel && btn && sel.value && btn.tagName === 'A') {
         const tpl = @json(auth()->check() ? route('pemesanan.form', ['jadwal' => 'JADWAL_ID']) : null);
-        if (tpl) btn.href = tpl.replace('JADWAL_ID', sel.value) + '?jumlah=' + dewasa;
+        if (tpl) btn.href = tpl.replace('JADWAL_ID', sel.value) + '?dewasa=' + dewasa + '&anak=' + anak;
     }
 }
 function ubahPeserta(d) { dewasa = Math.max(1, Math.min(20, dewasa + d)); render(); }
 function ubahAnak(d) { anak = Math.max(0, Math.min(10, anak + d)); render(); }
+
+// Nonaktifkan tombol minus saat sudah di batas bawah
+function segarkanTombol() {
+    const baris = document.querySelectorAll('.book-row .stepper');
+    if (baris[0]) baris[0].querySelector('button').disabled = dewasa <= 1;
+    if (baris[1]) baris[1].querySelector('button').disabled = anak <= 0;
+}
 render();
 
 document.querySelectorAll('.tabbar button').forEach(b => {

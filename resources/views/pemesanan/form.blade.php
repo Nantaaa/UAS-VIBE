@@ -49,12 +49,29 @@
                 </div>
 
                 {{-- Peserta --}}
-                <div class="field" style="max-width:240px">
-                    <label for="jumlah_peserta">Jumlah peserta</label>
-                    <input id="jumlah_peserta" type="number" name="jumlah_peserta"
-                           value="{{ old('jumlah_peserta', request('jumlah', 1)) }}"
-                           min="1" max="{{ min(20, $jadwal->sisa_kuota) }}" required>
+                @php
+                    $maksDewasa = min((int) config('travel.maks_peserta', 20), $jadwal->sisa_kuota);
+                    $maksAnak = min((int) config('travel.maks_anak', 10), $jadwal->sisa_kuota);
+                    $valDewasa = (int) old('dewasa', request('dewasa', request('jumlah', 1)));
+                    $valAnak = (int) old('anak', request('anak', 0));
+                @endphp
+
+                <div class="row" style="gap:12px;flex-wrap:wrap;align-items:flex-start">
+                    <div class="field" style="flex:1 1 0;min-width:140px;max-width:190px">
+                        <label for="dewasa">Jumlah Dewasa</label>
+                        <input id="dewasa" type="number" name="dewasa" value="{{ $valDewasa }}"
+                               min="0" max="{{ $maksDewasa }}" required>
+                    </div>
+                    <div class="field" style="flex:1 1 0;min-width:140px;max-width:190px">
+                        <label for="anak">Jumlah Anak</label>
+                        <input id="anak" type="number" name="anak" value="{{ $valAnak }}"
+                               min="0" max="{{ $maksAnak }}">
+                    </div>
+                    <input type="hidden" name="jumlah_peserta" id="jumlah_peserta" value="{{ $valDewasa + $valAnak }}">
                 </div>
+                <span class="hint" style="display:block;margin-top:6px">
+                    Tarif anak {{ \App\Models\Pemesanan::persenTarifAnak() }}% dari tarif dewasa. Data peserta dewasa diisi lebih dulu, lalu anak.
+                </span>
 
                 <div id="pesertaWrap" class="stack"></div>
 
@@ -83,8 +100,9 @@
                         </div>
 
                         <div class="mt-16">
-                            <div class="summary-line"><span class="muted">Harga per orang</span><span>Rp {{ number_format($jadwal->paket->tarif, 0, ',', '.') }}</span></div>
-                            <div class="summary-line"><span class="muted">Jumlah peserta</span><span id="txtJumlah">1 orang</span></div>
+                            <div class="summary-line"><span class="muted">Tarif dewasa / orang</span><span>Rp {{ number_format($jadwal->paket->tarif, 0, ',', '.') }}</span></div>
+                            <div class="summary-line"><span class="muted">Tarif anak / orang ({{ \App\Models\Pemesanan::persenTarifAnak() }}%)</span><span>Rp {{ number_format(\App\Models\Pemesanan::tarifKategori((float) $jadwal->paket->tarif, 'anak'), 0, ',', '.') }}</span></div>
+                            <div class="summary-line"><span class="muted">Komposisi peserta</span><span id="txtJumlah">1 dewasa</span></div>
                             <div class="summary-line"><span class="muted">Biaya layanan</span><span>Rp 0</span></div>
                             <div class="summary-line" id="barisDiskon" style="display:none">
                                 <span class="muted">Diskon promo</span><span style="color:#15803d" id="txtDiskon">-Rp 0</span>
@@ -205,18 +223,26 @@
 
 <script>
 const TARIF = {{ (int) $jadwal->paket->tarif }};
+const TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $jadwal->paket->tarif, 'anak') }};
 const MAKS = {{ min(20, $jadwal->sisa_kuota) }};
+const MAKS_ANAK = {{ min(10, $jadwal->sisa_kuota) }};
 const wrap = document.getElementById('pesertaWrap');
 const tpl = document.getElementById('tplPeserta');
+const inputDewasa = document.getElementById('dewasa');
+const inputAnak = document.getElementById('anak');
 const inputJumlah = document.getElementById('jumlah_peserta');
 
 function render() {
-    const n = Math.max(1, Math.min(parseInt(inputJumlah.value || 1), MAKS));
+    const dewasa = Math.max(0, Math.min(parseInt(inputDewasa.value || 0, 10), MAKS));
+    const anak = Math.max(0, Math.min(parseInt(inputAnak.value || 0, 10), MAKS_ANAK));
+    const n = Math.max(1, dewasa + anak);
+    inputJumlah.value = n;
     wrap.innerHTML = '';
     for (let i = 0; i < n; i++) {
         const node = tpl.content.cloneNode(true);
+        const kategori = i < dewasa ? 'Dewasa' : 'Anak';
         node.querySelector('[data-nomor]').textContent = i + 1;
-        node.querySelector('[data-peran]').textContent = i === 0 ? '— Data Pemesan' : '— Data Tambahan';
+        node.querySelector('[data-peran]').textContent = i === 0 ? '— Data Pemesan' : '— ' + kategori;
         node.querySelectorAll('[data-name]').forEach(el => {
             el.name = `peserta[${i}][${el.dataset.name}]`;
             if (i === 0 && el.dataset.name === 'email') el.value = @json(auth()->user()->email ?? '');
@@ -224,10 +250,11 @@ function render() {
         });
         wrap.appendChild(node);
     }
-    document.getElementById('txtJumlah').textContent = n + ' orang';
-    document.getElementById('txtTotal').textContent = 'Rp ' + (TARIF * n).toLocaleString('id-ID');
+    document.getElementById('txtJumlah').textContent = dewasa + ' dewasa' + (anak > 0 ? ' + ' + anak + ' anak' : '');
+    document.getElementById('txtTotal').textContent = 'Rp ' + (TARIF * dewasa + TARIF_ANAK * anak).toLocaleString('id-ID');
 }
-inputJumlah.addEventListener('input', render);
+inputDewasa.addEventListener('input', render);
+inputAnak.addEventListener('input', render);
 render();
 
 // ===== Kode promo =====
@@ -236,7 +263,8 @@ if (btnPromo) {
     btnPromo.addEventListener('click', async () => {
         const kode = document.getElementById('inputPromo').value.trim();
         const status = document.getElementById('statusPromo');
-        const jumlah = parseInt(document.getElementById('jumlah_peserta').value || 1, 10);
+        const dewasaVal = parseInt(document.getElementById('dewasa').value || 0, 10);
+        const anakVal = parseInt(document.getElementById('anak').value || 0, 10);
         const jadwal = {{ $jadwal->id }};
 
         if (!kode) {
@@ -257,7 +285,7 @@ if (btnPromo) {
                     'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ kode: kode, id_jadwal: jadwal, jumlah: jumlah })
+                body: JSON.stringify({ kode: kode, id_jadwal: jadwal, dewasa: dewasaVal, anak: anakVal, jumlah: dewasaVal + anakVal })
             });
             const data = await res.json();
 
@@ -271,7 +299,7 @@ if (btnPromo) {
             } else {
                 document.getElementById('kodePromoHidden').value = '';
                 document.getElementById('barisDiskon').style.display = 'none';
-                document.getElementById('txtTotal').textContent = 'Rp ' + (TARIF * jumlah).toLocaleString('id-ID');
+                document.getElementById('txtTotal').textContent = 'Rp ' + (TARIF * dewasaVal + TARIF_ANAK * anakVal).toLocaleString('id-ID');
                 status.textContent = data.pesan || 'Kode promo tidak valid.';
                 status.style.color = '#dc2626';
             }

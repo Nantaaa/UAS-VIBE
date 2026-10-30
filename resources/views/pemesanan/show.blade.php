@@ -45,7 +45,13 @@
                         <dt>Lokasi</dt><dd>{{ $pemesanan->jadwal->paket->destinasi->lokasi }}</dd>
                         <dt>Tanggal berangkat</dt><dd>{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('d F Y') }}</dd>
                         <dt>Tanggal kembali</dt><dd>{{ $pemesanan->jadwal->tanggal_kembali?->translatedFormat('d F Y') ?? '-' }}</dd>
-                        <dt>Jumlah peserta</dt><dd>{{ $pemesanan->jumlah_peserta }} orang</dd>
+                        <dt>Jumlah peserta</dt>
+                        <dd>
+                            {{ $pemesanan->jumlah_peserta }} orang
+                            <span class="tiny muted">
+                                ({{ $pemesanan->jumlah_dewasa ?: $pemesanan->jumlah_peserta }} dewasa{{ $pemesanan->jumlah_anak > 0 ? ' + '.$pemesanan->jumlah_anak.' anak' : '' }})
+                            </span>
+                        </dd>
                         @if($pemesanan->diskon > 0)
                             <dt>Diskon promo</dt>
                             <dd style="color:#15803d">-Rp {{ number_format($pemesanan->diskon, 0, ',', '.') }}

@@ -118,9 +118,12 @@
             <div class="card" style="position:sticky;top:88px">
                 <div class="card-head"><h3>Rincian Harga</h3></div>
                 <div class="card-body">
-                    <div class="summary-line"><span class="muted">Harga per orang</span><span>Rp {{ number_format($pemesanan->jadwal->paket->tarif, 0, ',', '.') }}</span></div>
-                    <div class="summary-line"><span class="muted">Jumlah peserta</span><span>{{ $pemesanan->jumlah_peserta }}x</span></div>
-                    <div class="summary-line"><span class="muted">Subtotal</span><span>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</span></div>
+                    @php($rincian = $pemesanan->rincianBiaya())
+                    <div class="summary-line"><span class="muted">Dewasa {{ $rincian['dewasa'] }} × Rp {{ number_format($rincian['tarif'], 0, ',', '.') }}</span><span>Rp {{ number_format($rincian['dewasa'] * $rincian['tarif'], 0, ',', '.') }}</span></div>
+                    @if($rincian['anak'] > 0)
+                        <div class="summary-line"><span class="muted">Anak {{ $rincian['anak'] }} × Rp {{ number_format($rincian['tarif_anak'], 0, ',', '.') }} ({{ \App\Models\Pemesanan::persenTarifAnak() }}%)</span><span>Rp {{ number_format($rincian['anak'] * $rincian['tarif_anak'], 0, ',', '.') }}</span></div>
+                    @endif
+                    <div class="summary-line"><span class="muted">Subtotal</span><span>Rp {{ number_format($rincian['subtotal'], 0, ',', '.') }}</span></div>
                     <div class="summary-line"><span class="muted">Pajak &amp; biaya</span><span>Rp 0</span></div>
                     @if($pemesanan->diskon > 0)
                         <div class="summary-line"><span class="muted">Diskon promo{{ $pemesanan->kode_promo ? ' ('.$pemesanan->kode_promo.')' : '' }}</span>

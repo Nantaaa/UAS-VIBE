@@ -12,7 +12,7 @@ class Peserta extends Model
     protected $table = 'peserta';
 
     protected $fillable = [
-        'id_pemesanan', 'nama_peserta', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin',
+        'id_pemesanan', 'nama_peserta', 'kategori', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin',
         'jenis_identitas', 'no_identitas', 'no_hp', 'email', 'alamat', 'kota', 'provinsi',
         'file_identitas', 'status',
     ];

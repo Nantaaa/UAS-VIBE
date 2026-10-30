@@ -37,7 +37,7 @@ class Pemesanan extends Model
     ];
 
     protected $fillable = [
-        'id_user', 'id_jadwal', 'kode_pemesanan', 'jumlah_peserta', 'total_bayar',
+        'id_user', 'id_jadwal', 'kode_pemesanan', 'jumlah_peserta', 'jumlah_dewasa', 'jumlah_anak', 'total_bayar',
         'status_pemesanan', 'catatan_status', 'tanggal_pemesanan', 'batas_pembayaran',
         'kode_promo', 'diskon',
     ];
@@ -48,6 +48,37 @@ class Pemesanan extends Model
         'tanggal_pemesanan' => 'datetime',
         'batas_pembayaran' => 'datetime',
     ];
+
+    /** Persentase tarif anak terhadap tarif dewasa (default 50%). */
+    public static function persenTarifAnak(): int
+    {
+        return max(0, min(100, (int) config('travel.tarif_anak_persen', 50)));
+    }
+
+    /** Hitung tarif per kategori dari tarif dewasa paket. */
+    public static function tarifKategori(float $tarifDewasa, string $kategori): float
+    {
+        return $kategori === 'anak'
+            ? round($tarifDewasa * self::persenTarifAnak() / 100, 2)
+            : (float) $tarifDewasa;
+    }
+
+    /** Rincian biaya pemesanan ini (dewasa, anak, subtotal). */
+    public function rincianBiaya(): array
+    {
+        $tarif = (float) $this->jadwal->paket->tarif;
+        $dewasa = (int) ($this->jumlah_dewasa ?: $this->jumlah_peserta);
+        $anak = (int) $this->jumlah_anak;
+        $tarifAnak = self::tarifKategori($tarif, 'anak');
+
+        return [
+            'dewasa' => $dewasa,
+            'anak' => $anak,
+            'tarif' => $tarif,
+            'tarif_anak' => $tarifAnak,
+            'subtotal' => ($dewasa * $tarif) + ($anak * $tarifAnak),
+        ];
+    }
 
     public function user()
     {

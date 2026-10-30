@@ -25,11 +25,16 @@ class PemesananController extends Controller
         $data = $request->validate([
             'kode' => ['required', 'string', 'max:30'],
             'id_jadwal' => ['required', 'integer', 'exists:jadwal_keberangkatan,id'],
-            'jumlah' => ['required', 'integer', 'min:1', 'max:20'],
+            'jumlah' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'dewasa' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'anak' => ['nullable', 'integer', 'min:0', 'max:10'],
         ]);
 
         $jadwal = \App\Models\JadwalKeberangkatan::with('paket')->findOrFail($data['id_jadwal']);
-        $subtotal = (float) $jadwal->paket->tarif * (int) $data['jumlah'];
+        $tarifDewasa = (float) $jadwal->paket->tarif;
+        $dewasa = (int) ($data['dewasa'] ?? $data['jumlah'] ?? 1);
+        $anak = (int) ($data['anak'] ?? 0);
+        $subtotal = ($dewasa * $tarifDewasa) + ($anak * \App\Models\Pemesanan::tarifKategori($tarifDewasa, 'anak'));
 
         try {
             $hasil = $this->promo->hitung($data['kode'], $subtotal);
@@ -74,6 +79,8 @@ class PemesananController extends Controller
     {
         $request->validate([
             'jumlah_peserta' => ['required', 'integer', 'min:1', 'max:20'],
+            'dewasa' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'anak' => ['nullable', 'integer', 'min:0', 'max:10'],
             'peserta' => ['required', 'array'],
             'peserta.*.nama_peserta' => ['required', 'string', 'max:100'],
             'peserta.*.jenis_identitas' => ['required', 'in:KTP,Paspor'],
@@ -88,6 +95,18 @@ class PemesananController extends Controller
             'peserta.*.file_identitas.max' => 'Ukuran berkas identitas maksimal 2 MB.',
         ]);
 
+        // Kategori peserta: dewasa & anak dihitung terpisah karena tarifnya berbeda
+        $dewasa = (int) $request->input('dewasa', $request->input('jumlah_peserta'));
+        $anak = (int) $request->input('anak', 0);
+
+        if ($dewasa + $anak < 1) {
+            throw ValidationException::withMessages([
+                'jumlah_peserta' => 'Minimal satu peserta (dewasa atau anak) harus diisi.',
+            ]);
+        }
+
+        $jumlahPeserta = $dewasa + $anak;
+
         $input = $request->input('peserta', []);
         $files = $request->file('peserta', []);
 
@@ -97,12 +116,18 @@ class PemesananController extends Controller
             $data[$i] = $row;
         }
 
-        $data = array_slice($data, 0, (int) $request->input('jumlah_peserta'), true);
+        $data = array_slice($data, 0, $jumlahPeserta, true);
 
-        if (count($data) < (int) $request->input('jumlah_peserta')) {
+        if (count($data) < $jumlahPeserta) {
             throw ValidationException::withMessages([
                 'peserta' => 'Data peserta belum lengkap sesuai jumlah peserta.',
             ]);
+        }
+
+        $urut = 0;
+        foreach (array_keys($data) as $key) {
+            $data[$key]['kategori'] = $urut < $dewasa ? 'dewasa' : 'anak';
+            $urut++;
         }
 
         foreach ($data as $row) {
@@ -113,10 +138,13 @@ class PemesananController extends Controller
             }
         }
 
-        $subtotal = (float) $jadwal->paket->tarif * count($data);
+        $tarifDewasa = (float) $jadwal->paket->tarif;
+        $subtotal = ($dewasa * $tarifDewasa) + ($anak * \App\Models\Pemesanan::tarifKategori($tarifDewasa, 'anak'));
         $promo = $this->promo->hitung($request->input('kode_promo'), $subtotal);
 
-        $pemesanan = $this->booking->buat($request->user(), $jadwal->id, array_values($data), $promo);
+        $pemesanan = $this->booking->buat(
+            $request->user(), $jadwal->id, array_values($data), $promo, $dewasa, $anak
+        );
 
         if ($promo['promo']) {
             $this->promo->tandaiTerpakai($promo['promo']);

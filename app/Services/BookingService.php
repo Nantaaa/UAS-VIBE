@@ -21,15 +21,23 @@ class BookingService
      *
      * @param  array<int, array{nama_peserta:string, jenis_identitas:string, no_identitas:string, file_identitas:UploadedFile}>  $pesertaData
      */
-    public function buat(User $user, int $idJadwal, array $pesertaData, array $promo = []): Pemesanan
+    public function buat(User $user, int $idJadwal, array $pesertaData, array $promo = [], ?int $dewasa = null, ?int $anak = null): Pemesanan
     {
         $jumlah = count($pesertaData);
+        $dewasa = $dewasa ?? $jumlah;
+        $anak = $anak ?? 0;
+
+        if ($dewasa + $anak !== $jumlah) {
+            throw ValidationException::withMessages([
+                'jumlah_peserta' => 'Jumlah dewasa dan anak harus sama dengan jumlah data peserta.',
+            ]);
+        }
 
         if ($jumlah < 1) {
             throw ValidationException::withMessages(['peserta' => 'Minimal satu peserta harus diisi.']);
         }
 
-        return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo) {
+        return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo, $dewasa, $anak) {
             /** @var JadwalKeberangkatan $jadwal */
             $jadwal = JadwalKeberangkatan::whereKey($idJadwal)->lockForUpdate()->firstOrFail();
 
@@ -43,7 +51,9 @@ class BookingService
             }
 
             $paket = $jadwal->paket;
-            $subtotal = $paket->tarif * $jumlah;
+            $tarifDewasa = (float) $paket->tarif;
+            $tarifAnak = Pemesanan::tarifKategori($tarifDewasa, 'anak');
+            $subtotal = ($dewasa * $tarifDewasa) + ($anak * $tarifAnak);
             $diskon = (float) ($promo['diskon'] ?? 0);
             $total = max(0, $subtotal - $diskon);
 
@@ -52,6 +62,8 @@ class BookingService
                 'id_jadwal' => $jadwal->id,
                 'kode_pemesanan' => $this->generateKode(),
                 'jumlah_peserta' => $jumlah,
+                'jumlah_dewasa' => $dewasa,
+                'jumlah_anak' => $anak,
                 'total_bayar' => $total,
                 'kode_promo' => $promo['promo']->kode ?? null,
                 'diskon' => $diskon,
@@ -61,12 +73,13 @@ class BookingService
                 'batas_pembayaran' => now()->addMinutes(self::BATAS_PEMBAYARAN_MENIT),
             ]);
 
-            foreach ($pesertaData as $p) {
+            foreach (array_values($pesertaData) as $idx => $p) {
                 $path = $p['file_identitas']->store('identitas', 'local');
 
                 Peserta::create([
                     'id_pemesanan' => $pemesanan->id,
                     'nama_peserta' => $p['nama_peserta'],
+                    'kategori' => $p['kategori'] ?? ($idx < $dewasa ? 'dewasa' : 'anak'),
                     'tempat_lahir' => $p['tempat_lahir'] ?? null,
                     'tanggal_lahir' => $p['tanggal_lahir'] ?? null,
                     'jenis_kelamin' => $p['jenis_kelamin'] ?? null,

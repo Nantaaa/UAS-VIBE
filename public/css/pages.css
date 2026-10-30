@@ -142,3 +142,6 @@
   .stepper-bar { font-size: 11px; padding: 12px; }
   .stepper-bar .line { margin: 0 8px; }
 }
+
+/* Stepper nonaktif di batas bawah */
+.book-row .stepper button:disabled { opacity: .35; cursor: not-allowed; }

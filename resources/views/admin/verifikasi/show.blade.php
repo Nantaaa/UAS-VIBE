@@ -102,8 +102,11 @@
         <div class="adm-card">
             <div class="adm-card-head"><div><h3>Ringkasan Tagihan</h3><p>Mata uang IDR</p></div></div>
             <div class="adm-card-body">
-                @php($tarif = (float) $pemesanan->jadwal->paket->tarif)
-                <div class="row between" style="font-size:11.5px;padding:4px 0"><span class="sub">Tarif peserta ({{ $pemesanan->jumlah_peserta }} pax)</span><span>Rp {{ number_format($tarif * $pemesanan->jumlah_peserta, 0, ',', '.') }}</span></div>
+                @php($rincian = $pemesanan->rincianBiaya())
+                <div class="row between" style="font-size:11.5px;padding:4px 0"><span class="sub">Dewasa {{ $rincian['dewasa'] }} × Rp {{ number_format($rincian['tarif'], 0, ',', '.') }}</span><span>Rp {{ number_format($rincian['dewasa'] * $rincian['tarif'], 0, ',', '.') }}</span></div>
+                @if($rincian['anak'] > 0)
+                    <div class="row between" style="font-size:11.5px;padding:4px 0"><span class="sub">Anak {{ $rincian['anak'] }} × Rp {{ number_format($rincian['tarif_anak'], 0, ',', '.') }}</span><span>Rp {{ number_format($rincian['anak'] * $rincian['tarif_anak'], 0, ',', '.') }}</span></div>
+                @endif
                 @if($pemesanan->diskon > 0)
                     <div class="row between" style="font-size:11.5px;padding:4px 0"><span class="sub">Diskon promo{{ $pemesanan->kode_promo ? ' ('.$pemesanan->kode_promo.')' : '' }}</span><span style="color:#15803d">-Rp {{ number_format($pemesanan->diskon, 0, ',', '.') }}</span></div>
                 @endif

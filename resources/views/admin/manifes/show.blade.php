@@ -72,7 +72,7 @@
     <div style="overflow-x:auto">
         <table class="adm-table">
             <thead>
-                <tr><th>No</th><th>Nama Lengkap</th><th>NIK / Paspor</th><th>Domisili</th><th>Kode Booking</th><th>Kontak Pemesan</th></tr>
+                <tr><th>No</th><th>Nama Lengkap</th><th>Kategori</th><th>NIK / Paspor</th><th>Domisili</th><th>Kode Booking</th><th>Kontak Pemesan</th></tr>
             </thead>
             <tbody>
                 @php($no = 1)
@@ -81,6 +81,7 @@
                         <tr>
                             <td>{{ str_pad($no++, 2, '0', STR_PAD_LEFT) }}</td>
                             <td><div class="nm">{{ $ps->nama_peserta }}</div><div class="sub">{{ $ps->jenis_kelamin === 'P' ? 'Perempuan' : 'Laki-laki' }}</div></td>
+                            <td><span class="pill {{ ($ps->kategori ?? 'dewasa') === 'anak' ? 'info' : 'gray' }}">{{ ucfirst($ps->kategori ?? 'dewasa') }}</span></td>
                             <td style="font-family:ui-monospace,monospace;font-size:10.5px">{{ $ps->no_identitas }}</td>
                             <td class="sub">{{ $ps->kota ?: '—' }}</td>
                             <td style="font-family:ui-monospace,monospace;font-size:10.5px">{{ $p->kode_pemesanan }}</td>
@@ -91,7 +92,7 @@
                         </tr>
                     @endforeach
                 @empty
-                    <tr><td colspan="6" class="empty" style="padding:28px">Belum ada peserta terkonfirmasi pada keberangkatan ini.</td></tr>
+                    <tr><td colspan="7" class="empty" style="padding:28px">Belum ada peserta terkonfirmasi pada keberangkatan ini.</td></tr>
                 @endforelse
             </tbody>
         </table>
