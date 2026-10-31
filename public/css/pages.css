@@ -280,3 +280,41 @@
   background: var(--line);
 }
 .pdp-meta div svg { color: #94a3b8; }
+
+
+/* ===== Daftar titik jemput ===== */
+.meet-list { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--line); }
+.meet-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 0; font-size: 11.5px;
+}
+.meet-no {
+  width: 19px; height: 19px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--teal-soft); color: var(--teal-dark);
+  font-size: 9.5px; font-weight: 800; display: grid; place-items: center;
+}
+.meet-item-nama { font-weight: 700; color: var(--ink); }
+.meet-item-meta { margin-left: auto; color: var(--muted); font-weight: 600; white-space: nowrap; }
+
+/* Kebijakan */
+.policy-card {
+  margin-top: 14px; background: #fbfcfe; border: 1px dashed #cfd6e2;
+  border-radius: 12px; padding: 14px 16px;
+}
+.policy-card h4 { margin: 0 0 8px; font-size: 12px; letter-spacing: -.01em; }
+.policy-card ul { margin: 0; padding-left: 16px; display: grid; gap: 6px; }
+.policy-card li { font-size: 11px; line-height: 1.55; color: var(--ink-soft); }
+
+/* Pilihan titik jemput di form */
+.titik-pilih { display: grid; gap: 8px; margin-top: 6px; }
+.titik-opsi {
+  display: flex; align-items: flex-start; gap: 10px;
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+  cursor: pointer; transition: border-color .16s, background .16s;
+}
+.titik-opsi:hover { border-color: #b8e8e0; background: #f7fdfc; }
+.titik-opsi:has(input:checked) { border-color: var(--teal); background: var(--teal-soft); }
+.titik-opsi input { width: auto; margin-top: 3px; accent-color: var(--teal); }
+.titik-isi { display: grid; gap: 2px; }
+.titik-nama { font-size: 12px; font-weight: 700; color: var(--ink); }
+.titik-meta { font-size: 10.5px; color: var(--muted); font-weight: 600; }

@@ -22,6 +22,11 @@ class JadwalKeberangkatan extends Model
         'tanggal_kembali' => 'date',
     ];
 
+    public function titikJemput()
+    {
+        return $this->hasMany(\App\Models\TitikJemput::class, 'id_jadwal')->orderBy('urutan');
+    }
+
     public function paket()
     {
         return $this->belongsTo(PaketWisata::class, 'id_paket');

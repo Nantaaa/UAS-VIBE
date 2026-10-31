@@ -205,6 +205,38 @@
                         {{ $jadwalKumpul->catatan_keberangkatan }}
                     </div>
                 @endif
+
+                @php($titikAktif = $jadwalKumpul?->titikJemput->where('urutan', '<', 99) ?? collect())
+                @if($titikAktif->isNotEmpty())
+                    <div class="meet-list">
+                        <div class="meet-lbl" style="margin-bottom:7px">Pilihan Titik Jemput</div>
+                        @foreach($titikAktif as $t)
+                            <div class="meet-item">
+                                <span class="meet-no">{{ $loop->iteration }}</span>
+                                <span class="meet-item-nama">{{ $t->nama }}</span>
+                                <span class="meet-item-meta">
+                                    @if($t->jam){{ $t->jam->format('H:i') }}@endif
+                                    @if((float) $t->biaya_tambahan > 0)
+                                        · +Rp {{ number_format($t->biaya_tambahan, 0, ',', '.') }}
+                                    @else
+                                        · gratis jemput
+                                    @endif
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            <div class="policy-card">
+                <h4>Kebijakan Titik Jemput &amp; Keterlambatan</h4>
+                <ul>
+                    <li>Penjemputan hanya dilakukan di titik jemput yang tertera. Di luar titik tersebut, peserta menuju sendiri ke titik terdekat dengan biaya sendiri.</li>
+                    <li>Peserta wajib berada di titik jemput <strong>15 menit</strong> sebelum jam penjemputan.</li>
+                    <li>Keterlambatan melebihi <strong>30 menit</strong> dari jam jemput dianggap menyusul sendiri, tanpa pengembalian biaya.</li>
+                    <li>Perubahan titik jemput mendadak oleh operator tidak akan jauh dari titik awal dan akan diinformasikan lewat WhatsApp.</li>
+                    <li>Tiket pesawat dari kota asal bukan bagian paket, kecuali tertera "Termasuk" pada titik kumpul.</li>
+                </ul>
             </div>
         </div>
 

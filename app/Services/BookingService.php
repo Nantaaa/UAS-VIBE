@@ -21,8 +21,15 @@ class BookingService
      *
      * @param  array<int, array{nama_peserta:string, jenis_identitas:string, no_identitas:string, file_identitas:UploadedFile}>  $pesertaData
      */
-    public function buat(User $user, int $idJadwal, array $pesertaData, array $promo = [], ?int $dewasa = null, ?int $anak = null): Pemesanan
-    {
+    public function buat(
+        User $user,
+        int $idJadwal,
+        array $pesertaData,
+        array $promo = [],
+        ?int $dewasa = null,
+        ?int $anak = null,
+        ?int $idTitikJemput = null
+    ): Pemesanan {
         $jumlah = count($pesertaData);
         $dewasa = $dewasa ?? $jumlah;
         $anak = $anak ?? 0;
@@ -37,7 +44,7 @@ class BookingService
             throw ValidationException::withMessages(['peserta' => 'Minimal satu peserta harus diisi.']);
         }
 
-        return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo, $dewasa, $anak) {
+        return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo, $dewasa, $anak, $idTitikJemput) {
             /** @var JadwalKeberangkatan $jadwal */
             $jadwal = JadwalKeberangkatan::whereKey($idJadwal)->lockForUpdate()->firstOrFail();
 
@@ -55,11 +62,27 @@ class BookingService
             $tarifAnak = Pemesanan::tarifKategori($tarifDewasa, 'anak');
             $subtotal = ($dewasa * $tarifDewasa) + ($anak * $tarifAnak);
             $diskon = (float) ($promo['diskon'] ?? 0);
-            $total = max(0, $subtotal - $diskon);
+
+            // Titik jemput: harus milik jadwal ini; biaya tambahan masuk ke total
+            $titik = null;
+            $biayaJemput = 0.0;
+            if ($idTitikJemput) {
+                $titik = \App\Models\TitikJemput::where('id_jadwal', $jadwal->id)->find($idTitikJemput);
+                if (! $titik) {
+                    throw ValidationException::withMessages([
+                        'id_titik_jemput' => 'Titik jemput tidak tersedia untuk jadwal ini.',
+                    ]);
+                }
+                $biayaJemput = (float) $titik->biaya_tambahan;
+            }
+
+            $total = max(0, $subtotal - $diskon) + $biayaJemput;
 
             $pemesanan = Pemesanan::create([
                 'id_user' => $user->id,
                 'id_jadwal' => $jadwal->id,
+                'id_titik_jemput' => $titik?->id,
+                'biaya_jemput' => $biayaJemput,
                 'kode_pemesanan' => $this->generateKode(),
                 'jumlah_peserta' => $jumlah,
                 'jumlah_dewasa' => $dewasa,

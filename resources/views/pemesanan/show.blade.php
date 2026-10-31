@@ -45,6 +45,18 @@
                         <dt>Lokasi</dt><dd>{{ $pemesanan->jadwal->paket->destinasi->lokasi }}</dd>
                         <dt>Tanggal berangkat</dt><dd>{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('d F Y') }}</dd>
                         <dt>Tanggal kembali</dt><dd>{{ $pemesanan->jadwal->tanggal_kembali?->translatedFormat('d F Y') ?? '-' }}</dd>
+                        @if($pemesanan->titikJemput)
+                            <dt>Titik jemput dipilih</dt>
+                            <dd>
+                                {{ $pemesanan->titikJemput->nama }}
+                                @if($pemesanan->titikJemput->jam)
+                                    <span class="tiny muted">· {{ $pemesanan->titikJemput->jam->format('H:i') }}</span>
+                                @endif
+                                @if((float) $pemesanan->biaya_jemput > 0)
+                                    <span class="tiny muted">· +Rp {{ number_format($pemesanan->biaya_jemput, 0, ',', '.') }}</span>
+                                @endif
+                            </dd>
+                        @endif
                         <dt>Titik kumpul</dt>
                         <dd>
                             {{ $pemesanan->jadwal->kota_kumpul ?? 'Dikonfirmasi admin' }}

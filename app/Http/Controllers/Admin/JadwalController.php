@@ -46,6 +46,7 @@ class JadwalController extends Controller
         $data['sisa_kuota'] = $data['kuota_peserta'];
 
         $jadwal = JadwalKeberangkatan::create($data);
+        $this->sinkronTitikJemput($jadwal, $request);
         $this->simpanPenugasan($request, $jadwal);
 
         return redirect()->route('admin.jadwal.index')->with('sukses', 'Jadwal keberangkatan berhasil ditambahkan.');
@@ -73,6 +74,7 @@ class JadwalController extends Controller
         }
 
         $jadwal->update($data);
+        $this->sinkronTitikJemput($jadwal, $request);
         $jadwal->sinkronSisaKuota();
         $this->simpanPenugasan($request, $jadwal);
 
@@ -104,6 +106,51 @@ class JadwalController extends Controller
         }
     }
 
+    /**
+     * Samakan daftar titik jemput dengan isian form.
+     * Titik yang masih dipakai pemesanan tidak dihapus.
+     */
+    private function sinkronTitikJemput(JadwalKeberangkatan $jadwal, Request $request): void
+    {
+        $baris = collect($request->input('titik', []))
+            ->filter(fn ($t) => filled($t['nama'] ?? null))
+            ->values();
+
+        $idDipakai = \App\Models\Pemesanan::where('id_jadwal', $jadwal->id)
+            ->whereNotNull('id_titik_jemput')->pluck('id_titik_jemput')->all();
+
+        $tersimpan = [];
+        foreach ($baris as $i => $t) {
+            $data = [
+                'nama' => $t['nama'],
+                'jam' => filled($t['jam'] ?? null) ? $t['jam'] : null,
+                'urutan' => $i + 1,
+                'biaya_tambahan' => (float) ($t['biaya_tambahan'] ?? 0),
+            ];
+
+            $id = $t['id'] ?? null;
+            if ($id && $jadwal->titikJemput()->whereKey($id)->exists()) {
+                $jadwal->titikJemput()->whereKey($id)->update($data);
+                $tersimpan[] = (int) $id;
+            } else {
+                $tersimpan[] = $jadwal->titikJemput()->create($data)->id;
+            }
+        }
+
+        // Titik yang tidak lagi ada di form tapi masih dipakai pemesanan:
+        // jangan dihapus, cukup dipindah ke urutan akhir agar tidak tampil sebagai pilihan utama.
+        $sisa = $jadwal->titikJemput()->whereNotIn('id', $tersimpan ?: [0])->pluck('id')->all();
+        $dipakai = array_values(array_intersect($sisa, $idDipakai));
+        if ($dipakai) {
+            \App\Models\TitikJemput::whereIn('id', $dipakai)->update(['urutan' => 99]);
+        }
+
+        $hapus = array_values(array_diff($sisa, $idDipakai));
+        if ($hapus) {
+            \App\Models\TitikJemput::whereIn('id', $hapus)->delete();
+        }
+    }
+
     private function validasi(Request $request): array
     {
         return $request->validate([
@@ -115,6 +162,10 @@ class JadwalController extends Controller
             'titik_kumpul' => ['nullable', 'string', 'max:160'],
             'jam_kumpul' => ['nullable', 'date_format:H:i'],
             'catatan_keberangkatan' => ['nullable', 'string', 'max:500'],
+            'titik' => ['nullable', 'array'],
+            'titik.*.nama' => ['nullable', 'string', 'max:120'],
+            'titik.*.jam' => ['nullable', 'date_format:H:i'],
+            'titik.*.biaya_tambahan' => ['nullable', 'numeric', 'min:0'],
         ], [
             'id_paket.required' => 'Paket wajib dipilih.',
             'tanggal_berangkat.required' => 'Tanggal berangkat wajib diisi.',

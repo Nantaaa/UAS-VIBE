@@ -81,6 +81,7 @@ class PemesananController extends Controller
             'jumlah_peserta' => ['required', 'integer', 'min:1', 'max:20'],
             'dewasa' => ['nullable', 'integer', 'min:0', 'max:20'],
             'anak' => ['nullable', 'integer', 'min:0', 'max:10'],
+            'id_titik_jemput' => ['nullable', 'integer', 'exists:titik_jemput,id'],
             'peserta' => ['required', 'array'],
             'peserta.*.nama_peserta' => ['required', 'string', 'max:100'],
             'peserta.*.jenis_identitas' => ['required', 'in:KTP,Paspor'],
@@ -140,10 +141,26 @@ class PemesananController extends Controller
 
         $tarifDewasa = (float) $jadwal->paket->tarif;
         $subtotal = ($dewasa * $tarifDewasa) + ($anak * \App\Models\Pemesanan::tarifKategori($tarifDewasa, 'anak'));
+
+        // biaya jemput ikut dihitung sebagai bagian tagihan sebelum diskon
+        if ($request->filled('id_titik_jemput')) {
+            $titik = \App\Models\TitikJemput::where('id_jadwal', $jadwal->id)
+                ->find($request->input('id_titik_jemput'));
+            if ($titik) {
+                $subtotal += (float) $titik->biaya_tambahan;
+            }
+        }
+
         $promo = $this->promo->hitung($request->input('kode_promo'), $subtotal);
 
         $pemesanan = $this->booking->buat(
-            $request->user(), $jadwal->id, array_values($data), $promo, $dewasa, $anak
+            $request->user(),
+            $jadwal->id,
+            array_values($data),
+            $promo,
+            $dewasa,
+            $anak,
+            $request->filled('id_titik_jemput') ? (int) $request->input('id_titik_jemput') : null
         );
 
         if ($promo['promo']) {

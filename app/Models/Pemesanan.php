@@ -37,7 +37,7 @@ class Pemesanan extends Model
     ];
 
     protected $fillable = [
-        'id_user', 'id_jadwal', 'kode_pemesanan', 'jumlah_peserta', 'jumlah_dewasa', 'jumlah_anak', 'total_bayar',
+        'id_user', 'id_jadwal', 'id_titik_jemput', 'biaya_jemput', 'kode_pemesanan', 'jumlah_peserta', 'jumlah_dewasa', 'jumlah_anak', 'total_bayar',
         'status_pemesanan', 'catatan_status', 'tanggal_pemesanan', 'batas_pembayaran',
         'kode_promo', 'diskon',
     ];
@@ -45,6 +45,7 @@ class Pemesanan extends Model
     protected $casts = [
         'total_bayar' => 'decimal:2',
         'diskon' => 'decimal:2',
+        'biaya_jemput' => 'decimal:2',
         'tanggal_pemesanan' => 'datetime',
         'batas_pembayaran' => 'datetime',
     ];
@@ -83,6 +84,11 @@ class Pemesanan extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function titikJemput()
+    {
+        return $this->belongsTo(\App\Models\TitikJemput::class, 'id_titik_jemput');
     }
 
     public function jadwal()

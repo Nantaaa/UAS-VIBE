@@ -73,6 +73,33 @@
                     Tarif anak {{ \App\Models\Pemesanan::persenTarifAnak() }}% dari tarif dewasa. Data peserta dewasa diisi lebih dulu, lalu anak.
                 </span>
 
+                @php($titikAktif = $jadwal->titikJemput->where('urutan', '<', 99))
+                @if($titikAktif->isNotEmpty())
+                    <div class="field mt-16">
+                        <label>Pilih Titik Jemput</label>
+                        <div class="titik-pilih">
+                            @foreach($titikAktif as $t)
+                                <label class="titik-opsi">
+                                    <input type="radio" name="id_titik_jemput" value="{{ $t->id }}"
+                                           data-biaya="{{ (float) $t->biaya_tambahan }}"
+                                           @checked($loop->first)>
+                                    <span class="titik-isi">
+                                        <span class="titik-nama">{{ $t->nama }}</span>
+                                        <span class="titik-meta">
+                                            @if($t->jam){{ $t->jam->format('H:i') }}@endif
+                                            @if((float) $t->biaya_tambahan > 0)
+                                                · +Rp {{ number_format($t->biaya_tambahan, 0, ',', '.') }}
+                                            @else
+                                                · gratis
+                                            @endif
+                                        </span>
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <div id="pesertaWrap" class="stack"></div>
 
                 {{-- Persetujuan --}}
@@ -103,6 +130,9 @@
                             <div class="summary-line"><span class="muted">Tarif dewasa / orang</span><span>Rp {{ number_format($jadwal->paket->tarif, 0, ',', '.') }}</span></div>
                             <div class="summary-line"><span class="muted">Tarif anak / orang ({{ \App\Models\Pemesanan::persenTarifAnak() }}%)</span><span>Rp {{ number_format(\App\Models\Pemesanan::tarifKategori((float) $jadwal->paket->tarif, 'anak'), 0, ',', '.') }}</span></div>
                             <div class="summary-line"><span class="muted">Komposisi peserta</span><span id="txtJumlah">1 dewasa</span></div>
+                            <div class="summary-line" id="barisJemput" style="display:none">
+                                <span class="muted">Biaya titik jemput</span><span id="txtJemput">Rp 0</span>
+                            </div>
                             <div class="summary-line"><span class="muted">Biaya layanan</span><span>Rp 0</span></div>
                             <div class="summary-line" id="barisDiskon" style="display:none">
                                 <span class="muted">Diskon promo</span><span style="color:#15803d" id="txtDiskon">-Rp 0</span>
@@ -251,10 +281,18 @@ function render() {
         wrap.appendChild(node);
     }
     document.getElementById('txtJumlah').textContent = dewasa + ' dewasa' + (anak > 0 ? ' + ' + anak + ' anak' : '');
-    document.getElementById('txtTotal').textContent = 'Rp ' + (TARIF * dewasa + TARIF_ANAK * anak).toLocaleString('id-ID');
+    const dipilih = document.querySelector('input[name="id_titik_jemput"]:checked');
+    const biayaJemput = dipilih ? parseFloat(dipilih.dataset.biaya || 0) : 0;
+    const barisJemput = document.getElementById('barisJemput');
+    if (barisJemput) {
+        barisJemput.style.display = biayaJemput > 0 ? '' : 'none';
+        document.getElementById('txtJemput').textContent = 'Rp ' + biayaJemput.toLocaleString('id-ID');
+    }
+    document.getElementById('txtTotal').textContent = 'Rp ' + (TARIF * dewasa + TARIF_ANAK * anak + biayaJemput).toLocaleString('id-ID');
 }
 inputDewasa.addEventListener('input', render);
 inputAnak.addEventListener('input', render);
+document.querySelectorAll('input[name="id_titik_jemput"]').forEach(r => r.addEventListener('change', render));
 render();
 
 // ===== Kode promo =====
@@ -285,7 +323,11 @@ if (btnPromo) {
                     'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ kode: kode, id_jadwal: jadwal, dewasa: dewasaVal, anak: anakVal, jumlah: dewasaVal + anakVal })
+                body: JSON.stringify({
+                    kode: kode, id_jadwal: jadwal, dewasa: dewasaVal, anak: anakVal,
+                    jumlah: dewasaVal + anakVal,
+                    id_titik_jemput: (document.querySelector('input[name="id_titik_jemput"]:checked') || {}).value || null
+                })
             });
             const data = await res.json();
 

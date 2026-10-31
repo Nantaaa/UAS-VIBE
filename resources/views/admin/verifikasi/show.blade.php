@@ -31,6 +31,9 @@
                 <div class="nm" style="font-size:13px">{{ $pemesanan->jadwal->paket->nama_paket }}</div>
                 <div class="sub mt-8">{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('d M Y') }} – {{ $pemesanan->jadwal->tanggal_kembali?->translatedFormat('d M Y') }}</div>
                 <div class="sub">Destinasi: {{ $pemesanan->jadwal->paket->destinasi->nama_destinasi }} · {{ $pemesanan->jumlah_peserta }} peserta</div>
+                @if($pemesanan->titikJemput)
+                    <div class="sub">Titik jemput: <strong>{{ $pemesanan->titikJemput->nama }}</strong>{{ $pemesanan->titikJemput->jam ? ' · '.$pemesanan->titikJemput->jam->format('H:i') : '' }}</div>
+                @endif
 
                 <div class="form-grid mt-16">
                     <div>

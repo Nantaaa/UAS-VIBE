@@ -53,6 +53,12 @@
             <td class="lbl">Tanggal berangkat</td>
             <td>{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('l, d F Y') }}</td>
         </tr>
+        @if($pemesanan->titikJemput)
+        <tr>
+            <td class="lbl">Titik jemput</td>
+            <td>{{ $pemesanan->titikJemput->nama }}{{ $pemesanan->titikJemput->jam ? ' ('.$pemesanan->titikJemput->jam->format('H:i').')' : '' }}</td>
+        </tr>
+        @endif
         <tr>
             <td class="lbl">Titik kumpul</td>
             <td colspan="3">{{ $pemesanan->jadwal->kota_kumpul ?? '-' }}{{ $pemesanan->jadwal->titik_kumpul ? ' — '.$pemesanan->jadwal->titik_kumpul : '' }}{{ $pemesanan->jadwal->jam_kumpul ? ' ('.$pemesanan->jadwal->jam_kumpul->format('H:i').')' : '' }}</td>

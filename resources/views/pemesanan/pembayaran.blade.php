@@ -55,6 +55,13 @@
                     <dt>Destinasi</dt><dd>{{ $pemesanan->jadwal->paket->destinasi->nama_destinasi }}</dd>
                     <dt>Keberangkatan</dt><dd>{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('d F Y') }}</dd>
                     <dt>Jumlah peserta</dt><dd>{{ $pemesanan->jumlah_peserta }} orang</dd>
+                    @if($pemesanan->titikJemput)
+                        <dt>Titik jemput</dt>
+                        <dd>
+                            {{ $pemesanan->titikJemput->nama }}
+                            @if($pemesanan->titikJemput->jam) · {{ $pemesanan->titikJemput->jam->format('H:i') }} @endif
+                        </dd>
+                    @endif
                     <dt>Titik kumpul</dt>
                     <dd>
                         {{ $pemesanan->jadwal->kota_kumpul ?? 'Dikonfirmasi admin' }}
@@ -132,6 +139,9 @@
                         <div class="summary-line"><span class="muted">Anak {{ $rincian['anak'] }} × Rp {{ number_format($rincian['tarif_anak'], 0, ',', '.') }} ({{ \App\Models\Pemesanan::persenTarifAnak() }}%)</span><span>Rp {{ number_format($rincian['anak'] * $rincian['tarif_anak'], 0, ',', '.') }}</span></div>
                     @endif
                     <div class="summary-line"><span class="muted">Subtotal</span><span>Rp {{ number_format($rincian['subtotal'], 0, ',', '.') }}</span></div>
+                    @if((float) $pemesanan->biaya_jemput > 0)
+                        <div class="summary-line"><span class="muted">Biaya titik jemput</span><span>Rp {{ number_format($pemesanan->biaya_jemput, 0, ',', '.') }}</span></div>
+                    @endif
                     <div class="summary-line"><span class="muted">Pajak &amp; biaya</span><span>Rp 0</span></div>
                     @if($pemesanan->diskon > 0)
                         <div class="summary-line"><span class="muted">Diskon promo{{ $pemesanan->kode_promo ? ' ('.$pemesanan->kode_promo.')' : '' }}</span>
