@@ -50,17 +50,22 @@
 
                 {{-- Peserta --}}
                 @php
+                    $minTotal = (int) config('travel.min_peserta', 2);
                     $maksDewasa = min((int) config('travel.maks_peserta', 20), $jadwal->sisa_kuota);
                     $maksAnak = min((int) config('travel.maks_anak', 10), $jadwal->sisa_kuota);
-                    $valDewasa = (int) old('dewasa', request('dewasa', request('jumlah', 1)));
+                    $valDewasa = (int) old('dewasa', request('dewasa', request('jumlah', $minTotal)));
                     $valAnak = (int) old('anak', request('anak', 0));
+                    if ($valDewasa + $valAnak < $minTotal) {
+                        $valDewasa = $minTotal;
+                        $valAnak = 0;
+                    }
                 @endphp
 
                 <div class="row" style="gap:12px;flex-wrap:wrap;align-items:flex-start">
                     <div class="field" style="flex:1 1 0;min-width:140px;max-width:190px">
                         <label for="dewasa">Jumlah Dewasa</label>
                         <input id="dewasa" type="number" name="dewasa" value="{{ $valDewasa }}"
-                               min="0" max="{{ $maksDewasa }}" required>
+                               min="1" max="{{ $maksDewasa }}" required>
                     </div>
                     <div class="field" style="flex:1 1 0;min-width:140px;max-width:190px">
                         <label for="anak">Jumlah Anak</label>
@@ -70,7 +75,7 @@
                     <input type="hidden" name="jumlah_peserta" id="jumlah_peserta" value="{{ $valDewasa + $valAnak }}">
                 </div>
                 <span class="hint" style="display:block;margin-top:6px">
-                    Tarif anak {{ \App\Models\Pemesanan::persenTarifAnak() }}% dari tarif dewasa. Data peserta dewasa diisi lebih dulu, lalu anak.
+                    Pemesanan minimal 2 peserta. Tarif anak {{ \App\Models\Pemesanan::persenTarifAnak() }}% dari tarif dewasa. Data peserta dewasa diisi lebih dulu, lalu anak.
                 </span>
 
                 @php($titikAktif = $jadwal->titikJemput->where('urutan', '<', 99))
@@ -254,6 +259,7 @@
 <script>
 const TARIF = {{ (int) $jadwal->paket->tarif }};
 const TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $jadwal->paket->tarif, 'anak') }};
+const MIN_TOTAL = {{ (int) config('travel.min_peserta', 2) }};
 const MAKS = {{ min(20, $jadwal->sisa_kuota) }};
 const MAKS_ANAK = {{ min(10, $jadwal->sisa_kuota) }};
 const wrap = document.getElementById('pesertaWrap');
@@ -263,9 +269,20 @@ const inputAnak = document.getElementById('anak');
 const inputJumlah = document.getElementById('jumlah_peserta');
 
 function render() {
-    const dewasa = Math.max(0, Math.min(parseInt(inputDewasa.value || 0, 10), MAKS));
-    const anak = Math.max(0, Math.min(parseInt(inputAnak.value || 0, 10), MAKS_ANAK));
-    const n = Math.max(1, dewasa + anak);
+    let dewasa = Math.max(1, Math.min(parseInt(inputDewasa.value || 1, 10), MAKS));
+    let anak = Math.max(0, Math.min(parseInt(inputAnak.value || 0, 10), MAKS_ANAK));
+
+    if (dewasa + anak < MIN_TOTAL) {
+        if (anak === 0 && dewasa < MIN_TOTAL) {
+            dewasa = MIN_TOTAL;
+            inputDewasa.value = MIN_TOTAL;
+        } else if (dewasa < 1) {
+            dewasa = 1;
+            inputDewasa.value = 1;
+        }
+    }
+
+    const n = Math.max(MIN_TOTAL, dewasa + anak);
     inputJumlah.value = n;
     wrap.innerHTML = '';
     for (let i = 0; i < n; i++) {
@@ -292,6 +309,22 @@ function render() {
 }
 inputDewasa.addEventListener('input', render);
 inputAnak.addEventListener('input', render);
+inputDewasa.addEventListener('change', () => {
+    let d = parseInt(inputDewasa.value || 1, 10);
+    let a = parseInt(inputAnak.value || 0, 10);
+    if (d + a < MIN_TOTAL) {
+        inputDewasa.value = Math.max(1, MIN_TOTAL - a);
+    }
+    render();
+});
+inputAnak.addEventListener('change', () => {
+    let d = parseInt(inputDewasa.value || 1, 10);
+    let a = parseInt(inputAnak.value || 0, 10);
+    if (d + a < MIN_TOTAL) {
+        inputDewasa.value = Math.max(1, MIN_TOTAL - a);
+    }
+    render();
+});
 document.querySelectorAll('input[name="id_titik_jemput"]').forEach(r => r.addEventListener('change', render));
 render();
 

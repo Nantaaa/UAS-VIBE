@@ -184,16 +184,6 @@
                         <div class="meet-val">{{ $jadwalKumpul?->jam_kumpul?->format('H:i') ?? '—' }} waktu setempat</div>
                     </div>
                     <div>
-                        <div class="meet-lbl">Tiket Pesawat</div>
-                        <div class="meet-val">
-                            @if($paket->include_penerbangan)
-                                <span class="pill-ok">Termasuk</span>
-                            @else
-                                <span class="pill-no">Tidak termasuk</span>
-                            @endif
-                        </div>
-                    </div>
-                    <div>
                         <div class="meet-lbl">Titik Awal Paket</div>
                         <div class="meet-val">{{ $jadwalKumpul->kota_kumpul ?? $paket->destinasi->lokasi }}</div>
                     </div>
@@ -235,7 +225,6 @@
                     <li>Peserta wajib berada di titik jemput <strong>15 menit</strong> sebelum jam penjemputan.</li>
                     <li>Keterlambatan melebihi <strong>30 menit</strong> dari jam jemput dianggap menyusul sendiri, tanpa pengembalian biaya.</li>
                     <li>Perubahan titik jemput mendadak oleh operator tidak akan jauh dari titik awal dan akan diinformasikan lewat WhatsApp.</li>
-                    <li>Tiket pesawat dari kota asal bukan bagian paket, kecuali tertera "Termasuk" pada titik kumpul.</li>
                 </ul>
             </div>
         </div>
@@ -282,7 +271,7 @@
                     <div class="book-row">
                         <span class="lbl">Dewasa</span>
                         <div class="stepper">
-                            <button type="button" onclick="ubahPeserta(-1)">−</button>
+                            <button type="button" onclick="ubahPeserta(-1)" disabled>−</button>
                             <span class="n" id="nDewasa">2</span>
                             <button type="button" onclick="ubahPeserta(1)">+</button>
                         </div>
@@ -290,7 +279,7 @@
                     <div class="book-row" style="border-bottom:0">
                         <span class="lbl">Anak <small style="color:var(--muted);font-weight:600">({{ \App\Models\Pemesanan::persenTarifAnak() }}%)</small></span>
                         <div class="stepper">
-                            <button type="button" onclick="ubahAnak(-1)">−</button>
+                            <button type="button" onclick="ubahAnak(-1)" disabled>−</button>
                             <span class="n" id="nAnak">0</span>
                             <button type="button" onclick="ubahAnak(1)">+</button>
                         </div>
@@ -321,6 +310,7 @@
 <script>
 const TARIF = {{ (int) $paket->tarif }};
 const TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $paket->tarif, 'anak') }};
+const MIN_TOTAL = {{ (int) config('travel.min_peserta', 2) }};
 let dewasa = 2, anak = 0;
 const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
 
@@ -345,14 +335,24 @@ function render() {
         if (tpl) btn.href = tpl.replace('JADWAL_ID', sel.value) + '?dewasa=' + dewasa + '&anak=' + anak;
     }
 }
-function ubahPeserta(d) { dewasa = Math.max(1, Math.min(20, dewasa + d)); render(); }
-function ubahAnak(d) { anak = Math.max(0, Math.min(10, anak + d)); render(); }
+function ubahPeserta(d) {
+    const minDewasa = Math.max(1, MIN_TOTAL - anak);
+    dewasa = Math.max(minDewasa, Math.min(20, dewasa + d));
+    render();
+}
+function ubahAnak(d) {
+    const minAnak = Math.max(0, MIN_TOTAL - dewasa);
+    anak = Math.max(minAnak, Math.min(10, anak + d));
+    render();
+}
 
-// Nonaktifkan tombol minus saat sudah di batas bawah
+// Nonaktifkan tombol minus saat sudah di batas bawah (minimal total peserta 2)
 function segarkanTombol() {
     const baris = document.querySelectorAll('.book-row .stepper');
-    if (baris[0]) baris[0].querySelector('button').disabled = dewasa <= 1;
-    if (baris[1]) baris[1].querySelector('button').disabled = anak <= 0;
+    const minDewasa = Math.max(1, MIN_TOTAL - anak);
+    const minAnak = Math.max(0, MIN_TOTAL - dewasa);
+    if (baris[0]) baris[0].querySelector('button').disabled = (dewasa <= minDewasa);
+    if (baris[1]) baris[1].querySelector('button').disabled = (anak <= minAnak);
 }
 render();
 

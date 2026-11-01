@@ -144,7 +144,13 @@
 }
 
 /* Stepper nonaktif di batas bawah */
-.book-row .stepper button:disabled { opacity: .35; cursor: not-allowed; }
+.stepper button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  border-color: #cbd5e1 !important;
+}
 
 /* ===== Titik kumpul & include/exclude ===== */
 .meet-card {
@@ -159,7 +165,7 @@
 .meet-kota { font-size: 13.5px; font-weight: 800; letter-spacing: -.01em; }
 .meet-titik { font-size: 11.5px; color: var(--muted); line-height: 1.5; margin-top: 2px; }
 .meet-grid {
-  display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px;
+  display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px;
   margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line);
 }
 .meet-lbl { font-size: 8.8px; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; color: var(--muted); margin-bottom: 4px; }

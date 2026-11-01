@@ -25,15 +25,18 @@ class PemesananController extends Controller
         $data = $request->validate([
             'kode' => ['required', 'string', 'max:30'],
             'id_jadwal' => ['required', 'integer', 'exists:jadwal_keberangkatan,id'],
-            'jumlah' => ['nullable', 'integer', 'min:1', 'max:20'],
-            'dewasa' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'jumlah' => ['nullable', 'integer', 'min:2', 'max:20'],
+            'dewasa' => ['nullable', 'integer', 'min:1', 'max:20'],
             'anak' => ['nullable', 'integer', 'min:0', 'max:10'],
         ]);
 
         $jadwal = \App\Models\JadwalKeberangkatan::with('paket')->findOrFail($data['id_jadwal']);
         $tarifDewasa = (float) $jadwal->paket->tarif;
-        $dewasa = (int) ($data['dewasa'] ?? $data['jumlah'] ?? 1);
+        $dewasa = (int) ($data['dewasa'] ?? $data['jumlah'] ?? 2);
         $anak = (int) ($data['anak'] ?? 0);
+        if ($dewasa + $anak < 2) {
+            $dewasa = 2;
+        }
         $subtotal = ($dewasa * $tarifDewasa) + ($anak * \App\Models\Pemesanan::tarifKategori($tarifDewasa, 'anak'));
 
         try {
@@ -78,8 +81,8 @@ class PemesananController extends Controller
     public function store(Request $request, JadwalKeberangkatan $jadwal)
     {
         $request->validate([
-            'jumlah_peserta' => ['required', 'integer', 'min:1', 'max:20'],
-            'dewasa' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'jumlah_peserta' => ['required', 'integer', 'min:2', 'max:20'],
+            'dewasa' => ['nullable', 'integer', 'min:1', 'max:20'],
             'anak' => ['nullable', 'integer', 'min:0', 'max:10'],
             'id_titik_jemput' => ['nullable', 'integer', 'exists:titik_jemput,id'],
             'peserta' => ['required', 'array'],
@@ -89,6 +92,8 @@ class PemesananController extends Controller
             'peserta.*.file_identitas' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
         ], [
             'jumlah_peserta.required' => 'Jumlah peserta wajib diisi.',
+            'jumlah_peserta.min' => 'Pemesanan paket wisata minimal 2 peserta.',
+            'dewasa.min' => 'Minimal 1 peserta dewasa harus disertakan.',
             'peserta.*.nama_peserta.required' => 'Nama peserta wajib diisi.',
             'peserta.*.no_identitas.required' => 'Nomor identitas wajib diisi.',
             'peserta.*.file_identitas.required' => 'Berkas KTP/Paspor wajib diunggah.',
@@ -100,9 +105,14 @@ class PemesananController extends Controller
         $dewasa = (int) $request->input('dewasa', $request->input('jumlah_peserta'));
         $anak = (int) $request->input('anak', 0);
 
-        if ($dewasa + $anak < 1) {
+        if ($dewasa + $anak < 2) {
             throw ValidationException::withMessages([
-                'jumlah_peserta' => 'Minimal satu peserta (dewasa atau anak) harus diisi.',
+                'jumlah_peserta' => 'Pemesanan paket wisata minimal 2 peserta.',
+            ]);
+        }
+        if ($dewasa < 1) {
+            throw ValidationException::withMessages([
+                'dewasa' => 'Pemesanan wajib menyertakan minimal 1 peserta dewasa.',
             ]);
         }
 

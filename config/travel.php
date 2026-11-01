@@ -11,6 +11,7 @@ return [
     'tarif_anak_persen' => (int) env('TARIF_ANAK_PERSEN', 50),
 
     // Batas jumlah peserta dalam satu pemesanan
+    'min_peserta' => 2,
     'maks_peserta' => 20,
     'maks_anak' => 10,
 ];

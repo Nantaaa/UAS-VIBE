@@ -40,8 +40,8 @@ class BookingService
             ]);
         }
 
-        if ($jumlah < 1) {
-            throw ValidationException::withMessages(['peserta' => 'Minimal satu peserta harus diisi.']);
+        if ($jumlah < (int) config('travel.min_peserta', 2)) {
+            throw ValidationException::withMessages(['peserta' => 'Pemesanan minimal 2 peserta.']);
         }
 
         return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo, $dewasa, $anak, $idTitikJemput) {
