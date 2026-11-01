@@ -115,7 +115,7 @@
                 <span class="row" style="gap:6px">
                     <input type="checkbox" name="remember" style="width:auto"> Ingat saya
                 </span>
-                <a href="#" onclick="alert('Fitur reset kata sandi belum aktif pada demo UAS.'); return false;"
+                <a href="javascript:void(0)" onclick="document.getElementById('modalLupaSandi').style.display='flex'"
                    style="color:var(--orange);font-weight:700">Lupa kata sandi?</a>
             </label>
 
@@ -132,9 +132,29 @@
             <div class="perks-title">Keuntungan akun Nanta</div>
             <ul>
                 <li>{!! view('partials.icon', ['name' => 'check-circle', 'size' => 13])->render() !!} E-ticket &amp; voucher digital terbit otomatis setelah pembayaran diverifikasi</li>
-                <li>{!! view('partials.icon', ['name' => 'calendar', 'size' => 13])->render() !!} Kelola jadwal, peserta, dan riwayat perjalanan dalam satu akun</li>
-                <li>{!! view('partials.icon', ['name' => 'phone', 'size' => 13])->render() !!} Concierge siap membantu koordinasi trip 24 jam via WhatsApp</li>
+                <li>{!! view('partials.icon', ['name' => 'check-circle', 'size' => 13])->render() !!} Pelacakan status verifikasi berkas KTP &amp; bukti pembayaran secara real-time</li>
+                <li>{!! view('partials.icon', ['name' => 'check-circle', 'size' => 13])->render() !!} Akses promo eksklusif dan kemudahan menyimpan paket ke Wishlist</li>
             </ul>
+        </div>
+
+        {{-- Modal Bantuan Lupa Sandi --}}
+        <div id="modalLupaSandi" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.style.display='none'">
+            <div style="background:#fff;border-radius:12px;max-width:440px;width:100%;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.3)">
+                <div class="row between mb-12">
+                    <h3 style="margin:0;font-size:15px;color:var(--primary)">🔑 Informasi Bantuan Kata Sandi</h3>
+                    <button type="button" onclick="document.getElementById('modalLupaSandi').style.display='none'" style="background:none;border:0;font-size:20px;cursor:pointer">×</button>
+                </div>
+                <p class="tiny muted" style="line-height:1.7;margin-bottom:12px">
+                    Untuk kemudahan evaluasi proyek UAS, kata sandi bawaan seluruh akun demo adalah:
+                </p>
+                <div class="card card-pad" style="background:#f8fafc;font-family:ui-monospace,monospace;font-size:12px;margin-bottom:14px;text-align:center">
+                    <strong>password</strong>
+                </div>
+                <p class="tiny muted" style="line-height:1.7;margin-bottom:16px">
+                    Bila Anda mendaftar dengan email baru dan lupa kata sandinya, silakan gunakan tombol <strong>"Akun Demo Instan"</strong> di bagian bawah halaman login atau hubungi administrator melalui <a href="mailto:admin@nanta.id" style="color:var(--primary);font-weight:700">admin@nanta.id</a>.
+                </p>
+                <button type="button" class="btn btn-primary btn-block btn-sm" onclick="document.getElementById('modalLupaSandi').style.display='none'">Mengerti</button>
+            </div>
         </div>
     @endif
 

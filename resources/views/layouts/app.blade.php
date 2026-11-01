@@ -98,19 +98,19 @@
                 <h4>Layanan</h4>
                 <ul>
                     <li><a href="{{ route('beranda') }}#katalog">Paket Wisata</a></li>
-                    <li><a href="{{ route('beranda') }}#katalog">Private Trip</a></li>
-                    <li><a href="{{ route('beranda') }}#katalog">Open Trip</a></li>
-                    <li><a href="{{ route('beranda') }}#katalog">Custom Itinerary</a></li>
+                    <li><a href="{{ route('beranda', ['tipe' => ['Private Trip']]) }}#katalog">Private Trip</a></li>
+                    <li><a href="{{ route('beranda', ['tipe' => ['Open Trip']]) }}#katalog">Open Trip</a></li>
+                    <li><a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20konsultasi%20Custom%20Itinerary" target="_blank">Custom Itinerary</a></li>
                 </ul>
             </div>
 
             <div>
                 <h4>Bantuan</h4>
                 <ul>
-                    <li><a href="#">Syarat &amp; Ketentuan</a></li>
-                    <li><a href="#">Kebijakan Privasi</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Pusat Bantuan</a></li>
+                    <li><a href="{{ route('halaman.syarat') }}">Syarat &amp; Ketentuan</a></li>
+                    <li><a href="{{ route('halaman.privasi') }}">Kebijakan Privasi</a></li>
+                    <li><a href="{{ route('halaman.faq') }}">FAQ</a></li>
+                    <li><a href="{{ route('halaman.faq') }}">Pusat Bantuan</a></li>
                 </ul>
             </div>
 
@@ -118,7 +118,7 @@
                 <h4>Kontak &amp; Alamat</h4>
                 <ul>
                     <li>Jl. Jenderal Sudirman No. 88, Jakarta</li>
-                    <li>+62 812-3456-7890</li>
+                    <li><a href="https://wa.me/6281234567890" target="_blank">+62 812-3456-7890</a></li>
                     <li><a href="mailto:hello@nantatravel.com">hello@nantatravel.com</a></li>
                 </ul>
             </div>
@@ -126,7 +126,7 @@
 
         <div class="footer-legal">
             <span>© {{ date('Y') }} Nanta Travel. Seluruh hak cipta dilindungi.</span>
-            <span>Syarat &amp; Ketentuan | Kebijakan Privasi</span>
+            <span><a href="{{ route('halaman.syarat') }}" style="color:inherit">Syarat &amp; Ketentuan</a> | <a href="{{ route('halaman.privasi') }}" style="color:inherit">Kebijakan Privasi</a></span>
         </div>
     </div>
 </footer>

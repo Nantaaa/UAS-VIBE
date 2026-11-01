@@ -80,7 +80,12 @@
 
             <div class="adm-top-right">
                 <span class="adm-online"><span class="dot-green"></span> Sistem Online</span>
-                <span class="adm-bell">@include('partials.icon', ['name' => 'bell', 'size' => 16])</span>
+                <a href="{{ route('admin.verifikasi.index') }}" class="adm-bell" title="{{ $nVerif > 0 ? $nVerif . ' pesanan menunggu verifikasi' : 'Tidak ada notifikasi baru' }}" style="position:relative;display:flex;align-items:center;color:inherit;text-decoration:none">
+                    @include('partials.icon', ['name' => 'bell', 'size' => 16])
+                    @if($nVerif > 0)
+                        <span style="position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:800;border-radius:999px;width:15px;height:15px;display:grid;place-items:center">{{ $nVerif }}</span>
+                    @endif
+                </a>
                 <div class="adm-user">
                     <span class="ava">{{ strtoupper(substr(auth()->user()->nama_lengkap, 0, 1)) }}</span>
                     <span>

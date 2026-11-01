@@ -88,4 +88,19 @@ class BerandaController extends Controller
 
         return view('paket.detail', compact('paket', 'galeri'));
     }
+
+    public function syarat()
+    {
+        return view('pages.syarat');
+    }
+
+    public function privasi()
+    {
+        return view('pages.privasi');
+    }
+
+    public function faq()
+    {
+        return view('pages.faq');
+    }
 }

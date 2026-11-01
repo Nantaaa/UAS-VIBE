@@ -27,7 +27,7 @@
             <div class="hero-chips">
                 @foreach($destinasi->take(6) as $d)
                     <a class="hero-chip {{ in_array($d->id, (array) request('destinasi', [])) ? 'active' : '' }}"
-                       href="{{ route('beranda', ['destinasi' => [$d->id]]) }}">{{ $d->nama_destinasi }}</a>
+                       href="{{ route('beranda', ['destinasi' => [$d->id]]) }}#katalog">{{ $d->nama_destinasi }}</a>
                 @endforeach
             </div>
         </div>
@@ -271,8 +271,8 @@
             <p>Tim Nanta Travel siap membantu merancang perjalanan impian Anda. Konsultasi gratis, itinerary personal, dan harga terbaik untuk grup.</p>
         </div>
         <div class="row" style="gap:10px">
-            <a href="https://wa.me/6281234567890" class="btn btn-primary">Hubungi via WhatsApp</a>
-            <a href="{{ route('beranda') }}#katalog" class="btn btn-ghost" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Request Itinerary</a>
+            <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20konsultasi%20paket%20wisata" class="btn btn-primary" target="_blank">Hubungi via WhatsApp</a>
+            <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20request%20custom%20itinerary%20group" class="btn btn-ghost" target="_blank" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Request Itinerary</a>
         </div>
     </section>
 </div>

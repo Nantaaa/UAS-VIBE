@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 Route::get('/paket/{paket}', [BerandaController::class, 'detail'])->name('paket.detail');
+Route::get('/syarat-ketentuan', [BerandaController::class, 'syarat'])->name('halaman.syarat');
+Route::get('/kebijakan-privasi', [BerandaController::class, 'privasi'])->name('halaman.privasi');
+Route::get('/faq', [BerandaController::class, 'faq'])->name('halaman.faq');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

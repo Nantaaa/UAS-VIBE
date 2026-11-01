@@ -33,16 +33,40 @@
     {{-- Galeri --}}
     <div class="pdp-gallery">
         <div class="pdp-main">
-            @if($paket->foto)<img src="{{ '/storage/'.$paket->foto }}" alt="{{ $paket->nama_paket }}">@endif
-            <span class="pdp-gallery-btn">{!! view('partials.icon', ['name' => 'camera', 'size' => 15])->render() !!} Lihat semua foto</span>
+            @if($paket->foto)<img src="{{ '/storage/'.$paket->foto }}" alt="{{ $paket->nama_paket }}" id="mainPhoto">@endif
+            <span class="pdp-gallery-btn" onclick="bukaModalFoto()" style="cursor:pointer">{!! view('partials.icon', ['name' => 'camera', 'size' => 15])->render() !!} Lihat semua foto</span>
         </div>
         <div class="pdp-side">
             @foreach($galeri as $i => $g)
-                <div>
+                <div onclick="gantiFotoUtama('{{ '/storage/'.$g->foto }}')" style="cursor:pointer" title="Klik untuk melihat">
                     <img src="{{ '/storage/'.$g->foto }}" alt="{{ $g->nama_paket }}">
-                    <span class="pdp-gallery-btn" style="font-size:10px">{!! view('partials.icon', ['name' => 'camera', 'size' => 15])->render() !!} {{ $i + 2 }}/12</span>
+                    <span class="pdp-gallery-btn" style="font-size:10px">{!! view('partials.icon', ['name' => 'camera', 'size' => 15])->render() !!} {{ $i + 2 }}/{{ count($galeri) + 1 }}</span>
                 </div>
             @endforeach
+        </div>
+    </div>
+
+    {{-- Modal Galeri Lengkap --}}
+    <div id="modalGaleri" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)tutupModalFoto()">
+        <div style="background:#fff;border-radius:12px;max-width:880px;width:100%;max-height:90vh;overflow-y:auto;padding:24px;position:relative">
+            <div class="row between mb-16" style="border-bottom:1px solid var(--line);padding-bottom:12px">
+                <h3 style="margin:0;font-size:16px">Galeri Destinasi: {{ $paket->nama_paket }}</h3>
+                <button type="button" onclick="tutupModalFoto()" style="background:none;border:0;font-size:24px;line-height:1;cursor:pointer">×</button>
+            </div>
+            <div class="grid grid-2" style="gap:14px">
+                @if($paket->foto)
+                    <div>
+                        <img src="{{ '/storage/'.$paket->foto }}" style="width:100%;height:220px;object-fit:cover;border-radius:8px">
+                        <div class="tiny muted mt-4">Foto Utama Paket</div>
+                    </div>
+                @endif
+                @foreach($galeri as $g)
+                    <div>
+                        <img src="{{ '/storage/'.$g->foto }}" style="width:100%;height:220px;object-fit:cover;border-radius:8px">
+                        <div class="tiny muted mt-4">{{ $g->nama_paket }}</div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
 
@@ -357,6 +381,19 @@ function segarkanTombol() {
 render();
 
 document.getElementById('pilihJadwal')?.addEventListener('change', render);
+
+function gantiFotoUtama(src) {
+    const img = document.getElementById('mainPhoto');
+    if (img) img.src = src;
+}
+function bukaModalFoto() {
+    const m = document.getElementById('modalGaleri');
+    if (m) m.style.display = 'flex';
+}
+function tutupModalFoto() {
+    const m = document.getElementById('modalGaleri');
+    if (m) m.style.display = 'none';
+}
 
 document.querySelectorAll('.tabbar button').forEach(b => {
     b.addEventListener('click', () => {
