@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pembayaran;
 use App\Models\Pemesanan;
+use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ProfilController extends Controller
@@ -19,7 +22,17 @@ class ProfilController extends Controller
             'perjalanan' => (int) Pemesanan::where('id_user', $user->id)->where('status_pemesanan', 'terkonfirmasi')->sum('jumlah_peserta'),
         ];
 
-        return view('profil.edit', compact('user', 'statistik'));
+        $riwayatPembayaran = Pembayaran::whereHas('pemesanan', fn ($q) => $q->where('id_user', $user->id))
+            ->with(['pemesanan.jadwal.paket.destinasi'])
+            ->latest('tanggal_upload')
+            ->get();
+
+        $riwayatPeserta = Peserta::whereHas('pemesanan', fn ($q) => $q->where('id_user', $user->id))
+            ->latest('created_at')
+            ->limit(6)
+            ->get();
+
+        return view('profil.edit', compact('user', 'statistik', 'riwayatPembayaran', 'riwayatPeserta'));
     }
 
     public function update(Request $request)
@@ -49,6 +62,41 @@ class ProfilController extends Controller
         return back()->with('sukses', 'Informasi profil berhasil diperbarui.');
     }
 
+    public function updateDokumen(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'jenis_identitas' => ['required', 'in:KTP,Paspor'],
+            'no_identitas' => ['required', 'string', 'max:30'],
+            'kewarganegaraan' => ['nullable', 'string', 'max:50'],
+            'file_identitas' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+        ], [
+            'no_identitas.required' => 'Nomor identitas (NIK / Paspor) wajib diisi.',
+            'file_identitas.mimes' => 'Berkas identitas harus berformat JPG, PNG, atau PDF.',
+            'file_identitas.max' => 'Ukuran berkas identitas maksimal 2 MB.',
+        ]);
+
+        if ($request->hasFile('file_identitas')) {
+            if ($user->file_identitas && Storage::disk('local')->exists($user->file_identitas)) {
+                Storage::disk('local')->delete($user->file_identitas);
+            }
+            $data['file_identitas'] = $request->file('file_identitas')->store('identitas', 'local');
+        }
+
+        $user->update($data);
+
+        return redirect()->to(route('profil.edit').'#dokumen')->with('sukses', 'Dokumen identitas berhasil disimpan.');
+    }
+
+    public function lihatBerkas(Request $request)
+    {
+        $user = $request->user();
+        abort_unless($user->file_identitas && Storage::disk('local')->exists($user->file_identitas), 404);
+
+        return response()->file(Storage::disk('local')->path($user->file_identitas));
+    }
+
     public function updatePassword(Request $request)
     {
         $data = $request->validate([
@@ -66,6 +114,6 @@ class ProfilController extends Controller
 
         $request->user()->update(['password_hash' => $data['password']]);
 
-        return back()->with('sukses', 'Kata sandi berhasil diperbarui.');
+        return redirect()->to(route('profil.edit').'#keamanan')->with('sukses', 'Kata sandi berhasil diperbarui.');
     }
 }

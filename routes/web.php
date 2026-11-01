@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+    Route::put('/profil/dokumen', [ProfilController::class, 'updateDokumen'])->name('profil.dokumen');
+    Route::get('/profil/berkas', [ProfilController::class, 'lihatBerkas'])->name('profil.berkas');
     Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.password');
 });
 
