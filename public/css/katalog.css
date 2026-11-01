@@ -180,6 +180,9 @@ input[type=range] { width: 100%; accent-color: #2563eb; }
 .paket-thumb img { transition: transform .5s ease; }
 .paket-card:hover .paket-thumb img { transform: scale(1.05); }
 
+html { scroll-behavior: smooth; }
+#katalog { scroll-margin-top: 84px; }
+
 /* ============ REVISI AUDIT BERANDA ============ */
 
 /* 1. Navigasi: warna brand, bukan biru */

@@ -26,7 +26,6 @@
 
         <nav class="nav-pills">
             <a href="{{ route('beranda') }}" class="{{ request()->routeIs('beranda') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('beranda') }}#katalog" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}">Paket Wisata</a>
             <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}">Pesanan Saya</a>
             <a href="{{ auth()->check() ? route('wishlist.index') : route('login') }}" class="{{ request()->routeIs('wishlist.*') ? 'active' : '' }}">Wishlist</a>
         </nav>
@@ -135,7 +134,7 @@
 
 <nav class="bottom-nav">
     <a href="{{ route('beranda') }}" class="{{ request()->routeIs('beranda') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'home', 'size' => 15])->render() !!}</span> Beranda</a>
-    <a href="{{ route('beranda') }}#katalog" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'compass', 'size' => 15])->render() !!}</span> Paket</a>
+    <a href="{{ auth()->check() ? route('wishlist.index') : route('login') }}" class="{{ request()->routeIs('wishlist.*') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'heart', 'size' => 15])->render() !!}</span> Wishlist</a>
     <a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}" class="{{ request()->routeIs('pemesanan.*') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'ticket', 'size' => 15])->render() !!}</span> Pesanan</a>
     <a href="{{ auth()->check() ? route('profil.edit') : route('login') }}" class="{{ request()->routeIs('profil.*') ? 'active' : '' }}"><span class="ico">{!! view('partials.icon', ['name' => 'user', 'size' => 15])->render() !!}</span> Profil</a>
 </nav>

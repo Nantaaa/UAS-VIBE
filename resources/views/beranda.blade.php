@@ -5,11 +5,7 @@
 @php($user = auth()->user())
 
 @section('content')
-<div class="container">
-    <div class="crumb">
-        <span><a href="{{ route('beranda') }}">Beranda</a> / <strong>Paket Wisata</strong></span>
-    </div>
-
+<div class="container" style="padding-top:18px">
     {{-- HERO --}}
     <section class="catalog-hero" style="background-image:
         linear-gradient(115deg, rgba(6,20,36,.94) 0%, rgba(8,32,52,.82) 45%, rgba(8,42,44,.70) 100%),
@@ -38,7 +34,7 @@
     </section>
 
     {{-- BODY: filter + hasil --}}
-    <div class="catalog-body">
+    <div class="catalog-body" id="katalog">
         <aside class="filter-card">
             <div class="filter-head">
                 <strong>{!! view('partials.icon', ['name' => 'filter', 'size' => 14])->render() !!} Filter Lanjutan</strong>
