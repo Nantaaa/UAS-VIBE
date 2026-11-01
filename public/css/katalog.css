@@ -97,8 +97,51 @@ input[type=range] { width: 100%; accent-color: #2563eb; }
 /* ============ Results ============ */
 .results-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .view-toggle { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-.view-toggle button { border: 0; background: #fff; padding: 7px 10px; font-size: 13px; cursor: pointer; color: var(--muted); }
-.view-toggle button.active { background: #eff6ff; color: #2563eb; }
+.view-toggle button { border: 0; background: #fff; padding: 7px 11px; font-size: 13px; cursor: pointer; color: var(--muted); transition: background .16s, color .16s; }
+.view-toggle button:hover { background: #f0fdfa; color: var(--teal-dark); }
+.view-toggle button.active { background: var(--teal-soft); color: var(--teal-dark); font-weight: 800; }
+
+/* Tampilan List (Daftar Baris Horizontal) */
+#katalogGrid.is-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+#katalogGrid.is-list .katalog-card {
+  flex-direction: row;
+  min-height: 170px;
+  align-items: stretch;
+}
+#katalogGrid.is-list .katalog-thumb {
+  width: 260px;
+  max-width: 36%;
+  aspect-ratio: auto;
+  flex: 0 0 auto;
+}
+#katalogGrid.is-list .katalog-body {
+  padding: 16px 20px;
+  gap: 6px;
+  justify-content: space-between;
+}
+#katalogGrid.is-list .katalog-title {
+  font-size: 15.5px;
+  min-height: auto;
+}
+#katalogGrid.is-list .katalog-price {
+  border-top: 1px solid #f1f3f7;
+  padding-top: 12px;
+  margin-top: 8px;
+}
+@media (max-width: 680px) {
+  #katalogGrid.is-list .katalog-card {
+    flex-direction: column;
+  }
+  #katalogGrid.is-list .katalog-thumb {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 11;
+  }
+}
 
 .katalog-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; transition: .18s; }
 .katalog-card:hover { box-shadow: 0 14px 34px -18px rgba(17, 24, 39, .35); transform: translateY(-2px); }

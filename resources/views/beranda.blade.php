@@ -160,9 +160,9 @@
                             <option value="terbaru" @selected(request('urutkan') === 'terbaru')>Terbaru</option>
                         </select>
                     </form>
-                    <div class="view-toggle">
-                        <button class="active" type="button">{!! view('partials.icon', ['name' => 'grid', 'size' => 15])->render() !!}</button>
-                        <button type="button">{!! view('partials.icon', ['name' => 'list', 'size' => 15])->render() !!}</button>
+                    <div class="view-toggle" id="viewToggle">
+                        <button type="button" class="view-btn active" data-view="grid" title="Tampilan Grid" aria-label="Tampilan Grid">{!! view('partials.icon', ['name' => 'grid', 'size' => 15])->render() !!}</button>
+                        <button type="button" class="view-btn" data-view="list" title="Tampilan Daftar" aria-label="Tampilan Daftar">{!! view('partials.icon', ['name' => 'list', 'size' => 15])->render() !!}</button>
                     </div>
                 </div>
             </div>
@@ -174,7 +174,7 @@
                     <p class="mb-0">Coba longgarkan filter atau ubah kata kunci pencarian.</p>
                 </div>
             @else
-                <div class="grid grid-3">
+                <div class="grid grid-3" id="katalogGrid">
                     @foreach($paket as $p)
                         <article class="katalog-card">
                             <a href="{{ route('paket.detail', $p) }}" class="katalog-thumb">
@@ -295,6 +295,40 @@ function filterDestinasi(q) {
     if (!btn || !card) return;
     if (window.matchMedia('(max-width: 900px)').matches) card.classList.add('collapsed');
     btn.addEventListener('click', () => card.classList.toggle('collapsed'));
+})();
+
+// Toggle tampilan Grid / List
+(() => {
+    const grid = document.getElementById('katalogGrid');
+    const toggle = document.getElementById('viewToggle');
+    if (!grid || !toggle) return;
+
+    const btns = toggle.querySelectorAll('.view-btn');
+
+    function setView(mode) {
+        if (mode === 'list') {
+            grid.classList.add('is-list');
+            grid.classList.remove('grid-3');
+        } else {
+            grid.classList.remove('is-list');
+            grid.classList.add('grid-3');
+        }
+        btns.forEach(b => {
+            const match = b.dataset.view === mode;
+            b.classList.toggle('active', match);
+            b.setAttribute('aria-pressed', match ? 'true' : 'false');
+        });
+        try { localStorage.setItem('nanta_katalog_view', mode); } catch (e) {}
+    }
+
+    btns.forEach(b => {
+        b.addEventListener('click', () => setView(b.dataset.view));
+    });
+
+    try {
+        const saved = localStorage.getItem('nanta_katalog_view');
+        if (saved === 'list') setView('list');
+    } catch (e) {}
 })();
 </script>
 @endsection
