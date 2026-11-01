@@ -48,3 +48,40 @@ table.data td strong { color: var(--ink); }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: #d5dbe6; border-radius: 999px; border: 2px solid #fff; }
 ::-webkit-scrollbar-thumb:hover { background: #bcc6d6; }
+
+/* Selector Pilihan Bank */
+.btn-bank-opt {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+.btn-bank-opt:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+}
+.btn-bank-opt.active {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, .25);
+}
+
+/* Tombol Detail Kartu */
+.btn-detail {
+    background: #f0a94a;
+    border: 1px solid #d97706;
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 6px 14px;
+    transition: all .15s ease;
+}
+.btn-detail:hover {
+    background: #d97706;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, .35);
+}

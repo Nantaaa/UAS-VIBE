@@ -269,6 +269,15 @@ const inputAnak = document.getElementById('anak');
 const inputJumlah = document.getElementById('jumlah_peserta');
 
 function render() {
+    // Simpan input yang sudah diketik agar tidak hilang saat ubah jumlah
+    const existing = [];
+    wrap.querySelectorAll('[data-peserta]').forEach((card, idx) => {
+        existing[idx] = {};
+        card.querySelectorAll('[data-name]').forEach(inp => {
+            if (inp.type !== 'file') existing[idx][inp.dataset.name] = inp.value;
+        });
+    });
+
     let dewasa = Math.max(1, Math.min(parseInt(inputDewasa.value || 1, 10), MAKS));
     let anak = Math.max(0, Math.min(parseInt(inputAnak.value || 0, 10), MAKS_ANAK));
 
@@ -292,8 +301,18 @@ function render() {
         node.querySelector('[data-peran]').textContent = i === 0 ? '— Data Pemesan' : '— ' + kategori;
         node.querySelectorAll('[data-name]').forEach(el => {
             el.name = `peserta[${i}][${el.dataset.name}]`;
-            if (i === 0 && el.dataset.name === 'email') el.value = @json(auth()->user()->email ?? '');
-            if (i === 0 && el.dataset.name === 'no_hp') el.value = @json(auth()->user()->no_hp ?? '');
+            const name = el.dataset.name;
+            if (existing[i] && existing[i][name] !== undefined) {
+                el.value = existing[i][name];
+            } else if (i === 0) {
+                if (name === 'nama_peserta') el.value = @json(auth()->user()->nama_lengkap ?? '');
+                if (name === 'email') el.value = @json(auth()->user()->email ?? '');
+                if (name === 'no_hp') el.value = @json(auth()->user()->no_hp ?? '');
+                if (name === 'jenis_identitas' && @json(auth()->user()->jenis_identitas ?? '')) el.value = @json(auth()->user()->jenis_identitas ?? 'KTP');
+                if (name === 'no_identitas') el.value = @json(auth()->user()->no_identitas ?? '');
+                if (name === 'kota') el.value = @json(auth()->user()->kota ?? '');
+                if (name === 'alamat') el.value = @json(auth()->user()->alamat ?? '');
+            }
         });
         wrap.appendChild(node);
     }

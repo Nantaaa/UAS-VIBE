@@ -46,9 +46,11 @@
 
 <div class="adm-card">
     <div class="adm-card-head">
-        <div class="tabs" style="background:#f1f3f7">
-            <a href="{{ route('admin.verifikasi.index') }}" class="{{ $status === 'menunggu_verifikasi' ? 'active' : '' }}">Menunggu Verifikasi ({{ $jumlahMenunggu }})</a>
+        <div class="tabs" style="background:#f1f3f7;flex-wrap:wrap">
+            <a href="{{ route('admin.verifikasi.index', ['status' => 'menunggu_verifikasi']) }}" class="{{ $status === 'menunggu_verifikasi' ? 'active' : '' }}">Menunggu Verifikasi ({{ $jumlahMenunggu }})</a>
             <a href="{{ route('admin.verifikasi.index', ['status' => 'perlu_perbaikan']) }}" class="{{ $status === 'perlu_perbaikan' ? 'active' : '' }}">Perlu Perbaikan ({{ $jumlahPerbaikan }})</a>
+            <a href="{{ route('admin.verifikasi.index', ['status' => 'terkonfirmasi']) }}" class="{{ $status === 'terkonfirmasi' ? 'active' : '' }}">Terkonfirmasi ({{ $jumlahTerkonfirmasi }})</a>
+            <a href="{{ route('admin.verifikasi.index', ['status' => 'semua']) }}" class="{{ $status === 'semua' ? 'active' : '' }}">Semua ({{ $jumlahSemua }})</a>
         </div>
         <form method="GET" class="row" style="gap:6px">
             <input type="hidden" name="status" value="{{ $status }}">

@@ -17,11 +17,28 @@ class VerifikasiController extends Controller
     {
         $status = $request->input('status', 'menunggu_verifikasi');
 
-        $daftar = Pemesanan::with(['user', 'jadwal.paket.destinasi', 'peserta', 'pembayaranTerakhir'])
-            ->whereIn('status_pemesanan', $status === 'perlu_perbaikan'
-                ? ['perlu_perbaikan']
-                : ['menunggu_verifikasi'])
-            ->orderBy('tanggal_pemesanan')
+        $query = Pemesanan::with(['user', 'jadwal.paket.destinasi', 'peserta', 'pembayaranTerakhir']);
+
+        if ($request->filled('q')) {
+            $q = $request->input('q');
+            $query->where(function ($w) use ($q) {
+                $w->where('kode_pemesanan', 'like', "%{$q}%")
+                  ->orWhereHas('user', fn ($u) => $u->where('nama_lengkap', 'like', "%{$q}%")->orWhere('email', 'like', "%{$q}%")->orWhere('no_hp', 'like', "%{$q}%"))
+                  ->orWhereHas('jadwal.paket', fn ($p) => $p->where('nama_paket', 'like', "%{$q}%"));
+            });
+        }
+
+        if ($status === 'perlu_perbaikan') {
+            $query->where('status_pemesanan', 'perlu_perbaikan');
+        } elseif ($status === 'terkonfirmasi') {
+            $query->where('status_pemesanan', 'terkonfirmasi');
+        } elseif ($status === 'semua') {
+            // semua status
+        } else {
+            $query->where('status_pemesanan', 'menunggu_verifikasi');
+        }
+
+        $daftar = $query->orderBy('tanggal_pemesanan', 'desc')
             ->paginate(10)
             ->withQueryString();
 
@@ -30,6 +47,8 @@ class VerifikasiController extends Controller
             'status' => $status,
             'jumlahMenunggu' => Pemesanan::where('status_pemesanan', 'menunggu_verifikasi')->count(),
             'jumlahPerbaikan' => Pemesanan::where('status_pemesanan', 'perlu_perbaikan')->count(),
+            'jumlahTerkonfirmasi' => Pemesanan::where('status_pemesanan', 'terkonfirmasi')->count(),
+            'jumlahSemua' => Pemesanan::count(),
         ]);
     }
 

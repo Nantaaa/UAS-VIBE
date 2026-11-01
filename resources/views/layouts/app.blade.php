@@ -43,9 +43,9 @@
                     </span>
                     <span class="chev">⌄</span>
                 </a>
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" style="margin:0">
                     @csrf
-                    <button class="btn-masuk" type="submit">Keluar</button>
+                    <button class="btn btn-ghost btn-sm" type="submit" style="color:#ef4444;border-color:rgba(239,68,68,.3)">Keluar</button>
                 </form>
             @else
                 <a href="{{ route('login') }}" class="btn btn-ghost btn-sm">Masuk</a>

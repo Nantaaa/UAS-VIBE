@@ -72,7 +72,7 @@
                 <div class="ticket-date">
                     <div class="tiny muted">Keberangkatan</div>
                     <div class="d">{{ $pemesanan->jadwal->tanggal_berangkat->translatedFormat('l, d F Y') }}</div>
-                    <div class="tiny muted">07:00 WITA</div>
+                    <div class="tiny muted">{{ $pemesanan->jadwal->jam_kumpul ? $pemesanan->jadwal->jam_kumpul->format('H:i') . ' WITA' : '07:00 WITA' }}</div>
                 </div>
                 <div class="ticket-date">
                     <div class="tiny muted">Kepulangan</div>
@@ -80,6 +80,26 @@
                     <div class="tiny muted">16:00 WITA</div>
                 </div>
             </div>
+
+            @if($pemesanan->titikJemput || $pemesanan->jadwal->titik_kumpul)
+                <div class="ticket-info-box mt-16" style="background:#f0fdf4;border-color:#bbf7d0">
+                    <div class="tiny" style="font-weight:800;margin-bottom:6px;color:#15803d">Titik Kumpul &amp; Titik Penjemputan</div>
+                    <div class="kv" style="font-size:11.5px">
+                        @if($pemesanan->titikJemput)
+                            <dt>Titik Jemput</dt>
+                            <dd>
+                                <strong>{{ $pemesanan->titikJemput->nama }}</strong>
+                                @if($pemesanan->titikJemput->jam)<span class="tiny muted">· Jam {{ $pemesanan->titikJemput->jam->format('H:i') }}</span>@endif
+                            </dd>
+                        @endif
+                        <dt>Meeting Point</dt>
+                        <dd>
+                            {{ $pemesanan->jadwal->kota_kumpul ?? '-' }}{{ $pemesanan->jadwal->titik_kumpul ? ' — '.$pemesanan->jadwal->titik_kumpul : '' }}
+                            @if($pemesanan->jadwal->jam_kumpul)<span class="tiny muted">· Jam kumpul {{ $pemesanan->jadwal->jam_kumpul->format('H:i') }}</span>@endif
+                        </dd>
+                    </div>
+                </div>
+            @endif
 
             <div class="mt-16">
                 <div class="tiny" style="font-weight:800;margin-bottom:8px">Peserta</div>

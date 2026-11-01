@@ -284,6 +284,41 @@ class PemesananController extends Controller
         return back()->with('sukses', 'Pemesanan dibatalkan dan kuota dilepas.');
     }
 
+    public function perbaruiIdentitasPeserta(Request $request, Pemesanan $pemesanan, \App\Models\Peserta $peserta)
+    {
+        $this->authorizeOwner($request, $pemesanan);
+
+        if ($peserta->id_pemesanan !== $pemesanan->id) {
+            abort(404);
+        }
+
+        $request->validate([
+            'file_identitas' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'no_identitas' => ['nullable', 'string', 'max:30'],
+        ], [
+            'file_identitas.required' => 'Berkas identitas pengganti wajib diunggah.',
+            'file_identitas.mimes' => 'Format berkas harus JPG, PNG, atau PDF.',
+            'file_identitas.max' => 'Ukuran berkas maksimal 2 MB.',
+        ]);
+
+        $path = $request->file('file_identitas')->store('identitas', 'local');
+
+        $peserta->update([
+            'file_identitas' => $path,
+            'no_identitas' => $request->input('no_identitas', $peserta->no_identitas),
+            'status' => 'menunggu',
+        ]);
+
+        if ($pemesanan->status_pemesanan === 'perlu_perbaikan') {
+            $pemesanan->update([
+                'status_pemesanan' => 'menunggu_verifikasi',
+                'catatan_status' => 'Dokumen peserta '.$peserta->nama_peserta.' telah diperbarui oleh wisatawan.',
+            ]);
+        }
+
+        return back()->with('sukses', 'Dokumen identitas peserta '.$peserta->nama_peserta.' berhasil diperbarui.');
+    }
+
     public function unduhVoucher(Request $request, Pemesanan $pemesanan)
     {
         $this->authorizeOwner($request, $pemesanan);

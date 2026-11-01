@@ -76,24 +76,35 @@
 
             {{-- Metode pembayaran --}}
             <div class="card card-body">
-                <h3 style="font-size:14px">Metode Pembayaran — BCA Virtual Account</h3>
-                <div class="va-box mt-8">
+                <div class="row between wrap" style="gap:8px">
+                    <h3 style="font-size:14px;margin:0">Metode Pembayaran Resmi</h3>
+                    <span class="badge badge-success">Pilih Saluran Transfer</span>
+                </div>
+
+                <div class="row wrap mt-12" style="gap:6px">
+                    <button type="button" class="btn btn-sm btn-bank-opt active" onclick="pilihBank('bca', '8808 0812 3456 7890', 'BCA Virtual Account', 'bca-inst')">BCA VA</button>
+                    <button type="button" class="btn btn-sm btn-bank-opt" onclick="pilihBank('mandiri', '137-00-1928374-1', 'Bank Mandiri', 'mandiri-inst')">Mandiri</button>
+                    <button type="button" class="btn btn-sm btn-bank-opt" onclick="pilihBank('bni', '0293-8472-91', 'Bank BNI', 'bni-inst')">BNI</button>
+                    <button type="button" class="btn btn-sm btn-bank-opt" onclick="pilihBank('bri', '0123-01-002938-50-4', 'Bank BRI', 'bri-inst')">BRI</button>
+                </div>
+
+                <div class="va-box mt-12">
                     <div>
-                        <div class="tiny muted">Nomor Virtual Account</div>
+                        <div class="tiny muted" id="bankLabel">Nomor BCA Virtual Account</div>
                         <div class="num" id="vaNum">8808 0812 3456 7890</div>
                     </div>
-                    <button type="button" class="btn btn-ghost btn-sm" onclick="salinVA()">Salin</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="btnSalin" onclick="salinVA()">Salin Nomor</button>
                 </div>
-                <div class="tiny muted mt-8">a.n. PT Nanta Ekspedisi Nusantara — nominal harus sama persis dengan total tagihan.</div>
+                <div class="tiny muted mt-8">a.n. <strong>PT Nanta Ekspedisi Nusantara</strong> — transfer sesuai nominal tagihan <strong>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</strong>.</div>
 
                 <div class="mt-16" style="background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px 16px">
-                    <div class="tiny" style="font-weight:800;margin-bottom:8px">Cara Bayar</div>
-                    <ol class="tiny muted" style="margin:0;padding-left:16px;line-height:1.9">
-                        <li>Buka aplikasi BCA mobile / internet banking.</li>
-                        <li>Pilih m-BCA → m-Transfer → BCA Virtual Account.</li>
-                        <li>Masukkan nomor Virtual Account di atas.</li>
-                        <li>Periksa nominal tagihan, lalu konfirmasi pembayaran.</li>
-                        <li>Simpan bukti transfer dan unggah pada form di bawah.</li>
+                    <div class="tiny" style="font-weight:800;margin-bottom:8px">Petunjuk Pembayaran</div>
+                    <ol class="tiny muted" id="instruksiBayar" style="margin:0;padding-left:16px;line-height:1.9">
+                        <li>Buka aplikasi Mobile Banking atau ATM bank pilihan Anda.</li>
+                        <li>Pilih menu Transfer / Pembayaran ke rekening resmi di atas.</li>
+                        <li>Pastikan nama penerima: <strong>PT Nanta Ekspedisi Nusantara</strong>.</li>
+                        <li>Masukkan nominal persis: <strong>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</strong>.</li>
+                        <li>Simpan bukti transfer dan unggah pada formulir di bawah ini.</li>
                     </ol>
                 </div>
             </div>
@@ -169,10 +180,24 @@
 </div>
 
 <script>
+function pilihBank(key, nomor, label, instId) {
+    document.querySelectorAll('.btn-bank-opt').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById('vaNum').textContent = nomor;
+    document.getElementById('bankLabel').textContent = 'Nomor ' + label;
+}
+
 function salinVA() {
     const t = document.getElementById('vaNum').innerText.replace(/\s/g, '');
     navigator.clipboard?.writeText(t);
-    alert('Nomor Virtual Account disalin: ' + t);
+    const btn = document.getElementById('btnSalin');
+    const old = btn.textContent;
+    btn.textContent = '✓ Disalin!';
+    btn.style.background = '#15803d';
+    setTimeout(() => {
+        btn.textContent = old;
+        btn.style.background = '';
+    }, 2000);
 }
 
 const clock = document.getElementById('clock');

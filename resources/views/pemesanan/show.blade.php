@@ -102,12 +102,26 @@
                                     <td>{{ $ps->jenis_identitas }}</td>
                                     <td>{{ $ps->no_identitas }}</td>
                                     <td>
-                                        @if($ps->file_identitas)
-                                            <a href="{{ route('pemesanan.berkas', [$pemesanan, 'identitas', $ps->id]) }}"
-                                               class="btn btn-ghost btn-sm" target="_blank">Lihat</a>
-                                        @else
-                                            <span class="muted tiny">-</span>
-                                        @endif
+                                        <div class="row" style="gap:6px;align-items:center">
+                                            @if($ps->file_identitas)
+                                                <a href="{{ route('pemesanan.berkas', [$pemesanan, 'identitas', $ps->id]) }}"
+                                                   class="btn btn-ghost btn-sm" target="_blank">Lihat</a>
+                                            @else
+                                                <span class="muted tiny">-</span>
+                                            @endif
+                                            @if(in_array($pemesanan->status_pemesanan, ['perlu_perbaikan', 'menunggu_pembayaran']))
+                                                <details style="display:inline-block">
+                                                    <summary class="btn btn-ghost btn-sm" style="cursor:pointer;color:var(--primary);font-size:11px">Ganti</summary>
+                                                    <form method="POST" action="{{ route('pemesanan.peserta.identitas', [$pemesanan, $ps]) }}"
+                                                          enctype="multipart/form-data" class="mt-8 card card-pad" style="position:absolute;z-index:10;background:#fff;border:1px solid var(--line);box-shadow:0 4px 12px rgba(0,0,0,.1);padding:10px;width:240px">
+                                                        @csrf
+                                                        <div class="tiny" style="font-weight:700;margin-bottom:6px">Unggah Berkas {{ $ps->jenis_identitas }} Baru:</div>
+                                                        <input type="file" name="file_identitas" accept=".jpg,.jpeg,.png,.pdf" required style="font-size:11px;padding:4px;width:100%">
+                                                        <button type="submit" class="btn btn-teal btn-sm btn-block mt-8">Simpan Berkas</button>
+                                                    </form>
+                                                </details>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td>
                                         <span class="badge badge-{{ $ps->status === 'valid' ? 'success' : ($ps->status === 'perlu_perbaikan' ? 'danger' : 'warning') }}">

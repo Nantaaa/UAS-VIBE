@@ -63,7 +63,43 @@
     <div class="kpi dark">
         <div class="lbl">Nahkoda &amp; Crew</div>
         <div class="val" style="font-size:13px">{{ $jadwal->penugasan->map(fn($p) => $p->petugas->nama_petugas)->join(', ') ?: 'Belum ditugaskan' }}</div>
-        <div class="sub">{{ $jadwal->penugasan->count() }} petugas</div>
+        <div class="sub">{{ $jadwal->penugasan->count() }} petugas ditugaskan</div>
+        <button type="button" class="btn-adm ghost sm mt-8" onclick="document.getElementById('modalPetugas').style.display='flex'" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff;font-size:10px;padding:3px 8px">
+            @include('partials.icon', ['name' => 'edit', 'size' => 11]) Atur Kru / Petugas
+        </button>
+    </div>
+</div>
+
+{{-- Modal Penugasan Petugas --}}
+<div id="modalPetugas" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+    <div class="adm-card" style="width:380px;max-width:90vw;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.3)">
+        <div class="adm-card-head" style="background:#0d1b2a;color:#fff">
+            <div>
+                <h3 style="color:#fff;font-size:14px;margin:0">Tugaskan Kru / Petugas</h3>
+                <p style="color:rgba(255,255,255,.6);font-size:11px;margin:2px 0 0">Jadwal: {{ $jadwal->tanggal_berangkat->format('d M Y') }}</p>
+            </div>
+            <button type="button" onclick="document.getElementById('modalPetugas').style.display='none'" style="background:none;border:0;color:#fff;font-size:18px;cursor:pointer">×</button>
+        </div>
+        <form method="POST" action="{{ route('admin.manifes.petugas', $jadwal) }}" class="adm-card-body" style="padding:18px">
+            @csrf
+            <div style="font-size:11px;color:var(--adm-muted);margin-bottom:12px">Pilih petugas yang bertugas pada pelayaran ini:</div>
+            <div style="display:grid;gap:8px;max-height:180px;overflow:auto;margin-bottom:16px">
+                @php($tugasAktif = $jadwal->penugasan->pluck('id_petugas')->all())
+                @foreach($daftarPetugas ?? \App\Models\Petugas::all() as $pt)
+                    <label class="row" style="gap:8px;font-size:12px;padding:6px 10px;border:1px solid var(--adm-line);border-radius:8px;cursor:pointer">
+                        <input type="checkbox" name="petugas[]" value="{{ $pt->id }}" style="width:auto" @checked(in_array($pt->id, $tugasAktif))>
+                        <div>
+                            <strong>{{ $pt->nama_petugas }}</strong>
+                            <span class="sub">({{ ucfirst($pt->peran) }} · {{ $pt->kontak }})</span>
+                        </div>
+                    </label>
+                @endforeach
+            </div>
+            <div class="row" style="gap:8px;justify-content:flex-end">
+                <button type="button" class="btn-adm ghost sm" onclick="document.getElementById('modalPetugas').style.display='none'">Batal</button>
+                <button type="submit" class="btn-adm orange sm">Simpan Penugasan</button>
+            </div>
+        </form>
     </div>
 </div>
 

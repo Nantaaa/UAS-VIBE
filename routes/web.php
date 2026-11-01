@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pemesanan/{pemesanan}', [PemesananController::class, 'show'])->name('pemesanan.show');
     Route::get('/pemesanan/{pemesanan}/pembayaran', [PemesananController::class, 'pembayaran'])->name('pemesanan.pembayaran');
     Route::post('/pemesanan/{pemesanan}/bayar', [PemesananController::class, 'unggahPembayaran'])->name('pemesanan.bayar');
+    Route::post('/pemesanan/{pemesanan}/peserta/{peserta}/identitas', [PemesananController::class, 'perbaruiIdentitasPeserta'])->name('pemesanan.peserta.identitas');
     Route::post('/pemesanan/{pemesanan}/batal', [PemesananController::class, 'batal'])->name('pemesanan.batal');
     Route::get('/pemesanan/{pemesanan}/voucher', [PemesananController::class, 'lihatVoucher'])->name('pemesanan.voucher');
     Route::get('/pemesanan/{pemesanan}/voucher/unduh', [PemesananController::class, 'unduhVoucher'])->name('pemesanan.voucher.unduh');
@@ -67,6 +68,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::get('manifes', [ManifesController::class, 'index'])->name('manifes.index');
     Route::get('manifes/{jadwal}', [ManifesController::class, 'show'])->name('manifes.show');
+    Route::post('manifes/{jadwal}/petugas', [ManifesController::class, 'updatePetugas'])->name('manifes.petugas');
     Route::get('manifes/{jadwal}/pdf', [ManifesController::class, 'pdf'])->name('manifes.pdf');
 
     Route::get('voucher', [VoucherController::class, 'index'])->name('voucher.index');

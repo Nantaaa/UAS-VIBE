@@ -48,7 +48,7 @@
                                 <div class="now">Rp {{ number_format($p->tarif, 0, ',', '.') }}</div>
                                 @if($p->harga_asli)<div class="was">Rp {{ number_format($p->harga_asli, 0, ',', '.') }}</div>@endif
                             </div>
-                            <a href="{{ route('paket.detail', $p) }}" class="btn btn-soft btn-sm">Detail</a>
+                            <a href="{{ route('paket.detail', $p) }}" class="btn btn-detail btn-sm">Detail</a>
                         </div>
                     </div>
                 </article>

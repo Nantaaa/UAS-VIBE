@@ -97,10 +97,13 @@
                             <div class="row" style="gap:7px;flex-wrap:wrap">
                                 <a href="{{ route('pemesanan.show', $p) }}" class="btn btn-ghost btn-sm">Detail Pesanan</a>
 
-                                @if($p->status_pemesanan === 'menunggu_pembayaran' || $p->status_pemesanan === 'perlu_perbaikan')
+                                @if($p->status_pemesanan === 'menunggu_pembayaran')
                                     <a href="{{ route('pemesanan.pembayaran', $p) }}" class="btn btn-primary btn-sm">Bayar Sekarang</a>
+                                @elseif($p->status_pemesanan === 'perlu_perbaikan')
+                                    <a href="{{ route('pemesanan.show', $p) }}" class="btn btn-primary btn-sm" style="background:#dc2626;border-color:#dc2626">Perbaiki Dokumen</a>
                                 @elseif($p->status_pemesanan === 'terkonfirmasi')
                                     <a href="{{ route('pemesanan.voucher', $p) }}" class="btn btn-teal btn-sm">E-Voucher</a>
+                                    <a href="{{ route('pemesanan.voucher.unduh', $p) }}" class="btn btn-ghost btn-sm">PDF</a>
                                 @elseif(in_array($p->status_pemesanan, ['dibatalkan', 'kedaluwarsa']))
                                     <a href="{{ route('paket.detail', $p->jadwal->id_paket) }}" class="btn btn-ghost btn-sm">Pesan Lagi</a>
                                 @endif

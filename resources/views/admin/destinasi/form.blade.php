@@ -31,22 +31,15 @@
                        value="{{ old('nama_destinasi', $destinasi->nama_destinasi) }}" placeholder="Taman Nasional Komodo & Flores" required>
             </div>
 
-            <div class="form-grid mt-16">
-                <div class="field">
-                    <label for="lokasi">Lokasi / Administrasi *</label>
-                    <input id="lokasi" type="text" name="lokasi" value="{{ old('lokasi', $destinasi->lokasi) }}"
-                           placeholder="Labuan Bajo, Nusa Tenggara Timur" required>
-                </div>
-                <div class="field">
-                    <label for="deskripsi_ringkas">Deskripsi Singkat Katalog</label>
-                    <input id="deskripsi_ringkas" type="text" name="deskripsi" value="{{ old('deskripsi', $destinasi->deskripsi) }}"
-                           placeholder="Gugusan pulau eksotis, Pink Beach, Manta Point">
-                </div>
+            <div class="field mt-16">
+                <label for="lokasi">Lokasi / Administrasi *</label>
+                <input id="lokasi" type="text" name="lokasi" value="{{ old('lokasi', $destinasi->lokasi) }}"
+                       placeholder="Labuan Bajo, Nusa Tenggara Timur" required>
             </div>
 
             <div class="field mt-16">
-                <label for="deskripsi">Deskripsi Lengkap</label>
-                <textarea id="deskripsi" name="deskripsi" rows="3" placeholder="Ceritakan daya tarik destinasi ini...">{{ old('deskripsi', $destinasi->deskripsi) }}</textarea>
+                <label for="deskripsi">Deskripsi Destinasi</label>
+                <textarea id="deskripsi" name="deskripsi" rows="3" placeholder="Ceritakan keindahan dan daya tarik destinasi ini...">{{ old('deskripsi', $destinasi->deskripsi) }}</textarea>
             </div>
 
             <div class="field mt-16">

@@ -356,6 +356,8 @@ function segarkanTombol() {
 }
 render();
 
+document.getElementById('pilihJadwal')?.addEventListener('change', render);
+
 document.querySelectorAll('.tabbar button').forEach(b => {
     b.addEventListener('click', () => {
         document.querySelectorAll('.tabbar button').forEach(x => x.classList.remove('active'));
