@@ -107,10 +107,10 @@
             <div>
                 <h4>Bantuan</h4>
                 <ul>
-                    <li><a href="{{ route('halaman.syarat') }}">Syarat &amp; Ketentuan</a></li>
-                    <li><a href="{{ route('halaman.privasi') }}">Kebijakan Privasi</a></li>
-                    <li><a href="{{ route('halaman.faq') }}">FAQ</a></li>
-                    <li><a href="{{ route('halaman.faq') }}">Pusat Bantuan</a></li>
+                    <li><a href="{{ route('halaman.faq') }}">Pusat Bantuan &amp; FAQ</a></li>
+                    <li><a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}">Lacak Pesanan</a></li>
+                    <li><a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20butuh%20bantuan" target="_blank">Layanan Concierge 24 Jam</a></li>
+                    <li><a href="mailto:hello@nantatravel.com">Layanan Pengaduan</a></li>
                 </ul>
             </div>
 
