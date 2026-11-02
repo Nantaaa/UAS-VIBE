@@ -67,11 +67,25 @@
                             </label>
                             <select id="searchDurasi" name="durasi[]" class="s-input-control">
                                 <option value="">Semua Durasi</option>
-                                <option value="1" @selected(in_array('1', (array) request('durasi', [])))>1 Hari (Midnight Express)</option>
+                                <option value="1" @selected(in_array('1', (array) request('durasi', [])))>1 Hari (Midnight)</option>
                                 <option value="2" @selected(in_array('2', (array) request('durasi', [])))>2 Hari 1 Malam</option>
                                 <option value="3" @selected(in_array('3', (array) request('durasi', [])))>3 Hari 2 Malam</option>
                                 <option value="4" @selected(in_array('4', (array) request('durasi', [])))>4 Hari 3 Malam</option>
                                 <option value="5" @selected(in_array('5', (array) request('durasi', [])))>5 Hari 4 Malam</option>
+                            </select>
+                        </div>
+
+                        {{-- Kolom Estimasi Budget --}}
+                        <div class="s-input-group">
+                            <label class="s-input-label" for="searchBudget">
+                                {!! view('partials.icon', ['name' => 'credit-card', 'size' => 12])->render() !!} Rentang Budget
+                            </label>
+                            <select id="searchBudget" name="budget" class="s-input-control">
+                                <option value="">Semua Budget</option>
+                                <option value="1jt" @selected(request('budget') === '1jt')>Di bawah Rp 1 Juta</option>
+                                <option value="1-2.5jt" @selected(request('budget') === '1-2.5jt')>Rp 1 Jt – 2,5 Juta</option>
+                                <option value="2.5-5jt" @selected(request('budget') === '2.5-5jt')>Rp 2,5 Jt – 5 Juta</option>
+                                <option value="5jt" @selected(request('budget') === '5jt')>Di atas Rp 5 Juta</option>
                             </select>
                         </div>
 
@@ -139,87 +153,8 @@
         </div>
     </section>
 
-    {{-- 4. BODY: FILTER LANJUTAN + HASIL KATALOG PAKET --}}
+    {{-- 4. BODY: HASIL KATALOG PAKET (FULL-WIDTH) --}}
     <div class="catalog-body" id="katalog">
-        <aside class="filter-card">
-            <div class="filter-head">
-                <strong>{!! view('partials.icon', ['name' => 'filter', 'size' => 14])->render() !!} Filter Lanjutan</strong>
-                <div class="row" style="gap:8px;align-items:center">
-                    <a href="{{ route('beranda') }}" class="filter-reset">Reset</a>
-                    <button type="button" class="filter-collapse" id="filterToggle" aria-label="Sembunyikan filter">
-                        {!! view('partials.icon', ['name' => 'chevron-down', 'size' => 14])->render() !!}
-                    </button>
-                </div>
-            </div>
-
-            <form method="GET" action="{{ route('beranda') }}" id="formFilter">
-                <div class="filter-block">
-                    <div class="filter-title">Destinasi</div>
-                    <input type="text" placeholder="Cari destinasi..." class="filter-search" oninput="filterDestinasi(this.value)">
-                    <div class="checklist" id="listDestinasi">
-                        @foreach($destinasi as $d)
-                            <label class="check">
-                                <input type="checkbox" name="destinasi[]" value="{{ $d->id }}"
-                                       @checked(in_array($d->id, (array) request('destinasi', [])))>
-                                <span>{{ $d->nama_destinasi }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="filter-block">
-                    <div class="filter-title">Tipe Perjalanan</div>
-                    <div class="checklist">
-                        @foreach($tipeTrip as $tipe)
-                            <label class="check">
-                                <input type="checkbox" name="tipe[]" value="{{ $tipe }}"
-                                       @checked(in_array($tipe, (array) request('tipe', [])))>
-                                <span>{{ $tipe }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="filter-block">
-                    <div class="filter-title">Rentang Harga (per orang)</div>
-                    <input type="range" min="0" max="10000000" step="250000" id="rangeHarga"
-                           value="{{ request('harga_max', 10000000) }}" oninput="syncHarga(this.value)">
-                    <div class="row between tiny muted" style="margin-top:2px">
-                        <span>Rp 0</span><span>Rp 10.000.000</span>
-                    </div>
-                    <div class="row" style="gap:8px;margin-top:8px">
-                        <label class="rp-input"><span>Rp</span>
-                            <input type="number" name="harga_min" id="hargaMin" value="{{ request('harga_min', 0) }}" placeholder="0">
-                        </label>
-                        <label class="rp-input"><span>Rp</span>
-                            <input type="number" name="harga_max" id="hargaMax" value="{{ request('harga_max', 10000000) }}" placeholder="10.000.000">
-                        </label>
-                    </div>
-                </div>
-
-                <div class="filter-block">
-                    <div class="filter-title">Tanggal Keberangkatan</div>
-                    <input type="date" name="tanggal" value="{{ request('tanggal') }}">
-                </div>
-
-                <div class="filter-block">
-                    <div class="filter-title">Durasi Trip</div>
-                    <div class="row" style="gap:8px">
-                        @foreach([1, 2, 3, 4, 5] as $durasi)
-                            <label class="durasi-box">
-                                <input type="checkbox" name="durasi[]" value="{{ $durasi }}"
-                                       @checked(in_array($durasi, (array) request('durasi', [])))>
-                                <span>{{ $durasi }}H</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <input type="hidden" name="urutkan" value="{{ request('urutkan') }}">
-                <button class="btn btn-primary btn-block" type="submit">{!! view('partials.icon', ['name' => 'check', 'size' => 14])->render() !!} Terapkan Filter</button>
-            </form>
-        </aside>
-
         <div>
             <?php
                 $aktif = [];
@@ -231,6 +166,15 @@
                 foreach ((array) request('durasi', []) as $du) $aktif[] = ['label' => $du.' Hari', 'key' => 'durasi', 'val' => $du];
                 if (request('q')) $aktif[] = ['label' => '“'.request('q').'”', 'key' => 'q', 'val' => null];
                 if (request('tanggal')) $aktif[] = ['label' => \Carbon\Carbon::parse(request('tanggal'))->translatedFormat('d M Y'), 'key' => 'tanggal', 'val' => null];
+                if (request('budget')) {
+                    $budgetLabels = [
+                        '1jt' => '< Rp 1 Juta',
+                        '1-2.5jt' => 'Rp 1 – 2,5 Jt',
+                        '2.5-5jt' => 'Rp 2,5 – 5 Jt',
+                        '5jt' => '> Rp 5 Jt',
+                    ];
+                    $aktif[] = ['label' => 'Budget: ' . ($budgetLabels[request('budget')] ?? request('budget')), 'key' => 'budget', 'val' => null];
+                }
             ?>
 
             @if(!empty($aktif))
@@ -426,25 +370,6 @@
 </div>
 
 <script>
-function syncHarga(v) {
-    document.getElementById('hargaMax').value = v;
-}
-function filterDestinasi(q) {
-    q = q.toLowerCase();
-    document.querySelectorAll('#listDestinasi .check').forEach(el => {
-        el.style.display = el.innerText.toLowerCase().includes(q) ? '' : 'none';
-    });
-}
-
-// Filter lanjutan bisa dilipat — di layar kecil default tertutup
-(() => {
-    const btn = document.getElementById('filterToggle');
-    const card = document.querySelector('.filter-card');
-    if (!btn || !card) return;
-    if (window.matchMedia('(max-width: 900px)').matches) card.classList.add('collapsed');
-    btn.addEventListener('click', () => card.classList.toggle('collapsed'));
-})();
-
 // Toggle tampilan Grid / List
 (() => {
     const grid = document.getElementById('katalogGrid');

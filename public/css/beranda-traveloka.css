@@ -122,7 +122,7 @@
 /* Baris Grid Input Pencarian */
 .search-inputs-grid {
   display: grid;
-  grid-template-columns: 1.3fr 1.1fr 1fr auto;
+  grid-template-columns: 1.3fr 1fr 0.9fr 1fr auto;
   gap: 12px;
   align-items: center;
 }
@@ -407,5 +407,29 @@
   .mega-promo-banner {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+/* FULL WIDTH CATALOG LAYOUT (ELIMINATES COLLIDING REDUNDANT SIDEBAR) */
+.catalog-body {
+  display: block !important;
+  padding: 12px 0 0 !important;
+}
+
+#katalogGrid.grid-3 {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 22px !important;
+}
+
+@media (max-width: 1080px) {
+  #katalogGrid.grid-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  #katalogGrid.grid-3 {
+    grid-template-columns: 1fr !important;
   }
 }

@@ -33,6 +33,16 @@ class BerandaController extends Controller
             $query->whereIn('tipe_trip', $tipeDipilih);
         }
 
+        if ($budget = $request->input('budget')) {
+            match ($budget) {
+                '1jt' => $query->where('tarif', '<=', 1000000),
+                '1-2.5jt' => $query->whereBetween('tarif', [1000000, 2500000]),
+                '2.5-5jt' => $query->whereBetween('tarif', [2500000, 5000000]),
+                '5jt' => $query->where('tarif', '>=', 5000000),
+                default => null,
+            };
+        }
+
         if ($request->filled('harga_min')) {
             $query->where('tarif', '>=', (float) $request->input('harga_min'));
         }
