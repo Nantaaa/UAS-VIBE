@@ -16,8 +16,25 @@
         <div class="step"><span class="num">3</span> Selesai</div>
     </div>
 
-    <form method="POST" action="{{ route('pemesanan.store', $jadwal) }}" enctype="multipart/form-data" id="formPesan">
+    <form method="POST" action="{{ route('pemesanan.store', $jadwal) }}" enctype="multipart/form-data" id="formBooking">
         @csrf
+
+        @php
+            $isPrivate = (request('opsi') === 'private');
+            $tarifDewasa = $isPrivate ? (float) $jadwal->paket->tarifPrivate() : (float) $jadwal->paket->tarif;
+            $tarifAnak = (float) round($tarifDewasa * \App\Models\Pemesanan::persenTarifAnak() / 100);
+            $minTotal = $isPrivate ? 2 : (int) $jadwal->paket->minPeserta();
+            $maksDewasa = min((int) config('travel.maks_peserta', 20), $jadwal->sisa_kuota);
+            $maksAnak = min((int) config('travel.maks_anak', 10), $jadwal->sisa_kuota);
+            $valDewasa = (int) old('dewasa', request('dewasa', request('jumlah', $minTotal)));
+            $valAnak = (int) old('anak', request('anak', 0));
+            if ($valDewasa + $valAnak < $minTotal) {
+                $valDewasa = $minTotal;
+                $valAnak = 0;
+            }
+        @endphp
+
+        <input type="hidden" name="opsi_paket" value="{{ $isPrivate ? 'private' : 'open' }}">
 
         <div class="grid" style="grid-template-columns: 1fr 372px; align-items:start">
             <div class="stack">
@@ -28,7 +45,7 @@
                             <h3 style="margin:0 0 6px;font-size:16px">{{ $jadwal->paket->nama_paket }}</h3>
                             <div class="row" style="gap:7px;flex-wrap:wrap">
                                 <span class="pdp-badge">{{ $jadwal->paket->durasi_hari }} Hari {{ $jadwal->paket->durasi_hari - 1 }} Malam</span>
-                                <span class="pdp-badge">{{ $jadwal->paket->tipe_trip }}</span>
+                                <span class="pdp-badge">{{ $isPrivate ? 'Private Group' : ($jadwal->paket->tipe_trip ?: 'Open Trip') }}</span>
                                 <span class="pdp-badge orange">{{ $jadwal->tanggal_berangkat->translatedFormat('d M Y') }}</span>
                             </div>
                         </div>
@@ -37,6 +54,28 @@
                             <strong>{{ $jadwal->sisa_kuota }} kursi</strong>
                         </div>
                     </div>
+
+                    @if($isPrivate)
+                        <div style="background:#faf5ff;border:1.5px solid #e9d5ff;border-radius:10px;padding:12px 14px;margin-top:14px">
+                            <div class="row" style="gap:8px;align-items:center">
+                                <span style="background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:2px 8px;border-radius:4px">👑 PRIVATE GROUP</span>
+                                <strong style="color:#6b21a8;font-size:13px">Paket Eksklusif Rombongan Sendiri</strong>
+                            </div>
+                            <p class="tiny" style="color:#7e22ce;margin:6px 0 0;line-height:1.45">
+                                Eksklusif untuk rombongan Anda sendiri tanpa gabung orang lain, bebas tentukan tanggal fleksibel.
+                            </p>
+                        </div>
+                    @else
+                        <div style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:10px;padding:12px 14px;margin-top:14px">
+                            <div class="row" style="gap:8px;align-items:center">
+                                <span style="background:#0284c7;color:#fff;font-size:11px;font-weight:800;padding:2px 8px;border-radius:4px">👥 OPEN TRIP</span>
+                                <strong style="color:#0369a1;font-size:13px">Paket Wisata Gabungan</strong>
+                            </div>
+                            <p class="tiny" style="color:#0284c7;margin:6px 0 0;line-height:1.45">
+                                Gabung dengan peserta lain, minimal kuota terpenuhi (bisa solo traveler berangkat sendirian).
+                            </p>
+                        </div>
+                    @endif
 
                     <div class="warn-box mt-16">
                         {!! view('partials.icon', ['name' => 'alert', 'size' => 15])->render() !!} Pastikan seluruh data peserta sesuai dengan KTP/Paspor. Data yang tidak sesuai dapat menyebabkan pemesanan dikembalikan untuk diperbaiki.
@@ -49,18 +88,6 @@
                 </div>
 
                 {{-- Peserta --}}
-                @php
-                    $minTotal = (int) $jadwal->paket->minPeserta();
-                    $maksDewasa = min((int) config('travel.maks_peserta', 20), $jadwal->sisa_kuota);
-                    $maksAnak = min((int) config('travel.maks_anak', 10), $jadwal->sisa_kuota);
-                    $valDewasa = (int) old('dewasa', request('dewasa', request('jumlah', $minTotal)));
-                    $valAnak = (int) old('anak', request('anak', 0));
-                    if ($valDewasa + $valAnak < $minTotal) {
-                        $valDewasa = $minTotal;
-                        $valAnak = 0;
-                    }
-                @endphp
-
                 <div class="row" style="gap:12px;flex-wrap:wrap;align-items:flex-start">
                     <div class="field" style="flex:1 1 0;min-width:140px;max-width:190px">
                         <label for="dewasa">Jumlah Dewasa</label>
@@ -132,8 +159,8 @@
                         </div>
 
                         <div class="mt-16">
-                            <div class="summary-line"><span class="muted">Tarif dewasa / orang</span><span>Rp {{ number_format($jadwal->paket->tarif, 0, ',', '.') }}</span></div>
-                            <div class="summary-line"><span class="muted">Tarif anak / orang ({{ \App\Models\Pemesanan::persenTarifAnak() }}%)</span><span>Rp {{ number_format(\App\Models\Pemesanan::tarifKategori((float) $jadwal->paket->tarif, 'anak'), 0, ',', '.') }}</span></div>
+                            <div class="summary-line"><span class="muted">Tarif dewasa / orang</span><span>Rp {{ number_format($tarifDewasa, 0, ',', '.') }}{{ $isPrivate ? ' (Private)' : '' }}</span></div>
+                            <div class="summary-line"><span class="muted">Tarif anak / orang ({{ \App\Models\Pemesanan::persenTarifAnak() }}%)</span><span>Rp {{ number_format($tarifAnak, 0, ',', '.') }}</span></div>
                             <div class="summary-line"><span class="muted">Komposisi peserta</span><span id="txtJumlah">1 dewasa</span></div>
                             <div class="summary-line" id="barisJemput" style="display:none">
                                 <span class="muted">Biaya titik jemput</span><span id="txtJemput">Rp 0</span>
@@ -244,9 +271,9 @@
 </template>
 
 <script>
-const TARIF = {{ (int) $jadwal->paket->tarif }};
-const TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $jadwal->paket->tarif, 'anak') }};
-const MIN_TOTAL = {{ (int) $jadwal->paket->minPeserta() }};
+const TARIF = {{ (int) $tarifDewasa }};
+const TARIF_ANAK = {{ (int) $tarifAnak }};
+const MIN_TOTAL = {{ (int) $minTotal }};
 const MAKS = {{ min(20, $jadwal->sisa_kuota) }};
 const MAKS_ANAK = {{ min(10, $jadwal->sisa_kuota) }};
 const wrap = document.getElementById('pesertaWrap');

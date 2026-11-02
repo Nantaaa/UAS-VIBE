@@ -28,7 +28,8 @@ class BookingService
         array $promo = [],
         ?int $dewasa = null,
         ?int $anak = null,
-        ?int $idTitikJemput = null
+        ?int $idTitikJemput = null,
+        ?string $opsiTrip = 'open'
     ): Pemesanan {
         $jumlah = count($pesertaData);
         $dewasa = $dewasa ?? $jumlah;
@@ -40,11 +41,12 @@ class BookingService
             ]);
         }
 
-        return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo, $dewasa, $anak, $idTitikJemput) {
+        return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo, $dewasa, $anak, $idTitikJemput, $opsiTrip) {
             /** @var JadwalKeberangkatan $jadwal */
             $jadwal = JadwalKeberangkatan::whereKey($idJadwal)->lockForUpdate()->firstOrFail();
 
-            $minPeserta = $jadwal->paket->minPeserta();
+            $isPrivate = ($opsiTrip === 'private');
+            $minPeserta = $isPrivate ? 2 : $jadwal->paket->minPeserta();
             if ($jumlah < $minPeserta) {
                 throw ValidationException::withMessages(['peserta' => "Pemesanan paket {$jadwal->paket->nama_paket} minimal {$minPeserta} peserta."]);
             }
@@ -59,7 +61,7 @@ class BookingService
             }
 
             $paket = $jadwal->paket;
-            $tarifDewasa = (float) $paket->tarif;
+            $tarifDewasa = $isPrivate ? $paket->tarifPrivate() : (float) $paket->tarif;
             $tarifAnak = Pemesanan::tarifKategori($tarifDewasa, 'anak');
             $subtotal = ($dewasa * $tarifDewasa) + ($anak * $tarifAnak);
             $titik = null;
@@ -89,7 +91,7 @@ class BookingService
                 'kode_promo' => null,
                 'diskon' => 0,
                 'status_pemesanan' => 'menunggu_pembayaran',
-                'catatan_status' => 'Selesaikan pembayaran dalam 1 jam dan unggah bukti transfer.',
+                'catatan_status' => ($isPrivate ? '[Private Group Eksklusif] ' : '[Open Trip] ') . 'Selesaikan pembayaran dalam 1 jam dan unggah bukti transfer.',
                 'tanggal_pemesanan' => now(),
                 'batas_pembayaran' => now()->addMinutes(self::BATAS_PEMBAYARAN_MENIT),
             ]);

@@ -78,4 +78,16 @@ class PaketWisata extends Model
     {
         return max(1, (int) ($this->min_peserta ?? 1));
     }
+
+    public function tarifPrivate(): float
+    {
+        $tipe = strtolower(trim((string) $this->tipe_trip));
+        if (str_contains($tipe, 'private') || str_contains($tipe, 'honeymoon')) {
+            return (float) $this->tarif;
+        }
+
+        // Private Group: kenaikan 35% mencerminkan armada carter privat & guide eksklusif
+        $raw = (float) $this->tarif * 1.35;
+        return (float) (round($raw / 50000) * 50000);
+    }
 }

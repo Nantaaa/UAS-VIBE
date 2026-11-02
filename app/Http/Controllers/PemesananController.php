@@ -131,7 +131,8 @@ class PemesananController extends Controller
             [],
             $dewasa,
             $anak,
-            $request->filled('id_titik_jemput') ? (int) $request->input('id_titik_jemput') : null
+            $request->filled('id_titik_jemput') ? (int) $request->input('id_titik_jemput') : null,
+            $request->input('opsi_paket', 'open')
         );
 
         return redirect()->route('pemesanan.show', $pemesanan)

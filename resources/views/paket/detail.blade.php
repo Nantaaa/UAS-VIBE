@@ -6,20 +6,26 @@
     $jadwalPertama = $paket->jadwalTersedia->first();
     // Parse itinerary: tiap baris "Hari N: A - B - C" jadi kartu hari
     $hari = [];
-    foreach (preg_split('/\r\n|\r|\n/', (string) $paket->itinerary) as $baris) {
+    foreach (preg_split('/
+\n|
+|\n/', (string) $paket->itinerary) as $baris) {
         $baris = trim($baris);
         if ($baris === '') continue;
         if (preg_match('/^Hari\s*(\d+)\s*[:.-]\s*(.+)$/i', $baris, $m)) {
             $hari[] = ['judul' => 'Hari '.$m[1].': '.$m[2], 'langkah' => []];
         } else {
+            if (empty($hari)) {
+                $hari[] = ['judul' => 'Jadwal Kegiatan', 'langkah' => []];
+            }
             $hari[count($hari) - 1]['langkah'][] = $baris;
         }
     }
     foreach ($hari as $i => $h) {
+        if (!isset($h['judul'])) continue;
         $pecah = array_filter(array_map('trim', preg_split('/\s+-\s+/', $h['judul'])));
         if (count($pecah) > 1) {
             $hari[$i]['judul'] = array_shift($pecah);
-            $hari[$i]['langkah'] = array_merge($pecah, $h['langkah']);
+            $hari[$i]['langkah'] = array_merge($pecah, $h['langkah'] ?? []);
         }
     }
 @endphp
@@ -280,11 +286,14 @@
                     </div>
 
                     <div class="field mt-16">
-                        <label>Pilih Paket</label>
-                        <select name="paket_opsi">
-                            <option>{{ $paket->tipe_trip }} — {{ $paket->durasi_hari }} Hari</option>
-                            <option>Private Group</option>
+                        <label>Pilihan Tipe Perjalanan</label>
+                        <select name="opsi" id="pilihOpsiPaket" onchange="gantiOpsiPaket(this.value)">
+                            <option value="open">Open Trip — Rp {{ number_format($paket->tarif, 0, ',', '.') }} / org</option>
+                            <option value="private">Private Group — Rp {{ number_format($paket->tarifPrivate(), 0, ',', '.') }} / org</option>
                         </select>
+                        <div id="descOpsiPaket" class="tiny" style="color:var(--ink-soft);background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-top:6px;line-height:1.45">
+                            <strong>Open Trip:</strong> Gabung dengan peserta lain, minimal kuota terpenuhi.
+                        </div>
                     </div>
 
                     <div class="book-meet" id="bookMeet">
@@ -332,11 +341,54 @@
 </div>
 
 <script>
-const TARIF = {{ (int) $paket->tarif }};
-const TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $paket->tarif, 'anak') }};
-const MIN_TOTAL = {{ (int) $paket->minPeserta() }};
-let dewasa = {{ (int) $paket->minPeserta() }}, anak = 0;
+const TARIF_OPEN = {{ (int) $paket->tarif }};
+const TARIF_PRIVATE = {{ (int) $paket->tarifPrivate() }};
+const MIN_OPEN = {{ (int) $paket->minPeserta() }};
+const MIN_PRIVATE = 2;
+
+let opsiPaket = 'open';
+let TARIF = TARIF_OPEN;
+let TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $paket->tarif, 'anak') }};
+let MIN_TOTAL = MIN_OPEN;
+let dewasa = MIN_OPEN, anak = 0;
 const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
+
+function gantiOpsiPaket(val) {
+    opsiPaket = val;
+    const descBox = document.getElementById('descOpsiPaket');
+    const priceDisplay = document.querySelector('.book-price');
+
+    if (val === 'private') {
+        TARIF = TARIF_PRIVATE;
+        MIN_TOTAL = MIN_PRIVATE;
+        if (dewasa < MIN_PRIVATE) {
+            dewasa = MIN_PRIVATE;
+        }
+        if (descBox) {
+            descBox.innerHTML = '<strong>Private Group:</strong> Eksklusif untuk rombongan Anda sendiri tanpa gabung orang lain, bebas tentukan tanggal fleksibel.';
+            descBox.style.background = '#faf5ff';
+            descBox.style.borderColor = '#e9d5ff';
+            descBox.style.color = '#6b21a8';
+        }
+        if (priceDisplay) {
+            priceDisplay.innerHTML = 'Rp ' + TARIF.toLocaleString('id-ID') + ' <span>/ orang (Private)</span>';
+        }
+    } else {
+        TARIF = TARIF_OPEN;
+        MIN_TOTAL = MIN_OPEN;
+        if (descBox) {
+            descBox.innerHTML = '<strong>Open Trip:</strong> Gabung dengan peserta lain, minimal kuota terpenuhi.';
+            descBox.style.background = '#f8fafc';
+            descBox.style.borderColor = '#e2e8f0';
+            descBox.style.color = 'var(--ink-soft)';
+        }
+        if (priceDisplay) {
+            priceDisplay.innerHTML = 'Rp ' + TARIF.toLocaleString('id-ID') + ' <span>/ orang</span>';
+        }
+    }
+    TARIF_ANAK = Math.round(TARIF * {{ (int) \App\Models\Pemesanan::persenTarifAnak() }} / 100);
+    render();
+}
 
 function render() {
     document.getElementById('nDewasa').textContent = dewasa;
@@ -356,7 +408,7 @@ function render() {
     const btn = document.getElementById('btnPesan');
     if (sel && btn && sel.value && btn.tagName === 'A') {
         const tpl = @json(auth()->check() ? route('pemesanan.form', ['jadwal' => 'JADWAL_ID']) : null);
-        if (tpl) btn.href = tpl.replace('JADWAL_ID', sel.value) + '?dewasa=' + dewasa + '&anak=' + anak;
+        if (tpl) btn.href = tpl.replace('JADWAL_ID', sel.value) + '?dewasa=' + dewasa + '&anak=' + anak + '&opsi=' + opsiPaket;
     }
 }
 function ubahPeserta(d) {

@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+*.py
+*.pyc
+__pycache__/
+database/seed_*.php
