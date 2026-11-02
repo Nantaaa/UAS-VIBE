@@ -9,7 +9,7 @@
     </div>
 
     <h1 style="font-size:23px;margin:0 0 4px">Profil Saya &amp; Pengaturan Akun</h1>
-    <p class="muted" style="font-size:12.5px">Kelola informasi pribadi, dokumen identitas, metode pembayaran, dan keamanan akun Anda.</p>
+    <p class="muted" style="font-size:12.5px">Kelola informasi pribadi, metode pembayaran, dan keamanan akun Anda.</p>
 
     {{-- Hero profil --}}
     <div class="profil-hero">
@@ -18,11 +18,7 @@
             <div>
                 <h2 style="margin:0;font-size:19px;color:#fff">{{ $user->nama_lengkap }}</h2>
                 <div class="row" style="gap:7px;margin-top:6px">
-                    @if($user->no_identitas)
-                        <span class="badge badge-success">✓ Terverifikasi</span>
-                    @else
-                        <span class="badge" style="background:#fef3c7;color:#92400e">⚠️ Lengkapi Dokumen</span>
-                    @endif
+                    <span class="badge badge-success">✓ Akun Aktif</span>
                     <span class="badge" style="background:rgba(255,255,255,.14);color:#fff">Member Nanta</span>
                 </div>
                 <div class="tiny" style="color:rgba(255,255,255,.72);margin-top:8px">
@@ -58,14 +54,6 @@
             </a>
             <a href="#keamanan" class="profil-link" data-tab="keamanan">
                 {!! view('partials.icon', ['name' => 'lock', 'size' => 15])->render() !!} Keamanan Akun
-            </a>
-            <a href="#dokumen" class="profil-link" data-tab="dokumen">
-                <span>📄 Dokumen &amp; Paspor</span>
-                @if(!$user->no_identitas || !$user->file_identitas)
-                    <span class="badge-dot" title="Dokumen belum lengkap"></span>
-                @else
-                    <span class="badge-check">✓</span>
-                @endif
             </a>
             <a href="#pembayaran" class="profil-link" data-tab="pembayaran">
                 <span>💳 Metode Pembayaran</span>
@@ -164,110 +152,6 @@
                         </form>
                     </div>
                 </div>
-            </div>
-
-            {{-- 2. TAB DOKUMEN & PASPOR --}}
-            <div class="profil-tab-content" id="tab-dokumen">
-                <div class="card">
-                    <div class="card-head">
-                        <div>
-                            <h3 style="margin:0">📄 Dokumen Identitas &amp; Paspor</h3>
-                            <p class="tiny muted" style="margin:2px 0 0">Data KTP atau Paspor digunakan untuk memverifikasi manifes resmi pelayaran dan reservasi tur.</p>
-                        </div>
-                        @if($user->no_identitas)
-                            <span class="badge badge-success">✓ Lengkap</span>
-                        @else
-                            <span class="badge badge-warning">Perlu Dilengkapi</span>
-                        @endif
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('profil.dokumen') }}" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT')
-
-                            <div class="form-grid">
-                                <div class="field">
-                                    <label>Jenis Dokumen</label>
-                                    <select name="jenis_identitas" required>
-                                        <option value="KTP" @selected(old('jenis_identitas', $user->jenis_identitas ?? 'KTP') === 'KTP')>KTP (Kartu Tanda Penduduk)</option>
-                                        <option value="Paspor" @selected(old('jenis_identitas', $user->jenis_identitas) === 'Paspor')>Paspor</option>
-                                    </select>
-                                </div>
-                                <div class="field">
-                                    <label>Nomor Identitas (NIK / No. Paspor)</label>
-                                    <input type="text" name="no_identitas" value="{{ old('no_identitas', $user->no_identitas) }}" placeholder="16 digit NIK atau Nomor Paspor" required>
-                                </div>
-                                <div class="field">
-                                    <label>Kewarganegaraan</label>
-                                    <input type="text" name="kewarganegaraan" value="{{ old('kewarganegaraan', $user->kewarganegaraan ?? 'Indonesia') }}" required>
-                                </div>
-                                <div class="field">
-                                    <label>Unggah Foto / Scan Berkas</label>
-                                    <input type="file" name="file_identitas" accept=".jpg,.jpeg,.png,.pdf">
-                                    <span class="hint">Format JPG, PNG, atau PDF (maks. 2 MB)</span>
-                                </div>
-                            </div>
-
-                            @if($user->file_identitas)
-                                <div class="row between mt-12" style="background:#f0fdfa;border:1px solid #b8e8e0;border-radius:10px;padding:12px 14px">
-                                    <div class="row" style="gap:8px">
-                                        <span style="color:#0f766e;font-size:16px">✓</span>
-                                        <div>
-                                            <div style="font-size:12px;font-weight:700;color:#0f766e">Berkas identitas tersimpan di sistem</div>
-                                            <div class="tiny muted">Dapat diperbarui sewaktu-waktu jika masa berlaku berganti.</div>
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('profil.berkas') }}" target="_blank" class="btn btn-ghost btn-sm" style="background:#fff">Pratinjau Berkas</a>
-                                </div>
-                            @endif
-
-                            <div class="row between mt-16">
-                                <button class="btn btn-navy" type="submit" style="background:#0f172a;color:#fff">Simpan Dokumen Identitas</button>
-                                <span class="tiny muted">🔒 Data disimpan terenkripsi sesuai standar privasi.</span>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                {{-- Riwayat dokumen peserta dari pemesanan sebelumnya --}}
-                @if($riwayatPeserta->isNotEmpty())
-                    <div class="card mt-16">
-                        <div class="card-head">
-                            <h3 style="font-size:14px">Riwayat Dokumen Peserta Tersimpan</h3>
-                            <span class="tiny muted">{{ $riwayatPeserta->count() }} peserta tercatat</span>
-                        </div>
-                        <div class="table-wrap">
-                            <table class="table" style="font-size:12px">
-                                <thead>
-                                    <tr>
-                                        <th>Nama Peserta</th>
-                                        <th>Identitas</th>
-                                        <th>Nomor</th>
-                                        <th>Kategori</th>
-                                        <th>Status Verifikasi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($riwayatPeserta as $rp)
-                                        <tr>
-                                            <td><strong>{{ $rp->nama_peserta }}</strong></td>
-                                            <td>{{ $rp->jenis_identitas }}</td>
-                                            <td><code>{{ $rp->no_identitas }}</code></td>
-                                            <td><span class="badge {{ $rp->kategori === 'anak' ? 'badge-info' : '' }}">{{ ucfirst($rp->kategori ?? 'dewasa') }}</span></td>
-                                            <td>
-                                                @if($rp->status === 'valid')
-                                                    <span class="badge badge-success">✓ Valid</span>
-                                                @else
-                                                    <span class="badge badge-warning">{{ ucfirst($rp->status) }}</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                @endif
             </div>
 
             {{-- 3. TAB METODE PEMBAYARAN --}}
