@@ -5,35 +5,191 @@
 @php($user = auth()->user())
 
 @section('content')
-<div class="container" style="padding-top:18px">
-    {{-- HERO --}}
-    <section class="catalog-hero" style="background-image:
-        linear-gradient(115deg, rgba(6,20,36,.94) 0%, rgba(8,32,52,.82) 45%, rgba(8,42,44,.70) 100%),
-        url('/storage/paket/raja_ampat.jpg');
-        background-size: cover; background-position: center;">
-        <div class="catalog-hero-inner">
-            <span class="hero-badge">✦ PILIHAN PAKET WISATA TERBAIK</span>
-            <h1>Temukan Paket Wisata Impianmu</h1>
-            <p>Jelajahi keindahan nusantara dengan paket wisata terbaik, harga terjangkau, dan pengalaman yang tak terlupakan.</p>
+<div class="container" style="padding-top:16px">
 
-            <form method="GET" action="{{ route('beranda') }}" class="hero-search">
-                <span class="hs-ico">{!! view('partials.icon', ['name' => 'search', 'size' => 15])->render() !!}</span>
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari destinasi, paket, atau aktivitas...">
-                <button type="submit" class="btn btn-primary hs-submit">
-                    {!! view('partials.icon', ['name' => 'search', 'size' => 14])->render() !!} Cari Paket
-                </button>
-            </form>
+    {{-- 1. HERO SECTION & FLOATING SEARCH BOX (TRAVELOKA STYLE) --}}
+    <section class="hero-traveloka" style="background-image: url('{{ asset('storage/destinasi/nusa_penida.jpg') }}');">
+        <div class="hero-content">
+            <span class="hero-badge-tvlk">✦ PILIHAN UTAMA WISATA NUSANTARA</span>
+            <h1 class="hero-title-tvlk">Pilihan Utama untuk Jelajahi Keindahan Nusantara</h1>
+            <p class="hero-sub-tvlk">
+                Temukan paket Open Trip, Private Tour, dan Honeymoon impianmu dengan harga terjangkau, fasilitas terjamin, dan ramah solo traveler.
+            </p>
 
-            <div class="hero-chips">
-                @foreach($destinasi->take(10) as $d)
-                    <a class="hero-chip {{ in_array($d->id, (array) request('destinasi', [])) ? 'active' : '' }}"
-                       href="{{ route('beranda', ['destinasi' => [$d->id]]) }}#katalog">{{ $d->nama_destinasi }}</a>
-                @endforeach
+            {{-- Floating Search Card --}}
+            <div class="search-box-card">
+                <form method="GET" action="{{ route('beranda') }}#katalog" id="heroSearchForm">
+                    {{-- Tab Kategori Tipe Trip --}}
+                    <div class="search-tabs">
+                        @php($tipeAktif = request('tipe.0', ''))
+                        <label class="search-tab-item {{ empty($tipeAktif) ? 'active' : '' }}">
+                            <input type="radio" name="tipe[]" value="" style="display:none" onchange="this.form.submit()" {{ empty($tipeAktif) ? 'checked' : '' }}>
+                            {!! view('partials.icon', ['name' => 'compass', 'size' => 14])->render() !!} Semua Paket
+                        </label>
+                        <label class="search-tab-item {{ $tipeAktif === 'Open Trip' ? 'active' : '' }}">
+                            <input type="radio" name="tipe[]" value="Open Trip" style="display:none" onchange="this.form.submit()" {{ $tipeAktif === 'Open Trip' ? 'checked' : '' }}>
+                            {!! view('partials.icon', ['name' => 'users', 'size' => 14])->render() !!} Open Trip (Bisa Solo)
+                        </label>
+                        <label class="search-tab-item {{ $tipeAktif === 'Private Trip' ? 'active' : '' }}">
+                            <input type="radio" name="tipe[]" value="Private Trip" style="display:none" onchange="this.form.submit()" {{ $tipeAktif === 'Private Trip' ? 'checked' : '' }}>
+                            {!! view('partials.icon', ['name' => 'shield', 'size' => 14])->render() !!} Private Trip
+                        </label>
+                        <label class="search-tab-item {{ $tipeAktif === 'Honeymoon' ? 'active' : '' }}">
+                            <input type="radio" name="tipe[]" value="Honeymoon" style="display:none" onchange="this.form.submit()" {{ $tipeAktif === 'Honeymoon' ? 'checked' : '' }}>
+                            {!! view('partials.icon', ['name' => 'heart', 'size' => 14])->render() !!} Honeymoon
+                        </label>
+                    </div>
+
+                    {{-- Form Grid Input Terpadu --}}
+                    <div class="search-inputs-grid">
+                        {{-- Kolom Destinasi --}}
+                        <div class="s-input-group">
+                            <label class="s-input-label" for="searchQ">
+                                {!! view('partials.icon', ['name' => 'map-pin', 'size' => 12])->render() !!} Destinasi Wisata
+                            </label>
+                            <input type="text" id="searchQ" name="q" value="{{ request('q') }}"
+                                   class="s-input-control" placeholder="Mau liburan ke mana? (misal: Bromo, Komodo)">
+                        </div>
+
+                        {{-- Kolom Tanggal Berangkat --}}
+                        <div class="s-input-group">
+                            <label class="s-input-label" for="searchTgl">
+                                {!! view('partials.icon', ['name' => 'calendar', 'size' => 12])->render() !!} Tanggal Berangkat
+                            </label>
+                            <input type="date" id="searchTgl" name="tanggal" value="{{ request('tanggal') }}"
+                                   class="s-input-control">
+                        </div>
+
+                        {{-- Kolom Pilihan Durasi / Peserta --}}
+                        <div class="s-input-group">
+                            <label class="s-input-label" for="searchDurasi">
+                                {!! view('partials.icon', ['name' => 'clock', 'size' => 12])->render() !!} Durasi Liburan
+                            </label>
+                            <select id="searchDurasi" name="durasi[]" class="s-input-control">
+                                <option value="">Semua Durasi</option>
+                                <option value="1" @selected(in_array('1', (array) request('durasi', [])))>1 Hari (Midnight Express)</option>
+                                <option value="2" @selected(in_array('2', (array) request('durasi', [])))>2 Hari 1 Malam</option>
+                                <option value="3" @selected(in_array('3', (array) request('durasi', [])))>3 Hari 2 Malam</option>
+                                <option value="4" @selected(in_array('4', (array) request('durasi', [])))>4 Hari 3 Malam</option>
+                                <option value="5" @selected(in_array('5', (array) request('durasi', [])))>5 Hari 4 Malam</option>
+                            </select>
+                        </div>
+
+                        {{-- Tombol Submit --}}
+                        <button type="submit" class="btn-search-exec">
+                            {!! view('partials.icon', ['name' => 'search', 'size' => 16])->render() !!}
+                            <span>Cari Paket</span>
+                        </button>
+                    </div>
+
+                    {{-- Trust Badges Bar --}}
+                    <div class="search-trust-bar">
+                        <div class="trust-item">
+                            <span class="icon">✓</span> 100% Jadwal Pasti Berangkat
+                        </div>
+                        <div class="trust-item">
+                            <span class="icon">✓</span> Tour Guide &amp; Nahkoda Berlisensi
+                        </div>
+                        <div class="trust-item">
+                            <span class="icon">✓</span> Pembayaran Resmi &amp; Terverifikasi
+                        </div>
+                        <div class="trust-item">
+                            <span class="icon">✓</span> Ramah Solo Traveler (Bisa 1 Orang)
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </section>
 
-    {{-- BODY: filter + hasil --}}
+    {{-- 2. SECTION KUPON TIKET ALA TRAVELOKA --}}
+    <section class="coupons-section">
+        <div class="section-head-tvlk">
+            <h2 class="section-title-tvlk">
+                <span>🎟️ Kupon &amp; Penawaran Spesial Wisatawan</span>
+            </h2>
+            <span class="tiny muted">Gunakan kode voucher saat checkout pembayaran</span>
+        </div>
+        <div class="coupons-grid">
+            {{-- Kupon 1 --}}
+            <div class="coupon-ticket">
+                <div class="coupon-left">
+                    <span class="coupon-badge">SEMUA PAKET</span>
+                    <h3 class="coupon-discount">Diskon 10% Hemat</h3>
+                    <p class="coupon-desc">Maksimal potongan hingga Rp 500.000 untuk seluruh trip</p>
+                    <div class="coupon-code-pill">
+                        <span>HEMAT10</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-copy-coupon" onclick="salinKupon(this, 'HEMAT10')">Salin Kupon</button>
+            </div>
+
+            {{-- Kupon 2 --}}
+            <div class="coupon-ticket">
+                <div class="coupon-left">
+                    <span class="coupon-badge" style="background:#fef3c7;color:#92400e">DISKON LANGSUNG</span>
+                    <h3 class="coupon-discount">Potongan Rp 200.000</h3>
+                    <p class="coupon-desc">Berlaku untuk minimal transaksi pemesanan Rp 2.000.000</p>
+                    <div class="coupon-code-pill">
+                        <span>LIBURAN200</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-copy-coupon" onclick="salinKupon(this, 'LIBURAN200')">Salin Kupon</button>
+            </div>
+
+            {{-- Kupon 3 --}}
+            <div class="coupon-ticket">
+                <div class="coupon-left">
+                    <span class="coupon-badge" style="background:#f0fdf4;color:#166534">SOLO TRAVELER</span>
+                    <h3 class="coupon-discount">Bisa 1 Orang Saja</h3>
+                    <p class="coupon-desc">Semua paket Open Trip ramah solo traveler tanpa biaya tambahan</p>
+                    <div class="coupon-code-pill">
+                        <span>SOLO OK</span>
+                    </div>
+                </div>
+                <a href="{{ route('beranda', ['tipe' => ['Open Trip']]) }}#katalog" class="btn-copy-coupon" style="text-decoration:none">Cari Open Trip</a>
+            </div>
+        </div>
+    </section>
+
+    {{-- 3. SECTION DESTINASI POPULER (PHOTO TILES) --}}
+    <section class="destinations-section">
+        <div class="section-head-tvlk">
+            <h2 class="section-title-tvlk">
+                <span>🏝️ Destinasi Favorit Wisatawan</span>
+            </h2>
+            <a href="{{ route('beranda') }}#katalog" class="tiny" style="color:#0284c7;font-weight:700">Lihat Semua Destinasi →</a>
+        </div>
+        <div class="dest-scroll-grid">
+            @foreach($destinasi->take(8) as $d)
+                <a href="{{ route('beranda', ['destinasi' => [$d->id]]) }}#katalog" class="dest-card-tvlk">
+                    <img src="{{ asset('storage/' . $d->foto) }}" alt="{{ $d->nama_destinasi }}" loading="lazy">
+                    <div class="dest-card-info">
+                        <h4 class="dest-card-name">{{ $d->nama_destinasi }}</h4>
+                        <div class="dest-card-count">{{ $d->paket_count ?? 1 }} Paket Trip</div>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
+    {{-- 4. SECTION MEGA PROMO BANNER (ALA EPIC SALE) --}}
+    <section class="mega-promo-banner">
+        <div class="mega-promo-content">
+            <span class="badge" style="background:#fef08a;color:#854d0e;font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block">
+                ⚡ FESTIVAL WISATA NUSANTARA 2026
+            </span>
+            <h3>Jelajahi Sudut Nusantara dengan Harga Terbaik</h3>
+            <p>Dapatkan potongan harga langsung, fasilitas kapal &amp; hotel terverifikasi, serta jaminan keberangkatan aman bersama pemandu lokal berlisensi.</p>
+        </div>
+        <div>
+            <a href="{{ route('beranda', ['urutkan' => 'termurah']) }}#katalog" class="btn" style="background:#ffffff;color:#0369a1;font-weight:800;padding:12px 20px;border-radius:10px;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,0.15)">
+                Cari Paket Termurah →
+            </a>
+        </div>
+    </section>
+
+    {{-- 5. BODY: FILTER LANJUTAN + HASIL KATALOG PAKET --}}
     <div class="catalog-body" id="katalog">
         <aside class="filter-card">
             <div class="filter-head">
@@ -99,11 +255,11 @@
                 <div class="filter-block">
                     <div class="filter-title">Durasi Trip</div>
                     <div class="row" style="gap:8px">
-                        @foreach([2, 3, 4, 5] as $durasi)
+                        @foreach([1, 2, 3, 4, 5] as $durasi)
                             <label class="durasi-box">
                                 <input type="checkbox" name="durasi[]" value="{{ $durasi }}"
                                        @checked(in_array($durasi, (array) request('durasi', [])))>
-                                <span>{{ $durasi }} Hari</span>
+                                <span>{{ $durasi }}H</span>
                             </label>
                         @endforeach
                     </div>
@@ -127,26 +283,27 @@
                 if (request('tanggal')) $aktif[] = ['label' => \Carbon\Carbon::parse(request('tanggal'))->translatedFormat('d M Y'), 'key' => 'tanggal', 'val' => null];
             ?>
 
-            @if(count($aktif))
-                <div class="active-filters">
-                    <span class="af-label">Filter aktif:</span>
-                    @foreach($aktif as $f)
-                        <a class="af-chip" href="{{ route('beranda', request()->except([$f['key']])) }}">
-                            {{ $f['label'] }} <span aria-hidden="true">×</span>
-                        </a>
+            @if(!empty($aktif))
+                <div class="active-chips">
+                    <span class="tiny muted" style="margin-right:4px">Filter aktif:</span>
+                    @foreach($aktif as $a)
+                        <span class="active-chip">
+                            {{ $a['label'] }}
+                            <a href="{{ route('beranda', request()->except($a['key'])) }}">×</a>
+                        </span>
                     @endforeach
-                    <a class="af-clear" href="{{ route('beranda') }}">Hapus semua</a>
+                    <a href="{{ route('beranda') }}" class="tiny" style="color:var(--danger);font-weight:600;margin-left:4px">Hapus Semua</a>
                 </div>
             @endif
 
             <div class="results-head">
                 <div>
-                    <h2 style="margin:0;font-size:17px">{{ $paket->total() }} Paket Wisata Ditemukan</h2>
-                    <div class="tiny muted">Jelajahi paket wisata terbaik dengan harga terbaik</div>
+                    <h2 style="font-size:18px;margin:0 0 2px;font-weight:800">Daftar Paket Wisata</h2>
+                    <span class="tiny muted">Ditemukan <strong>{{ $paket->total() }}</strong> pilihan perjalanan siap pesan</span>
                 </div>
-                <div class="row" style="gap:8px">
-                    <form method="GET" id="formUrut">
-                        @foreach(request()->except(['urutkan', 'page']) as $k => $v)
+                <div class="row" style="gap:10px;align-items:center">
+                    <form method="GET" class="row" style="gap:6px">
+                        @foreach(request()->except('urutkan') as $k => $v)
                             @if(is_array($v))
                                 @foreach($v as $vv)<input type="hidden" name="{{ $k }}[]" value="{{ $vv }}">@endforeach
                             @else
@@ -171,7 +328,7 @@
                 <div class="card empty">
                     <div class="big">{!! view('partials.icon', ['name' => 'compass', 'size' => 15])->render() !!}</div>
                     <h3>Paket tidak ditemukan</h3>
-                    <p class="mb-0">Coba longgarkan filter atau ubah kata kunci pencarian.</p>
+                    <p class="mb-0">Coba longgarkan filter atau ubah kata kunci pencarian Anda.</p>
                 </div>
             @else
                 <div class="grid grid-3" id="katalogGrid">
@@ -179,7 +336,7 @@
                         <article class="katalog-card">
                             <a href="{{ route('paket.detail', $p) }}" class="katalog-thumb">
                                 @if($p->foto)
-                                    <img src="{{ '/storage/'.$p->foto }}" alt="{{ $p->nama_paket }}">
+                                    <img src="{{ '/storage/'.$p->foto }}" alt="{{ $p->nama_paket }}" loading="lazy">
                                 @endif
                                 @if($p->is_bestseller)
                                     <span class="badge-seller">Best Seller</span>
@@ -210,6 +367,7 @@
                             <div class="katalog-body">
                                 <a href="{{ route('paket.detail', $p) }}" class="katalog-title">{{ $p->nama_paket }}</a>
                                 <div class="katalog-loc">{!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} {{ $p->destinasi->lokasi }}</div>
+                                
                                 <div class="row between" style="gap:6px;align-items:center">
                                     <div class="katalog-meta">{{ $p->highlight ?? ($p->durasi_hari.' Hari '.($p->durasi_hari-1).' Malam') }}</div>
                                     <span class="badge" style="font-size:10.5px;padding:2px 6px;border-radius:4px;background:{{ $p->minPeserta() === 1 ? '#e0f2fe' : '#fef3c7' }};color:{{ $p->minPeserta() === 1 ? '#0369a1' : '#92400e' }};font-weight:700">
@@ -269,12 +427,46 @@
         </div>
     </div>
 
-    {{-- CTA --}}
+    {{-- 6. SECTION 4 KEUNGGULAN (VALUE PROPOSITION) --}}
+    <section class="features-section">
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon-box">🛡️</div>
+                <div class="feature-text">
+                    <h4>Jaminan Pasti Berangkat</h4>
+                    <p>Jadwal terencana rapi tanpa pembatalan sepihak dan kuota terpantau real-time.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon-box">👨‍✈️</div>
+                <div class="feature-text">
+                    <h4>Pemandu &amp; Kru Berlisensi</h4>
+                    <p>Didampingi tour guide ramah, profesional, dan berpengalaman di tiap medan wisata.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon-box">💎</div>
+                <div class="feature-text">
+                    <h4>Fasilitas Lengkap &amp; Jujur</h4>
+                    <p>Harga transparan tanpa biaya siluman, tiket objek dan akomodasi tercover jelas.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon-box">📞</div>
+                <div class="feature-text">
+                    <h4>Layanan CS 24 Jam Siaga</h4>
+                    <p>Bantuan dan konsultasi perjalanan siap melayani Anda sebelum hingga selesai trip.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- 7. CTA BANNER KONSULTASI --}}
     <section class="cta-banner">
         <div>
             <span class="hero-badge">BUTUH RUTE KHUSUS?</span>
-            <h2>Mau Liburan Rombongan atau Rute Sendiri?</h2>
-            <p>Tim Nanta Travel siap membantu merancang perjalanan impian Anda. Konsultasi gratis, jadwal fleksibel, dan harga terbaik untuk grup.</p>
+            <h2>Mau Liburan Rombongan atau Request Rute Sendiri?</h2>
+            <p>Tim Nanta Travel siap membantu merancang perjalanan impian Anda. Konsultasi gratis, jadwal fleksibel, dan penawaran harga terbaik untuk rombongan kantor, keluarga, atau komunitas.</p>
         </div>
         <div class="row" style="gap:10px">
             <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20konsultasi%20paket%20wisata" class="btn btn-primary" target="_blank">Hubungi via WhatsApp</a>
@@ -291,6 +483,20 @@ function filterDestinasi(q) {
     q = q.toLowerCase();
     document.querySelectorAll('#listDestinasi .check').forEach(el => {
         el.style.display = el.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
+function salinKupon(btn, kode) {
+    navigator.clipboard.writeText(kode).then(() => {
+        const textAwal = btn.innerText;
+        btn.innerText = 'Tersalin! ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.innerText = textAwal;
+            btn.classList.remove('copied');
+        }, 2200);
+    }).catch(() => {
+        alert('Kode Kupon: ' + kode);
     });
 }
 
