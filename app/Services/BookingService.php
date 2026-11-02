@@ -62,9 +62,6 @@ class BookingService
             $tarifDewasa = (float) $paket->tarif;
             $tarifAnak = Pemesanan::tarifKategori($tarifDewasa, 'anak');
             $subtotal = ($dewasa * $tarifDewasa) + ($anak * $tarifAnak);
-            $diskon = (float) ($promo['diskon'] ?? 0);
-
-            // Titik jemput: harus milik jadwal ini; biaya tambahan masuk ke total
             $titik = null;
             $biayaJemput = 0.0;
             if ($idTitikJemput) {
@@ -77,7 +74,7 @@ class BookingService
                 $biayaJemput = (float) $titik->biaya_tambahan;
             }
 
-            $total = max(0, $subtotal - $diskon) + $biayaJemput;
+            $total = $subtotal + $biayaJemput;
 
             $pemesanan = Pemesanan::create([
                 'id_user' => $user->id,
@@ -89,8 +86,8 @@ class BookingService
                 'jumlah_dewasa' => $dewasa,
                 'jumlah_anak' => $anak,
                 'total_bayar' => $total,
-                'kode_promo' => $promo['promo']->kode ?? null,
-                'diskon' => $diskon,
+                'kode_promo' => null,
+                'diskon' => 0,
                 'status_pemesanan' => 'menunggu_pembayaran',
                 'catatan_status' => 'Selesaikan pembayaran dalam 1 jam dan unggah bukti transfer.',
                 'tanggal_pemesanan' => now(),

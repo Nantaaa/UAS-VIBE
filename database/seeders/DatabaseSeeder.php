@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Destinasi;
 use App\Models\JadwalKeberangkatan;
-use App\Models\KodePromo;
 use App\Models\PaketWisata;
 use App\Models\Penugasan;
 use App\Models\Petugas;
@@ -68,24 +67,5 @@ class DatabaseSeeder extends Seeder
             $dest = Destinasi::create($d);
             $destMap[$d['nama_destinasi']] = $dest->id;
         }
-
-        // 4. Promo
-        KodePromo::create([
-            'kode' => 'HEMAT10',
-            'tipe' => 'persentase',
-            'nilai' => 10,
-            'min_transaksi' => 1000000,
-            'maks_diskon' => 500000,
-            'kuota' => 100,
-            'aktif' => true,
-        ]);
-        KodePromo::create([
-            'kode' => 'LIBURAN200',
-            'tipe' => 'nominal',
-            'nilai' => 200000,
-            'min_transaksi' => 2000000,
-            'kuota' => 50,
-            'aktif' => true,
-        ]);
     }
 }

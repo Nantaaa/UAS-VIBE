@@ -139,20 +139,7 @@
                                 <span class="muted">Biaya titik jemput</span><span id="txtJemput">Rp 0</span>
                             </div>
                             <div class="summary-line"><span class="muted">Biaya layanan</span><span>Rp 0</span></div>
-                            <div class="summary-line" id="barisDiskon" style="display:none">
-                                <span class="muted">Diskon promo</span><span style="color:#15803d" id="txtDiskon">-Rp 0</span>
-                            </div>
                             <div class="summary-line total"><span>Total</span><span id="txtTotal">Rp 0</span></div>
-                        </div>
-
-                        <div class="field mt-16">
-                            <label>Kode Promo</label>
-                            <div class="row" style="gap:6px">
-                                <input type="text" id="inputPromo" placeholder="HEMAT10" autocomplete="off">
-                                <button type="button" class="btn btn-ghost btn-sm" id="btnPromo">Terapkan</button>
-                            </div>
-                            <span class="hint" id="statusPromo">Coba: HEMAT10 · NANTA500 · WEEKEND15</span>
-                            <input type="hidden" name="kode_promo" id="kodePromoHidden">
                         </div>
                     </div>
                 </div>
@@ -346,65 +333,6 @@ inputAnak.addEventListener('change', () => {
 });
 document.querySelectorAll('input[name="id_titik_jemput"]').forEach(r => r.addEventListener('change', render));
 render();
-
-// ===== Kode promo =====
-const btnPromo = document.getElementById('btnPromo');
-if (btnPromo) {
-    btnPromo.addEventListener('click', async () => {
-        const kode = document.getElementById('inputPromo').value.trim();
-        const status = document.getElementById('statusPromo');
-        const dewasaVal = parseInt(document.getElementById('dewasa').value || 0, 10);
-        const anakVal = parseInt(document.getElementById('anak').value || 0, 10);
-        const jadwal = {{ $jadwal->id }};
-
-        if (!kode) {
-            status.textContent = 'Masukkan kode promo terlebih dahulu.';
-            status.style.color = '#dc2626';
-            return;
-        }
-
-        btnPromo.disabled = true;
-        status.textContent = 'Memeriksa kode...';
-        status.style.color = '#6b7280';
-
-        try {
-            const res = await fetch('{{ route('promo.cek') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    kode: kode, id_jadwal: jadwal, dewasa: dewasaVal, anak: anakVal,
-                    jumlah: dewasaVal + anakVal,
-                    id_titik_jemput: (document.querySelector('input[name="id_titik_jemput"]:checked') || {}).value || null
-                })
-            });
-            const data = await res.json();
-
-            if (data.valid) {
-                document.getElementById('kodePromoHidden').value = data.kode;
-                document.getElementById('barisDiskon').style.display = '';
-                document.getElementById('txtDiskon').textContent = '-Rp ' + Math.round(data.diskon).toLocaleString('id-ID');
-                document.getElementById('txtTotal').textContent = 'Rp ' + Math.round(data.total).toLocaleString('id-ID');
-                status.textContent = data.pesan;
-                status.style.color = '#15803d';
-            } else {
-                document.getElementById('kodePromoHidden').value = '';
-                document.getElementById('barisDiskon').style.display = 'none';
-                document.getElementById('txtTotal').textContent = 'Rp ' + (TARIF * dewasaVal + TARIF_ANAK * anakVal).toLocaleString('id-ID');
-                status.textContent = data.pesan || 'Kode promo tidak valid.';
-                status.style.color = '#dc2626';
-            }
-        } catch (e) {
-            status.textContent = 'Gagal memeriksa kode promo.';
-            status.style.color = '#dc2626';
-        } finally {
-            btnPromo.disabled = false;
-        }
-    });
-}
 
 </script>
 @endsection

@@ -74,12 +74,6 @@
                                 ({{ $pemesanan->jumlah_dewasa ?: $pemesanan->jumlah_peserta }} dewasa{{ $pemesanan->jumlah_anak > 0 ? ' + '.$pemesanan->jumlah_anak.' anak' : '' }})
                             </span>
                         </dd>
-                        @if($pemesanan->diskon > 0)
-                            <dt>Diskon promo</dt>
-                            <dd style="color:#15803d">-Rp {{ number_format($pemesanan->diskon, 0, ',', '.') }}
-                                @if($pemesanan->kode_promo)<span class="badge badge-success">{{ $pemesanan->kode_promo }}</span>@endif
-                            </dd>
-                        @endif
                         <dt>Total bayar</dt><dd style="color:var(--primary-dark)">Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</dd>
                     </dl>
                 </div>

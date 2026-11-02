@@ -338,8 +338,8 @@
 
                             <label class="row between card-pad" style="border:1px solid var(--line);border-radius:10px;background:#fbfcfe">
                                 <div>
-                                    <strong style="font-size:12.5px;color:var(--ink)">Promo &amp; Diskon Eksklusif</strong>
-                                    <div class="tiny muted">Pemberitahuan kupon potongan harga open trip dan promo musiman Nanta Travel.</div>
+                                    <strong style="font-size:12.5px;color:var(--ink)">Informasi Trip &amp; Jadwal Baru</strong>
+                                    <div class="tiny muted">Pemberitahuan rute dan jadwal keberangkatan terbaru Nanta Travel.</div>
                                 </div>
                                 <input type="checkbox" checked style="width:auto;accent-color:var(--teal)">
                             </label>

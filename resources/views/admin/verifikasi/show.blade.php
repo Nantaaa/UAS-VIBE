@@ -110,9 +110,6 @@
                 @if($rincian['anak'] > 0)
                     <div class="row between" style="font-size:11.5px;padding:4px 0"><span class="sub">Anak {{ $rincian['anak'] }} × Rp {{ number_format($rincian['tarif_anak'], 0, ',', '.') }}</span><span>Rp {{ number_format($rincian['anak'] * $rincian['tarif_anak'], 0, ',', '.') }}</span></div>
                 @endif
-                @if($pemesanan->diskon > 0)
-                    <div class="row between" style="font-size:11.5px;padding:4px 0"><span class="sub">Diskon promo{{ $pemesanan->kode_promo ? ' ('.$pemesanan->kode_promo.')' : '' }}</span><span style="color:#15803d">-Rp {{ number_format($pemesanan->diskon, 0, ',', '.') }}</span></div>
-                @endif
                 <div class="row between" style="font-size:11.5px;padding:4px 0"><span class="sub">Biaya administrasi</span><span>Rp 0</span></div>
                 <div class="row between" style="border-top:1px solid var(--adm-line);margin-top:8px;padding-top:10px">
                     <strong style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--adm-muted)">Total Pembayaran</strong>

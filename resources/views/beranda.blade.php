@@ -102,57 +102,7 @@
         </div>
     </section>
 
-    {{-- 2. SECTION KUPON TIKET ALA TRAVELOKA --}}
-    <section class="coupons-section">
-        <div class="section-head-tvlk">
-            <h2 class="section-title-tvlk">
-                <span>🎟️ Kupon &amp; Penawaran Spesial Wisatawan</span>
-            </h2>
-            <span class="tiny muted">Gunakan kode voucher saat checkout pembayaran</span>
-        </div>
-        <div class="coupons-grid">
-            {{-- Kupon 1 --}}
-            <div class="coupon-ticket">
-                <div class="coupon-left">
-                    <span class="coupon-badge">SEMUA PAKET</span>
-                    <h3 class="coupon-discount">Diskon 10% Hemat</h3>
-                    <p class="coupon-desc">Maksimal potongan hingga Rp 500.000 untuk seluruh trip</p>
-                    <div class="coupon-code-pill">
-                        <span>HEMAT10</span>
-                    </div>
-                </div>
-                <button type="button" class="btn-copy-coupon" onclick="salinKupon(this, 'HEMAT10')">Salin Kupon</button>
-            </div>
-
-            {{-- Kupon 2 --}}
-            <div class="coupon-ticket">
-                <div class="coupon-left">
-                    <span class="coupon-badge" style="background:#fef3c7;color:#92400e">DISKON LANGSUNG</span>
-                    <h3 class="coupon-discount">Potongan Rp 200.000</h3>
-                    <p class="coupon-desc">Berlaku untuk minimal transaksi pemesanan Rp 2.000.000</p>
-                    <div class="coupon-code-pill">
-                        <span>LIBURAN200</span>
-                    </div>
-                </div>
-                <button type="button" class="btn-copy-coupon" onclick="salinKupon(this, 'LIBURAN200')">Salin Kupon</button>
-            </div>
-
-            {{-- Kupon 3 --}}
-            <div class="coupon-ticket">
-                <div class="coupon-left">
-                    <span class="coupon-badge" style="background:#f0fdf4;color:#166534">SOLO TRAVELER</span>
-                    <h3 class="coupon-discount">Bisa 1 Orang Saja</h3>
-                    <p class="coupon-desc">Semua paket Open Trip ramah solo traveler tanpa biaya tambahan</p>
-                    <div class="coupon-code-pill">
-                        <span>SOLO OK</span>
-                    </div>
-                </div>
-                <a href="{{ route('beranda', ['tipe' => ['Open Trip']]) }}#katalog" class="btn-copy-coupon" style="text-decoration:none">Cari Open Trip</a>
-            </div>
-        </div>
-    </section>
-
-    {{-- 3. SECTION DESTINASI POPULER (PHOTO TILES) --}}
+    {{-- 2. SECTION DESTINASI POPULER (PHOTO TILES) --}}
     <section class="destinations-section">
         <div class="section-head-tvlk">
             <h2 class="section-title-tvlk">
@@ -173,14 +123,14 @@
         </div>
     </section>
 
-    {{-- 4. SECTION MEGA PROMO BANNER (ALA EPIC SALE) --}}
+    {{-- 3. BANNER EKSPLORASI NUSANTARA --}}
     <section class="mega-promo-banner">
         <div class="mega-promo-content">
             <span class="badge" style="background:#fef08a;color:#854d0e;font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;margin-bottom:6px;display:inline-block">
-                ⚡ FESTIVAL WISATA NUSANTARA 2026
+                ⚡ EKSPLORASI NUSANTARA 2026
             </span>
-            <h3>Jelajahi Sudut Nusantara dengan Harga Terbaik</h3>
-            <p>Dapatkan potongan harga langsung, fasilitas kapal &amp; hotel terverifikasi, serta jaminan keberangkatan aman bersama pemandu lokal berlisensi.</p>
+            <h3>Jelajahi Sudut Nusantara dengan Layanan Terbaik</h3>
+            <p>Nikmati pengalaman liburan tak terlupakan dengan fasilitas kapal &amp; hotel terverifikasi, serta jaminan keberangkatan aman bersama pemandu lokal berlisensi.</p>
         </div>
         <div>
             <a href="{{ route('beranda', ['urutkan' => 'termurah']) }}#katalog" class="btn" style="background:#ffffff;color:#0369a1;font-weight:800;padding:12px 20px;border-radius:10px;text-decoration:none;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,0.15)">
@@ -189,7 +139,7 @@
         </div>
     </section>
 
-    {{-- 5. BODY: FILTER LANJUTAN + HASIL KATALOG PAKET --}}
+    {{-- 4. BODY: FILTER LANJUTAN + HASIL KATALOG PAKET --}}
     <div class="catalog-body" id="katalog">
         <aside class="filter-card">
             <div class="filter-head">
@@ -483,20 +433,6 @@ function filterDestinasi(q) {
     q = q.toLowerCase();
     document.querySelectorAll('#listDestinasi .check').forEach(el => {
         el.style.display = el.innerText.toLowerCase().includes(q) ? '' : 'none';
-    });
-}
-
-function salinKupon(btn, kode) {
-    navigator.clipboard.writeText(kode).then(() => {
-        const textAwal = btn.innerText;
-        btn.innerText = 'Tersalin! ✓';
-        btn.classList.add('copied');
-        setTimeout(() => {
-            btn.innerText = textAwal;
-            btn.classList.remove('copied');
-        }, 2200);
-    }).catch(() => {
-        alert('Kode Kupon: ' + kode);
     });
 }
 

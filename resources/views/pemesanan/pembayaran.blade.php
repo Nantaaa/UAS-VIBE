@@ -154,11 +154,6 @@
                         <div class="summary-line"><span class="muted">Biaya titik jemput</span><span>Rp {{ number_format($pemesanan->biaya_jemput, 0, ',', '.') }}</span></div>
                     @endif
                     <div class="summary-line"><span class="muted">Pajak &amp; biaya</span><span>Rp 0</span></div>
-                    @if($pemesanan->diskon > 0)
-                        <div class="summary-line"><span class="muted">Diskon promo{{ $pemesanan->kode_promo ? ' ('.$pemesanan->kode_promo.')' : '' }}</span>
-                            <span style="color:#15803d">-Rp {{ number_format($pemesanan->diskon, 0, ',', '.') }}</span>
-                        </div>
-                    @endif
                     <div class="summary-line total"><span>Total Pembayaran</span><span>Rp {{ number_format($pemesanan->total_bayar, 0, ',', '.') }}</span></div>
                 </div>
                 </div>

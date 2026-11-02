@@ -17,48 +17,7 @@ class PemesananController extends Controller
     public function __construct(
         private BookingService $booking,
         private VoucherService $voucher,
-        private PromoService $promo,
     ) {}
-
-    public function cekPromo(Request $request)
-    {
-        $data = $request->validate([
-            'kode' => ['required', 'string', 'max:30'],
-            'id_jadwal' => ['required', 'integer', 'exists:jadwal_keberangkatan,id'],
-            'jumlah' => ['nullable', 'integer', 'min:1', 'max:20'],
-            'dewasa' => ['nullable', 'integer', 'min:1', 'max:20'],
-            'anak' => ['nullable', 'integer', 'min:0', 'max:10'],
-        ]);
-
-        $jadwal = \App\Models\JadwalKeberangkatan::with('paket')->findOrFail($data['id_jadwal']);
-        $minPeserta = $jadwal->paket->minPeserta();
-        $tarifDewasa = (float) $jadwal->paket->tarif;
-        $dewasa = (int) ($data['dewasa'] ?? $data['jumlah'] ?? $minPeserta);
-        $anak = (int) ($data['anak'] ?? 0);
-        if ($dewasa + $anak < $minPeserta) {
-            $dewasa = $minPeserta;
-        }
-        $subtotal = ($dewasa * $tarifDewasa) + ($anak * \App\Models\Pemesanan::tarifKategori($tarifDewasa, 'anak'));
-
-        try {
-            $hasil = $this->promo->hitung($data['kode'], $subtotal);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'valid' => false,
-                'pesan' => collect($e->errors())->flatten()->first(),
-                'subtotal' => $subtotal,
-            ], 422);
-        }
-
-        return response()->json([
-            'valid' => true,
-            'pesan' => 'Kode promo diterapkan: '.$hasil['promo']->kode.' (-'.$hasil['promo']->labelDiskon().')',
-            'kode' => $hasil['promo']->kode,
-            'diskon' => (float) $hasil['diskon'],
-            'subtotal' => $subtotal,
-            'total' => (float) $hasil['total'],
-        ]);
-    }
 
     public function form(JadwalKeberangkatan $jadwal)
     {
@@ -165,21 +124,15 @@ class PemesananController extends Controller
             }
         }
 
-        $promo = $this->promo->hitung($request->input('kode_promo'), $subtotal);
-
         $pemesanan = $this->booking->buat(
             $request->user(),
             $jadwal->id,
             array_values($data),
-            $promo,
+            [],
             $dewasa,
             $anak,
             $request->filled('id_titik_jemput') ? (int) $request->input('id_titik_jemput') : null
         );
-
-        if ($promo['promo']) {
-            $this->promo->tandaiTerpakai($promo['promo']);
-        }
 
         return redirect()->route('pemesanan.show', $pemesanan)
             ->with('sukses', 'Pemesanan berhasil dibuat. Selesaikan pembayaran dalam 1 jam.');
