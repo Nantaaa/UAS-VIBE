@@ -153,8 +153,92 @@
         </div>
     </section>
 
-    {{-- 4. BODY: HASIL KATALOG PAKET (FULL-WIDTH) --}}
+    {{-- 4. BODY: FILTER LANJUTAN STICKY (KIRI) + HASIL KATALOG (KANAN) --}}
     <div class="catalog-body" id="katalog">
+        {{-- SIDEBAR FILTER STICKY (DIAM MENEMPEL SAAT DISCROLL) --}}
+        <aside class="filter-card">
+            <div class="filter-head">
+                <strong>{!! view('partials.icon', ['name' => 'filter', 'size' => 14])->render() !!} Filter Lanjutan</strong>
+                <a href="{{ route('beranda') }}#katalog" class="filter-reset">Reset</a>
+            </div>
+
+            <form method="GET" action="{{ route('beranda') }}#katalog" id="formFilter">
+                @if(request('q')) <input type="hidden" name="q" value="{{ request('q') }}"> @endif
+                @if(request('urutkan')) <input type="hidden" name="urutkan" value="{{ request('urutkan') }}"> @endif
+
+                {{-- 1. Destinasi --}}
+                <div class="filter-block">
+                    <div class="filter-title">Destinasi</div>
+                    <input type="text" placeholder="Cari destinasi..." class="filter-search" oninput="filterDestinasi(this.value)">
+                    <div class="checklist" id="listDestinasi">
+                        @foreach($destinasi as $d)
+                            <label class="check">
+                                <input type="checkbox" name="destinasi[]" value="{{ $d->id }}"
+                                       @checked(in_array($d->id, (array) request('destinasi', [])))>
+                                <span>{{ $d->nama_destinasi }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- 2. Tipe Perjalanan --}}
+                <div class="filter-block">
+                    <div class="filter-title">Tipe Perjalanan</div>
+                    <div class="checklist">
+                        @foreach($tipeTrip as $tipe)
+                            <label class="check">
+                                <input type="checkbox" name="tipe[]" value="{{ $tipe }}"
+                                       @checked(in_array($tipe, (array) request('tipe', [])))>
+                                <span>{{ $tipe }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- 3. Rentang Harga --}}
+                <div class="filter-block">
+                    <div class="filter-title">Rentang Harga (per orang)</div>
+                    <input type="range" min="0" max="10000000" step="250000" id="rangeHarga"
+                           value="{{ request('harga_max', 10000000) }}" oninput="syncHarga(this.value)">
+                    <div class="row between tiny muted" style="margin-top:2px">
+                        <span>Rp 0</span><span>Rp 10.000.000</span>
+                    </div>
+                    <div class="row" style="gap:8px;margin-top:8px">
+                        <label class="rp-input"><span>Rp</span>
+                            <input type="number" name="harga_min" id="hargaMin" value="{{ request('harga_min', 0) }}" placeholder="0">
+                        </label>
+                        <label class="rp-input"><span>Rp</span>
+                            <input type="number" name="harga_max" id="hargaMax" value="{{ request('harga_max', 10000000) }}" placeholder="10.000.000">
+                        </label>
+                    </div>
+                </div>
+
+                {{-- 4. Tanggal Keberangkatan --}}
+                <div class="filter-block">
+                    <div class="filter-title">Tanggal Keberangkatan</div>
+                    <input type="date" name="tanggal" value="{{ request('tanggal') }}" style="width:100%;font-size:12px;padding:8px 10px;border:1px solid var(--line);border-radius:8px">
+                </div>
+
+                {{-- 5. Durasi Trip --}}
+                <div class="filter-block">
+                    <div class="filter-title">Durasi Trip</div>
+                    <div class="row" style="gap:6px;flex-wrap:wrap">
+                        @foreach([1, 2, 3, 4, 5] as $durasi)
+                            <label class="durasi-box">
+                                <input type="checkbox" name="durasi[]" value="{{ $durasi }}"
+                                       @checked(in_array($durasi, (array) request('durasi', [])))>
+                                <span>{{ $durasi }}H</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-block" type="submit" style="margin-top:14px;border-radius:10px">
+                    {!! view('partials.icon', ['name' => 'check', 'size' => 14])->render() !!} Terapkan Filter
+                </button>
+            </form>
+        </aside>
+
         <div>
             <?php
                 $aktif = [];
@@ -321,55 +405,169 @@
         </div>
     </div>
 
-    {{-- 6. SECTION 4 KEUNGGULAN (VALUE PROPOSITION) --}}
-    <section class="features-section">
-        <div class="features-grid">
-            <div class="feature-item">
-                <div class="feature-icon-box">🛡️</div>
-                <div class="feature-text">
-                    <h4>Jaminan Pasti Berangkat</h4>
-                    <p>Jadwal terencana rapi tanpa pembatalan sepihak dan kuota terpantau real-time.</p>
+    {{-- 5. SECTION KEUNGGULAN OPEN TRIP (ALA EXPLORER.ID / SEBUMI) --}}
+    <section class="opentrip-why-section text-center">
+        <span class="section-badge-center">✦ PENGALAMAN LIBURAN TERBAIK</span>
+        <h2 class="section-title-center">Kenapa Ribuan Wisatawan Memilih Open Trip Nanta Travel?</h2>
+        <p class="section-sub-center">
+            Dari solo traveler hingga rombongan, nikmati perjalanan tanpa ribet dengan standar kenyamanan, kru bersertifikat, dan dokumentasi lengkap di setiap destinasi.
+        </p>
+
+        <div class="ot-cards-grid text-left">
+            {{-- Card 1 --}}
+            <div class="ot-card">
+                <div class="ot-icon-badge">⛵</div>
+                <h4>100% Jadwal Pasti Berangkat</h4>
+                <p>Jadwal keberangkatan terencana matang dengan kuota terpantau real-time. Tanpa drama pembatalan sepihak menjelang hari H.</p>
+            </div>
+
+            {{-- Card 2 --}}
+            <div class="ot-card">
+                <div class="ot-icon-badge">📸</div>
+                <h4>Free Dokumentasi Drone &amp; Kamera</h4>
+                <p>Dokumentasi foto kamera mirrorless, shoot drone udara, dan foto underwater GoPro di setiap trip laut tanpa biaya tambahan sepeser pun.</p>
+            </div>
+
+            {{-- Card 3 --}}
+            <div class="ot-card">
+                <div class="ot-icon-badge">🎒</div>
+                <h4>Ramah Solo Traveler (Bisa 1 Orang)</h4>
+                <p>Gak perlu tunggu teman liburan. Gabung sendirian tetap bisa dan pasti dapat kenalan teman jalan baru yang satu frekuensi.</p>
+            </div>
+
+            {{-- Card 4 --}}
+            <div class="ot-card">
+                <div class="ot-icon-badge">👨‍✈️</div>
+                <h4>Pemandu &amp; Nahkoda Berlisensi</h4>
+                <p>Didampingi tour leader resmi bersertifikat HPI dan nahkoda kapal lokal berpengalaman yang sigap, informatif, dan ramah.</p>
+            </div>
+
+            {{-- Card 5 --}}
+            <div class="ot-card">
+                <div class="ot-icon-badge">🏨</div>
+                <h4>Akomodasi &amp; Kapal Terverifikasi</h4>
+                <p>Penginapan hotel AC bersih, homestay terpilih, serta armada kapal phinisi dan boat wisata berstandar keselamatan pelayaran resmi.</p>
+            </div>
+
+            {{-- Card 6 --}}
+            <div class="ot-card">
+                <div class="ot-icon-badge">💎</div>
+                <h4>Harga Jujur Tanpa Biaya Siluman</h4>
+                <p>Seluruh tiket masuk taman nasional, retribusi pulau, sewa kapal, BBM, dan makan harian sudah tercover jelas tanpa pungli.</p>
+            </div>
+        </div>
+    </section>
+
+    {{-- 6. SECTION TESTIMONI KOMUNITAS PENJELAJAH --}}
+    <section class="community-reviews-section">
+        <div style="text-align:center;margin-bottom:28px">
+            <span class="section-badge-center">✦ ULASAN PENJELAJAH</span>
+            <h2 class="section-title-center">Cerita Seru dari Teman Trip Nusantara</h2>
+            <p class="section-sub-center" style="margin-bottom:0">
+                Pengalaman nyata para wisatawan yang telah menjelajahi sudut terindah Indonesia bersama Nanta Travel.
+            </p>
+        </div>
+
+        <div class="reviews-grid">
+            {{-- Review 1 --}}
+            <div class="review-card">
+                <div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-quote">
+                        “Awalnya ragu berangkat sendirian ke Labuan Bajo, takut canggung di kapal. Pas sailing Phinisi bareng Nanta Travel ternyata krunya ramah banget dan bikin suasana akrab. Pulang-pulang dapet circle teman jalan baru!”
+                    </p>
+                </div>
+                <div class="review-author">
+                    <div class="author-avatar">RA</div>
+                    <div class="author-info">
+                        <h5>Rian Ardiansyah</h5>
+                        <span>Solo Traveler · Komodo 3H2M</span>
+                    </div>
                 </div>
             </div>
-            <div class="feature-item">
-                <div class="feature-icon-box">👨‍✈️</div>
-                <div class="feature-text">
-                    <h4>Pemandu &amp; Kru Berlisensi</h4>
-                    <p>Didampingi tour guide ramah, profesional, dan berpengalaman di tiap medan wisata.</p>
+
+            {{-- Review 2 --}}
+            <div class="review-card">
+                <div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-quote">
+                        “Dokumentasinya beneran juara! Pas snorkeling di Karimunjawa difotoin sama hiu &amp; karang pake GoPro, sorenya sunset Pantai Ujung Gelam diambil pake drone. Hasil fotonya jernih banget, ga pelit file!”
+                    </p>
+                </div>
+                <div class="review-author">
+                    <div class="author-avatar" style="background:linear-gradient(135deg, #0d9488, #059669)">NB</div>
+                    <div class="author-info">
+                        <h5>Nadhira &amp; Bella</h5>
+                        <span>Traveler Surabaya · Karimunjawa 3H2M</span>
+                    </div>
                 </div>
             </div>
-            <div class="feature-item">
-                <div class="feature-icon-box">💎</div>
-                <div class="feature-text">
-                    <h4>Fasilitas Lengkap &amp; Jujur</h4>
-                    <p>Harga transparan tanpa biaya siluman, tiket objek dan akomodasi tercover jelas.</p>
+
+            {{-- Review 3 --}}
+            <div class="review-card">
+                <div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-quote">
+                        “Trip Bromo Midnight paling efisien. Penjemputan di Stasiun Malang on-time, Jeep Hardtop nyaman, driver paham banget spot sunrise yang view-nya dapet tapi ga padat turis. Bintang lima buat pelayanannya!”
+                    </p>
                 </div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon-box">📞</div>
-                <div class="feature-text">
-                    <h4>Layanan CS 24 Jam Siaga</h4>
-                    <p>Bantuan dan konsultasi perjalanan siap melayani Anda sebelum hingga selesai trip.</p>
+                <div class="review-author">
+                    <div class="author-avatar" style="background:linear-gradient(135deg, #f59e0b, #d97706)">DP</div>
+                    <div class="author-info">
+                        <h5>Dimas Prasetya</h5>
+                        <span>Traveler Bandung · Bromo Midnight</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- 7. CTA BANNER KONSULTASI --}}
-    <section class="cta-banner">
-        <div>
-            <span class="hero-badge">BUTUH RUTE KHUSUS?</span>
-            <h2>Mau Liburan Rombongan atau Request Rute Sendiri?</h2>
-            <p>Tim Nanta Travel siap membantu merancang perjalanan impian Anda. Konsultasi gratis, jadwal fleksibel, dan penawaran harga terbaik untuk rombongan kantor, keluarga, atau komunitas.</p>
-        </div>
-        <div class="row" style="gap:10px">
-            <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20konsultasi%20paket%20wisata" class="btn btn-primary" target="_blank">Hubungi via WhatsApp</a>
-            <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20request%20jadwal%20rombongan" class="btn btn-ghost" target="_blank" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Konsultasi Rute</a>
+    {{-- 7. SECTION GATHERING & PRIVATE TRIP ROMBONGAN --}}
+    <section class="gathering-banner" style="background-image: url('{{ asset('storage/paket/komodo.jpg') }}');">
+        <div class="gathering-inner">
+            <div class="gathering-copy">
+                <span class="gathering-badge">✦ PRIVATE &amp; CORPORATE GATHERING</span>
+                <h2>Rencanakan Liburan Rombongan Kantor, Komunitas, atau Keluarga?</h2>
+                <p>
+                    Bebas tentukan destinasi, tanggal berangkat, dan rute perjalanan custom sesuai impian grup Anda. Tim Nanta Travel siap menyusun proposal penawaran harga terbaik dalam waktu 1 jam!
+                </p>
+                <div class="gathering-perks">
+                    <div class="gathering-perk-item">
+                        <span class="chk">✓</span> Gratis Banner &amp; Video Drone Rombongan
+                    </div>
+                    <div class="gathering-perk-item">
+                        <span class="chk">✓</span> Invoice &amp; SPK Resmi Berbadan Hukum (PT)
+                    </div>
+                    <div class="gathering-perk-item">
+                        <span class="chk">✓</span> Konsultasi Rute &amp; Jadwal 100% Gratis
+                    </div>
+                </div>
+            </div>
+            <div class="gathering-actions">
+                <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20konsultasi%20paket%20rombongan%20gathering"
+                   class="btn-wa-gathering" target="_blank">
+                    <span>💬 Konsultasi Rombongan (WA)</span>
+                </a>
+                <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20minta%20brosur%20dan%20katalog%20trip%20terbaru"
+                   class="btn-cs-gathering" target="_blank">
+                    <span>📄 Minta Brosur &amp; Katalog PDF</span>
+                </a>
+            </div>
         </div>
     </section>
 </div>
 
 <script>
+function syncHarga(v) {
+    document.getElementById('hargaMax').value = v;
+}
+function filterDestinasi(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll('#listDestinasi .check').forEach(el => {
+        el.style.display = el.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
 // Toggle tampilan Grid / List
 (() => {
     const grid = document.getElementById('katalogGrid');
