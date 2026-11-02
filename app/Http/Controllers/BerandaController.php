@@ -56,8 +56,8 @@ class BerandaController extends Controller
             default => $query->orderByDesc('is_bestseller')->orderBy('nama_paket'),
         };
 
-        $perHalaman = (int) $request->input('per_halaman', 6);
-        $perHalaman = in_array($perHalaman, [6, 9, 12], true) ? $perHalaman : 6;
+        $perHalaman = (int) $request->input('per_halaman', 12);
+        $perHalaman = in_array($perHalaman, [6, 9, 12, 18, 24], true) ? $perHalaman : 12;
 
         $wishlistIds = auth()->check()
             ? \App\Models\Wishlist::where('id_user', auth()->id())->pluck('id_paket')->all()
@@ -80,11 +80,23 @@ class BerandaController extends Controller
         $paket->loadSum(['pemesanan as peserta_terkonfirmasi' => fn ($q) => $q->where('status_pemesanan', 'terkonfirmasi')], 'jumlah_peserta');
 
         $galeri = \App\Models\PaketWisata::where('id', '!=', $paket->id)
+            ->where('id_destinasi', $paket->id_destinasi)
             ->whereNotNull('foto')
             ->where('is_active', true)
-            ->inRandomOrder()
             ->limit(2)
             ->get(['foto', 'nama_paket']);
+
+        if ($galeri->count() < 2) {
+            $sisa = 2 - $galeri->count();
+            $tambahan = \App\Models\PaketWisata::where('id', '!=', $paket->id)
+                ->whereNotIn('id', $galeri->pluck('id')->all())
+                ->where('tipe_trip', $paket->tipe_trip)
+                ->whereNotNull('foto')
+                ->where('is_active', true)
+                ->limit($sisa)
+                ->get(['foto', 'nama_paket']);
+            $galeri = $galeri->concat($tambahan);
+        }
 
         return view('paket.detail', compact('paket', 'galeri'));
     }

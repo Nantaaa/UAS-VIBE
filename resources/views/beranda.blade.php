@@ -25,7 +25,7 @@
             </form>
 
             <div class="hero-chips">
-                @foreach($destinasi->take(6) as $d)
+                @foreach($destinasi->take(10) as $d)
                     <a class="hero-chip {{ in_array($d->id, (array) request('destinasi', [])) ? 'active' : '' }}"
                        href="{{ route('beranda', ['destinasi' => [$d->id]]) }}#katalog">{{ $d->nama_destinasi }}</a>
                 @endforeach
@@ -210,13 +210,19 @@
                             <div class="katalog-body">
                                 <a href="{{ route('paket.detail', $p) }}" class="katalog-title">{{ $p->nama_paket }}</a>
                                 <div class="katalog-loc">{!! view('partials.icon', ['name' => 'map-pin', 'size' => 15])->render() !!} {{ $p->destinasi->lokasi }}</div>
-                                <div class="row between" style="gap:6px">
+                                <div class="row between" style="gap:6px;align-items:center">
                                     <div class="katalog-meta">{{ $p->highlight ?? ($p->durasi_hari.' Hari '.($p->durasi_hari-1).' Malam') }}</div>
+                                    <span class="badge" style="font-size:10.5px;padding:2px 6px;border-radius:4px;background:{{ $p->minPeserta() === 1 ? '#e0f2fe' : '#fef3c7' }};color:{{ $p->minPeserta() === 1 ? '#0369a1' : '#92400e' }};font-weight:700">
+                                        Min. {{ $p->minPeserta() }} Pax{{ $p->minPeserta() === 1 ? ' (Bisa Solo)' : '' }}
+                                    </span>
+                                </div>
+                                <div class="row between mt-4" style="gap:6px">
+                                    <div class="tiny muted">{{ $p->durasi_hari }} Hari {{ max(1, $p->durasi_hari - 1) }} Malam · {{ $p->tipe_trip }}</div>
                                     @if(($p->peserta_terkonfirmasi ?? 0) > 0)
-                                    <div class="card-rating" style="color:var(--teal-dark)">{!! view('partials.icon', ['name' => 'users', 'size' => 11])->render() !!} {{ (int) $p->peserta_terkonfirmasi }} peserta</div>
-                                @else
-                                    <div class="card-rating" style="color:var(--muted)">Jadwal baru</div>
-                                @endif
+                                        <div class="card-rating" style="color:var(--teal-dark)">{!! view('partials.icon', ['name' => 'users', 'size' => 11])->render() !!} {{ (int) $p->peserta_terkonfirmasi }} peserta</div>
+                                    @else
+                                        <div class="card-rating" style="color:var(--muted)">Jadwal baru</div>
+                                    @endif
                                 </div>
                                 <div class="katalog-price">
                                     <div>
@@ -253,8 +259,8 @@
                             @endif
                         @endforeach
                         <select name="per_halaman" onchange="this.form.submit()" style="font-size:11.5px;padding:6px 8px">
-                            @foreach([6, 9, 12] as $n)
-                                <option value="{{ $n }}" @selected(request('per_halaman', 6) == $n)>Tampilkan: {{ $n }} per halaman</option>
+                            @foreach([9, 12, 18, 24] as $n)
+                                <option value="{{ $n }}" @selected(request('per_halaman', 12) == $n)>Tampilkan: {{ $n }} per halaman</option>
                             @endforeach
                         </select>
                     </form>
