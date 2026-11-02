@@ -405,60 +405,7 @@
         </div>
     </div>
 
-    {{-- 5. SECTION KEUNGGULAN OPEN TRIP (ALA EXPLORER.ID / SEBUMI) --}}
-    <section class="opentrip-why-section text-center">
-        <span class="section-badge-center">✦ PENGALAMAN LIBURAN TERBAIK</span>
-        <h2 class="section-title-center">Kenapa Ribuan Wisatawan Memilih Open Trip Nanta Travel?</h2>
-        <p class="section-sub-center">
-            Dari solo traveler hingga rombongan, nikmati perjalanan tanpa ribet dengan standar kenyamanan, kru bersertifikat, dan dokumentasi lengkap di setiap destinasi.
-        </p>
-
-        <div class="ot-cards-grid text-left">
-            {{-- Card 1 --}}
-            <div class="ot-card">
-                <div class="ot-icon-badge">⛵</div>
-                <h4>100% Jadwal Pasti Berangkat</h4>
-                <p>Jadwal keberangkatan terencana matang dengan kuota terpantau real-time. Tanpa drama pembatalan sepihak menjelang hari H.</p>
-            </div>
-
-            {{-- Card 2 --}}
-            <div class="ot-card">
-                <div class="ot-icon-badge">📸</div>
-                <h4>Free Dokumentasi Drone &amp; Kamera</h4>
-                <p>Dokumentasi foto kamera mirrorless, shoot drone udara, dan foto underwater GoPro di setiap trip laut tanpa biaya tambahan sepeser pun.</p>
-            </div>
-
-            {{-- Card 3 --}}
-            <div class="ot-card">
-                <div class="ot-icon-badge">🎒</div>
-                <h4>Ramah Solo Traveler (Bisa 1 Orang)</h4>
-                <p>Gak perlu tunggu teman liburan. Gabung sendirian tetap bisa dan pasti dapat kenalan teman jalan baru yang satu frekuensi.</p>
-            </div>
-
-            {{-- Card 4 --}}
-            <div class="ot-card">
-                <div class="ot-icon-badge">👨‍✈️</div>
-                <h4>Pemandu &amp; Nahkoda Berlisensi</h4>
-                <p>Didampingi tour leader resmi bersertifikat HPI dan nahkoda kapal lokal berpengalaman yang sigap, informatif, dan ramah.</p>
-            </div>
-
-            {{-- Card 5 --}}
-            <div class="ot-card">
-                <div class="ot-icon-badge">🏨</div>
-                <h4>Akomodasi &amp; Kapal Terverifikasi</h4>
-                <p>Penginapan hotel AC bersih, homestay terpilih, serta armada kapal phinisi dan boat wisata berstandar keselamatan pelayaran resmi.</p>
-            </div>
-
-            {{-- Card 6 --}}
-            <div class="ot-card">
-                <div class="ot-icon-badge">💎</div>
-                <h4>Harga Jujur Tanpa Biaya Siluman</h4>
-                <p>Seluruh tiket masuk taman nasional, retribusi pulau, sewa kapal, BBM, dan makan harian sudah tercover jelas tanpa pungli.</p>
-            </div>
-        </div>
-    </section>
-
-    {{-- 6. SECTION TESTIMONI KOMUNITAS PENJELAJAH --}}
+    {{-- 5. SECTION TESTIMONI KOMUNITAS PENJELAJAH --}}
     <section class="community-reviews-section">
         <div style="text-align:center;margin-bottom:28px">
             <span class="section-badge-center">✦ ULASAN PENJELAJAH</span>
