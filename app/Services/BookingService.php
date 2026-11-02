@@ -40,13 +40,14 @@ class BookingService
             ]);
         }
 
-        if ($jumlah < (int) config('travel.min_peserta', 2)) {
-            throw ValidationException::withMessages(['peserta' => 'Pemesanan minimal 2 peserta.']);
-        }
-
         return DB::transaction(function () use ($user, $idJadwal, $pesertaData, $jumlah, $promo, $dewasa, $anak, $idTitikJemput) {
             /** @var JadwalKeberangkatan $jadwal */
             $jadwal = JadwalKeberangkatan::whereKey($idJadwal)->lockForUpdate()->firstOrFail();
+
+            $minPeserta = $jadwal->paket->minPeserta();
+            if ($jumlah < $minPeserta) {
+                throw ValidationException::withMessages(['peserta' => "Pemesanan paket {$jadwal->paket->nama_paket} minimal {$minPeserta} peserta."]);
+            }
 
             $terpakai = $jadwal->kuotaTerpakai();
             $sisa = $jadwal->kuota_peserta - $terpakai;

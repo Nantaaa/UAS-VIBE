@@ -105,7 +105,7 @@
 
             <div class="pdp-meta">
                 <div>{!! view('partials.icon', ['name' => 'calendar', 'size' => 15])->render() !!} {{ $paket->durasi_hari }} Hari {{ $paket->durasi_hari - 1 }} Malam</div>
-                <div>{!! view('partials.icon', ['name' => 'users', 'size' => 15])->render() !!} Min. 2 Peserta</div>
+                <div>{!! view('partials.icon', ['name' => 'users', 'size' => 15])->render() !!} Min. {{ $paket->minPeserta() }} Peserta</div>
                 <div>{!! view('partials.icon', ['name' => 'check-circle', 'size' => 15])->render() !!} Kuota {{ $jadwalPertama->sisa_kuota ?? 0 }} kursi tersisa</div>
             </div>
 
@@ -296,7 +296,7 @@
                         <span class="lbl">Dewasa</span>
                         <div class="stepper">
                             <button type="button" onclick="ubahPeserta(-1)" disabled>−</button>
-                            <span class="n" id="nDewasa">2</span>
+                            <span class="n" id="nDewasa">{{ $paket->minPeserta() }}</span>
                             <button type="button" onclick="ubahPeserta(1)">+</button>
                         </div>
                     </div>
@@ -311,13 +311,13 @@
 
                     <div class="book-total">
                         <span class="lbl" style="font-size:12px;font-weight:700">Total</span>
-                        <span class="v" id="totalHarga">Rp {{ number_format($paket->tarif * 2, 0, ',', '.') }}</span>
+                        <span class="v" id="totalHarga">Rp {{ number_format($paket->tarif * $paket->minPeserta(), 0, ',', '.') }}</span>
                     </div>
 
-                    <input type="hidden" name="jumlah" id="inputJumlah" value="2">
+                    <input type="hidden" name="jumlah" id="inputJumlah" value="{{ $paket->minPeserta() }}">
 
                     @if($jadwalPertama)
-                        <a href="{{ auth()->check() ? route('pemesanan.form', ['jadwal' => $jadwalPertama, 'dewasa' => 2, 'anak' => 0]) : route('login') }}"
+                        <a href="{{ auth()->check() ? route('pemesanan.form', ['jadwal' => $jadwalPertama, 'dewasa' => $paket->minPeserta(), 'anak' => 0]) : route('login') }}"
                            class="btn btn-primary btn-block" id="btnPesan">Pesan Sekarang</a>
                     @else
                         <button class="btn btn-primary btn-block" disabled>Belum ada jadwal</button>
@@ -334,8 +334,8 @@
 <script>
 const TARIF = {{ (int) $paket->tarif }};
 const TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $paket->tarif, 'anak') }};
-const MIN_TOTAL = {{ (int) config('travel.min_peserta', 2) }};
-let dewasa = 2, anak = 0;
+const MIN_TOTAL = {{ (int) $paket->minPeserta() }};
+let dewasa = {{ (int) $paket->minPeserta() }}, anak = 0;
 const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
 
 function render() {

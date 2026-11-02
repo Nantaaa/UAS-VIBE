@@ -50,7 +50,7 @@
 
                 {{-- Peserta --}}
                 @php
-                    $minTotal = (int) config('travel.min_peserta', 2);
+                    $minTotal = (int) $jadwal->paket->minPeserta();
                     $maksDewasa = min((int) config('travel.maks_peserta', 20), $jadwal->sisa_kuota);
                     $maksAnak = min((int) config('travel.maks_anak', 10), $jadwal->sisa_kuota);
                     $valDewasa = (int) old('dewasa', request('dewasa', request('jumlah', $minTotal)));
@@ -75,7 +75,7 @@
                     <input type="hidden" name="jumlah_peserta" id="jumlah_peserta" value="{{ $valDewasa + $valAnak }}">
                 </div>
                 <span class="hint" style="display:block;margin-top:6px">
-                    Pemesanan minimal 2 peserta. Tarif anak {{ \App\Models\Pemesanan::persenTarifAnak() }}% dari tarif dewasa. Data peserta dewasa diisi lebih dulu, lalu anak.
+                    Pemesanan minimal {{ $jadwal->paket->minPeserta() }} peserta{{ $jadwal->paket->minPeserta() === 1 ? ' (bisa solo traveler / berangkat sendirian)' : '' }}. Tarif anak {{ \App\Models\Pemesanan::persenTarifAnak() }}% dari tarif dewasa.
                 </span>
 
                 @php($titikAktif = $jadwal->titikJemput->where('urutan', '<', 99))
@@ -120,7 +120,7 @@
 
             {{-- Ringkasan --}}
             <aside>
-                <div class="card" style="position:sticky;top:88px">
+                <div class="card">
                     <div class="card-head"><h3>Ringkasan Pesanan</h3></div>
                     <div class="card-body">
                         <div class="row" style="gap:10px">
@@ -259,7 +259,7 @@
 <script>
 const TARIF = {{ (int) $jadwal->paket->tarif }};
 const TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $jadwal->paket->tarif, 'anak') }};
-const MIN_TOTAL = {{ (int) config('travel.min_peserta', 2) }};
+const MIN_TOTAL = {{ (int) $jadwal->paket->minPeserta() }};
 const MAKS = {{ min(20, $jadwal->sisa_kuota) }};
 const MAKS_ANAK = {{ min(10, $jadwal->sisa_kuota) }};
 const wrap = document.getElementById('pesertaWrap');

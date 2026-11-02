@@ -191,7 +191,7 @@
             @endif
         </div>
 
-        <div class="stack" style="position:sticky;top:88px">
+        <div class="stack">
             <div class="card">
                 <div class="card-head"><h3>Status pemesanan</h3></div>
                 <div class="card-body">

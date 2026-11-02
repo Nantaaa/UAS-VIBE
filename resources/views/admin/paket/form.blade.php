@@ -50,6 +50,11 @@
                     <input id="durasi_hari" type="number" name="durasi_hari" min="1" max="30" value="{{ old('durasi_hari', $paket->durasi_hari) }}" required>
                 </div>
                 <div class="field">
+                    <label for="min_peserta">Minimal Peserta (Pax) *</label>
+                    <input id="min_peserta" type="number" name="min_peserta" min="1" max="20" value="{{ old('min_peserta', $paket->min_peserta ?? 1) }}" required>
+                    <span class="hint">1 untuk Open Trip (solo traveler), 2 untuk Honeymoon/Private.</span>
+                </div>
+                <div class="field">
                     <label for="tarif">Tarif / Orang (Rp) *</label>
                     <input id="tarif" type="number" name="tarif" min="0" step="1000" value="{{ old('tarif', (int) $paket->tarif) }}" required>
                 </div>

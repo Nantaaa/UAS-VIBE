@@ -13,12 +13,13 @@ class PaketWisata extends Model
 
     protected $fillable = [
         'id_destinasi', 'nama_paket', 'deskripsi', 'highlight', 'fasilitas',
-        'itinerary', 'durasi_hari', 'tipe_trip', 'include_penerbangan',
+        'itinerary', 'durasi_hari', 'min_peserta', 'tipe_trip', 'include_penerbangan',
         'termasuk', 'tidak_termasuk', 'tarif', 'harga_asli',
         'foto', 'is_active', 'is_bestseller',
     ];
 
     protected $casts = [
+        'min_peserta' => 'integer',
         'include_penerbangan' => 'boolean',
         'tarif' => 'decimal:2',
         'harga_asli' => 'decimal:2',
@@ -64,10 +65,17 @@ class PaketWisata extends Model
 
     public function fasilitasList(): array
     {
-        return collect(preg_split('/\r\n|\r|\n/', (string) $this->fasilitas))
+        return collect(preg_split('/
+\n|
+|\n/', (string) $this->fasilitas))
             ->map(fn ($f) => trim($f))
             ->filter()
             ->values()
             ->all();
+    }
+
+    public function minPeserta(): int
+    {
+        return max(1, (int) ($this->min_peserta ?? 1));
     }
 }

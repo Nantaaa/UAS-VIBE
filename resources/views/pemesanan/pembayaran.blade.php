@@ -141,7 +141,7 @@
         </div>
 
         <aside>
-            <div class="card" style="position:sticky;top:88px">
+            <div class="card">
                 <div class="card-head"><h3>Rincian Harga</h3></div>
                 <div class="card-body">
                     @php($rincian = $pemesanan->rincianBiaya())
