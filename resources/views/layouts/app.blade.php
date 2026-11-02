@@ -14,15 +14,15 @@
     <link rel="stylesheet" href="{{ asset('css/fixes.css') }}">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
     <link rel="stylesheet" href="{{ asset('css/beranda-traveloka.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 </head>
 <body>
 @hasSection('minimal')
 @else
 <header class="site-header">
     <div class="container">
-        <a href="{{ route('beranda') }}" class="brand-h">
-            <span class="brand-mark">N</span>
-            <span class="brand-name">Nanta <strong>Travel</strong></span>
+        <a href="{{ route('beranda') }}" class="brand-h" title="Nanta Travel">
+            <img src="{{ asset('images/logo-nanta.svg') }}" alt="Nanta Travel" height="38" style="height:38px;width:auto;display:block">
         </a>
 
         <nav class="nav-pills">
@@ -88,9 +88,8 @@
     <div class="container">
         <div class="footer-grid">
             <div>
-                <a href="{{ route('beranda') }}" class="brand-h" style="margin-bottom:10px">
-                    <span class="brand-mark">N</span>
-                    <span class="brand-name">Nanta <strong>Travel</strong></span>
+                <a href="{{ route('beranda') }}" class="brand-h" style="margin-bottom:12px" title="Nanta Travel">
+                    <img src="{{ asset('images/logo-nanta.svg') }}" alt="Nanta Travel" height="38" style="height:38px;width:auto;display:block">
                 </a>
                 <p>Menciptakan pengalaman perjalanan terbaik dengan destinasi pilihan di seluruh Indonesia.</p>
             </div>

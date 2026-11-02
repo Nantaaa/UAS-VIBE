@@ -7,6 +7,9 @@
 
 <div class="auth-card">
     <div class="auth-anim auth-d2">
+        <a href="{{ route('beranda') }}" style="display:inline-block;margin-bottom:14px" title="Nanta Travel">
+            <img src="{{ asset('images/logo-nanta.svg') }}" alt="Nanta Travel" height="38" style="height:38px;width:auto;display:block">
+        </a>
         <div class="auth-eyebrow">Akses Akun Travel</div>
         <h2>Selamat Datang di Nanta Travel</h2>
         <p class="lead">

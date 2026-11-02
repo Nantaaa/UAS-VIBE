@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 </head>
 <body class="adm">
 @php
@@ -17,10 +18,10 @@
 <div class="adm-shell">
     <aside class="adm-side">
         <a href="{{ route('admin.dashboard') }}" class="adm-brand">
-            <span class="mark">N</span>
+            <img src="{{ asset('images/logo-mark.svg') }}" alt="Nanta Travel" width="34" height="34" style="border-radius:9px;display:block">
             <span>
                 <span class="nm">Nanta Travel</span>
-                <span class="sub">Archipelago Concierge</span>
+                <span class="sub">Panel Operasional</span>
             </span>
         </a>
 
