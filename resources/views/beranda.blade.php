@@ -266,13 +266,13 @@
     {{-- CTA --}}
     <section class="cta-banner">
         <div>
-            <span class="hero-badge">BUTUH ITINERARY PRIVATE?</span>
-            <h2>Buat Itinerary Custom atau Private Group?</h2>
-            <p>Tim Nanta Travel siap membantu merancang perjalanan impian Anda. Konsultasi gratis, itinerary personal, dan harga terbaik untuk grup.</p>
+            <span class="hero-badge">BUTUH RUTE KHUSUS?</span>
+            <h2>Mau Liburan Rombongan atau Rute Sendiri?</h2>
+            <p>Tim Nanta Travel siap membantu merancang perjalanan impian Anda. Konsultasi gratis, jadwal fleksibel, dan harga terbaik untuk grup.</p>
         </div>
         <div class="row" style="gap:10px">
             <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20konsultasi%20paket%20wisata" class="btn btn-primary" target="_blank">Hubungi via WhatsApp</a>
-            <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20request%20custom%20itinerary%20group" class="btn btn-ghost" target="_blank" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Request Itinerary</a>
+            <a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20request%20jadwal%20rombongan" class="btn btn-ghost" target="_blank" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Konsultasi Rute</a>
         </div>
     </section>
 </div>

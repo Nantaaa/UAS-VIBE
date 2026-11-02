@@ -100,7 +100,7 @@
                     <li><a href="{{ route('beranda') }}#katalog">Paket Wisata</a></li>
                     <li><a href="{{ route('beranda', ['tipe' => ['Private Trip']]) }}#katalog">Private Trip</a></li>
                     <li><a href="{{ route('beranda', ['tipe' => ['Open Trip']]) }}#katalog">Open Trip</a></li>
-                    <li><a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20konsultasi%20Custom%20Itinerary" target="_blank">Custom Itinerary</a></li>
+                    <li><a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20ingin%20konsultasi%20rute%20khusus" target="_blank">Request Rute Sendiri</a></li>
                 </ul>
             </div>
 
@@ -109,7 +109,7 @@
                 <ul>
                     <li><a href="{{ route('halaman.faq') }}">Pusat Bantuan &amp; FAQ</a></li>
                     <li><a href="{{ auth()->check() ? route('pemesanan.index') : route('login') }}">Lacak Pesanan</a></li>
-                    <li><a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20butuh%20bantuan" target="_blank">Layanan Concierge 24 Jam</a></li>
+                    <li><a href="https://wa.me/6281234567890?text=Halo%20Nanta%20Travel,%20saya%20butuh%20bantuan" target="_blank">Customer Service 24 Jam</a></li>
                     <li><a href="mailto:hello@nantatravel.com">Layanan Pengaduan</a></li>
                 </ul>
             </div>

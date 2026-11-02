@@ -166,7 +166,7 @@
 
             <div class="help-card mt-16">
                 <h4>Butuh Bantuan?</h4>
-                <p>Hubungi concierge kami bila ada kendala pembayaran atau dokumen.</p>
+                <p>Hubungi Customer Service kami bila ada kendala pembayaran atau dokumen.</p>
                 <a href="https://wa.me/6281234567890" class="btn-wa">{!! view('partials.icon', ['name' => 'chat', 'size' => 15])->render() !!} Hubungi Kami</a>
             </div>
 

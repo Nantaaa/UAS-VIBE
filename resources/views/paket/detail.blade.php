@@ -112,7 +112,7 @@
             {{-- Tab --}}
             <div class="tabbar">
                 <button type="button" class="active" data-tab="deskripsi">Deskripsi</button>
-                <button type="button" data-tab="itinerary">Itinerary</button>
+                <button type="button" data-tab="itinerary">Rencana Perjalanan</button>
                 <button type="button" data-tab="fasilitas">Fasilitas</button>
                 <button type="button" data-tab="syarat">Syarat &amp; Ketentuan</button>
             </div>
@@ -125,7 +125,7 @@
             </div>
 
             <div class="tab-panel" id="tab-itinerary">
-                <h3 style="font-size:15px;margin-bottom:12px">Rencana Perjalanan / Itinerary</h3>
+                <h3 style="font-size:15px;margin-bottom:12px">Rencana Perjalanan (Jadwal Kegiatan Harian)</h3>
                 @forelse($hari as $h)
                     <div class="day-card">
                         <h4>{{ $h['judul'] }}</h4>

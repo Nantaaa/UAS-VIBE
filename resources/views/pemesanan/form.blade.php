@@ -166,7 +166,7 @@
 
                 <div class="help-card mt-16">
                     <h4>Butuh Bantuan?</h4>
-                    <p>Tim concierge kami siap membantu penyusunan itinerary dan pertanyaan paket.</p>
+                    <p>Tim Customer Service kami siap membantu pertanyaan paket dan rute perjalanan.</p>
                     <a href="https://wa.me/6281234567890" class="btn-wa">{!! view('partials.icon', ['name' => 'chat', 'size' => 15])->render() !!} Chat WhatsApp</a>
                 </div>
             </aside>
@@ -177,7 +177,7 @@
         @foreach([
             ['ico' => 'lock', 't' => 'Pembayaran Aman', 'd' => 'Verifikasi bukti transfer oleh admin'],
             ['ico' => 'refresh', 't' => 'Pembatalan Mudah', 'd' => 'Selama belum terkonfirmasi'],
-            ['ico' => 'phone', 't' => 'Layanan 24 Jam', 'd' => 'Concierge siap membantu'],
+            ['ico' => 'phone', 't' => 'Layanan 24 Jam', 'd' => 'CS siap membantu'],
             ['ico' => 'tag', 't' => 'Harga Terbaik', 'd' => 'Tanpa biaya tersembunyi'],
         ] as $b)
             <div class="benefit">
