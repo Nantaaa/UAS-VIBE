@@ -149,7 +149,7 @@
                                 <div class="sub">Format JPG, PNG, atau PDF — maksimal 5 MB</div>
                             </label>
                             <input id="bukti" type="file" name="bukti" accept=".jpg,.jpeg,.png,.pdf" required style="display:none"
-                                   onchange="const file=this.files[0]; const c=this.closest('form').querySelector('.dropzone .cap'); if(file && file.size > 5*1024*1024){ alert('Ukuran berkas ('+(file.size/1024/1024).toFixed(2)+' MB) melebihi batas maksimal 5 MB.'); this.value=''; c.textContent='Tarik berkas ke sini atau klik untuk memilih'; c.style.color=''; } else { c.textContent = file ? '{!! view('partials.icon', ['name' => 'paperclip', 'size' => 15])->render() !!} '+file.name+' ('+(file.size/1024/1024).toFixed(2)+' MB)' : 'Tarik berkas ke sini atau klik untuk memilih'; c.style.color = file ? '#1d4ed8' : ''; }">
+                                   onchange="cekBuktiShow(this)">
                             <button class="btn btn-primary btn-block mt-16" type="submit">Kirim Bukti Pembayaran</button>
                         </form>
                     </div>
@@ -252,6 +252,29 @@
         </div>
     </div>
 </div>
+
+<script>
+function cekBuktiShow(input) {
+    const file = input.files && input.files[0];
+    const c = input.closest('form').querySelector('.dropzone .cap');
+    if (!file) {
+        c.textContent = 'Tarik berkas ke sini atau klik untuk memilih';
+        c.style.color = '';
+        return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+        const mb = (file.size / (1024 * 1024)).toFixed(2);
+        alert('Ukuran berkas bukti pembayaran (' + mb + ' MB) melebihi batas maksimal 5 MB. Harap pilih foto/dokumen yang lebih kecil.');
+        input.value = '';
+        c.textContent = '❌ Ukuran file terlalu besar (maks. 5 MB)';
+        c.style.color = '#dc2626';
+        return;
+    }
+    const mb = (file.size / (1024 * 1024)).toFixed(2);
+    c.textContent = '📎 ' + file.name + ' (' + mb + ' MB)';
+    c.style.color = '#1d4ed8';
+}
+</script>
 
 @if($pemesanan->status_pemesanan === 'menunggu_pembayaran' && $pemesanan->sisaDetikPembayaran() > 0)
 <script>
