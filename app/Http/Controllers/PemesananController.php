@@ -173,7 +173,7 @@ class PemesananController extends Controller
 
     public function show(Request $request, Pemesanan $pemesanan)
     {
-        $this->authorizeOwner($request, $pemesanan);
+        $this->authorizeOwner($request, $pemesanan, allowAdmin: true);
 
         $pemesanan->load(['jadwal.paket.destinasi', 'peserta', 'pembayaran', 'tiket']);
 
@@ -279,7 +279,7 @@ class PemesananController extends Controller
 
     public function unduhVoucher(Request $request, Pemesanan $pemesanan)
     {
-        $this->authorizeOwner($request, $pemesanan);
+        $this->authorizeOwner($request, $pemesanan, allowAdmin: true);
 
         if ($pemesanan->status_pemesanan !== 'terkonfirmasi') {
             return back()->withErrors(['voucher' => 'Voucher hanya tersedia untuk pemesanan terkonfirmasi.']);
@@ -300,7 +300,7 @@ class PemesananController extends Controller
 
     public function lihatVoucher(Request $request, Pemesanan $pemesanan)
     {
-        $this->authorizeOwner($request, $pemesanan);
+        $this->authorizeOwner($request, $pemesanan, allowAdmin: true);
 
         abort_unless($pemesanan->status_pemesanan === 'terkonfirmasi', 403);
 
