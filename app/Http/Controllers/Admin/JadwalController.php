@@ -14,11 +14,51 @@ class JadwalController extends Controller
 {
     public function index(Request $request)
     {
-        $jadwal = JadwalKeberangkatan::with(['paket.destinasi', 'penugasan.petugas'])
-            ->withCount(['pemesanan as peserta_terkonfirmasi' => fn ($q) => $q->where('status_pemesanan', 'terkonfirmasi')])
-            ->when($request->filled('paket'), fn ($q) => $q->where('id_paket', $request->integer('paket')))
-            ->orderByDesc('tanggal_berangkat')
-            ->paginate(10)
+        $query = JadwalKeberangkatan::with([
+            'paket.destinasi',
+            'penugasan.petugas',
+            'pemesanan' => fn ($q) => $q->whereIn('status_pemesanan', ['terkonfirmasi', 'menunggu_verifikasi', 'perlu_perbaikan', 'menunggu_pembayaran'])
+                ->with(['peserta', 'user']),
+        ])
+        ->withCount(['pemesanan as peserta_terkonfirmasi' => fn ($q) => $q->where('status_pemesanan', 'terkonfirmasi')]);
+
+        // 1. Pencarian Kata Kunci (Nama Paket, Destinasi, Kota Kumpul, Petugas)
+        if ($cari = $request->string('q')->trim()->toString()) {
+            $query->where(function ($q) use ($cari) {
+                $q->where('kota_kumpul', 'like', "%{$cari}%")
+                    ->orWhere('titik_kumpul', 'like', "%{$cari}%")
+                    ->orWhereDate('tanggal_berangkat', $cari)
+                    ->orWhereHas('paket', function ($p) use ($cari) {
+                        $p->where('nama_paket', 'like', "%{$cari}%")
+                            ->orWhereHas('destinasi', fn ($d) => $d->where('nama_destinasi', 'like', "%{$cari}%")->orWhere('lokasi', 'like', "%{$cari}%"));
+                    })
+                    ->orWhereHas('penugasan.petugas', fn ($pt) => $pt->where('nama_petugas', 'like', "%{$cari}%"));
+            });
+        }
+
+        // 2. Filter Paket Wisata Tertentu
+        if ($request->filled('paket')) {
+            $query->where('id_paket', $request->integer('paket'));
+        }
+
+        // 3. Filter Tanggal Spesifik
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal_berangkat', $request->input('tanggal'));
+        }
+
+        // 4. Filter Status Jadwal
+        if ($status = $request->input('status')) {
+            match ($status) {
+                'mendatang' => $query->where('tanggal_berangkat', '>=', now()->toDateString()),
+                'lewat' => $query->where('tanggal_berangkat', '<', now()->toDateString()),
+                'tersedia' => $query->where('sisa_kuota', '>', 0),
+                'penuh' => $query->where('sisa_kuota', '<=', 0),
+                default => null,
+            };
+        }
+
+        $jadwal = $query->orderByDesc('tanggal_berangkat')
+            ->paginate(12)
             ->withQueryString();
 
         foreach ($jadwal as $j) {
