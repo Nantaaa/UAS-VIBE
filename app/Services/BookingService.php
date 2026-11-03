@@ -147,6 +147,8 @@ class BookingService
                 'catatan_status' => $alasan ?: 'Dibatalkan oleh wisatawan.',
             ]);
 
+            $pemesanan->peserta()->update(['status' => 'dibatalkan']);
+
             $pemesanan->jadwal->sinkronSisaKuota();
         });
     }

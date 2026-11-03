@@ -118,9 +118,15 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $ps->status === 'valid' ? 'success' : ($ps->status === 'perlu_perbaikan' ? 'danger' : 'warning') }}">
-                                            {{ ucfirst(str_replace('_', ' ', $ps->status)) }}
-                                        </span>
+                                        @if($pemesanan->status_pemesanan === 'dibatalkan' || $ps->status === 'dibatalkan')
+                                            <span class="badge" style="background:#f1f5f9;color:#64748b;font-weight:700">Dibatalkan</span>
+                                        @elseif($pemesanan->status_pemesanan === 'kedaluwarsa' || $ps->status === 'kedaluwarsa')
+                                            <span class="badge" style="background:#f1f5f9;color:#64748b;font-weight:700">Kedaluwarsa</span>
+                                        @else
+                                            <span class="badge badge-{{ $ps->status === 'valid' ? 'success' : ($ps->status === 'perlu_perbaikan' ? 'danger' : 'warning') }}">
+                                                {{ ucfirst(str_replace('_', ' ', $ps->status)) }}
+                                            </span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

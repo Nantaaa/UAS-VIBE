@@ -27,6 +27,8 @@ class KedaluwarsakanPemesanan extends Command
                     'catatan_status' => 'Batas waktu pembayaran 1 jam terlewati. Kuota dilepas otomatis.',
                 ]);
 
+                $pemesanan->peserta()->update(['status' => 'kedaluwarsa']);
+
                 $pemesanan->jadwal->sinkronSisaKuota();
             });
 

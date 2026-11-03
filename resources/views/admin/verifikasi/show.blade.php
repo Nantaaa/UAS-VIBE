@@ -68,7 +68,11 @@
                             </div>
                         </div>
                         <div class="row" style="gap:8px">
-                            <span class="pill {{ $ps->status === 'valid' ? 'ok' : ($ps->status === 'perlu_perbaikan' ? 'err' : 'warn') }}">{{ ucfirst(str_replace('_',' ',$ps->status)) }}</span>
+                            @if(in_array($ps->status, ['dibatalkan', 'kedaluwarsa']))
+                                <span class="pill" style="background:#f1f5f9;color:#64748b;font-weight:700">{{ ucfirst($ps->status) }}</span>
+                            @else
+                                <span class="pill {{ $ps->status === 'valid' ? 'ok' : ($ps->status === 'perlu_perbaikan' ? 'err' : 'warn') }}">{{ ucfirst(str_replace('_',' ',$ps->status)) }}</span>
+                            @endif
                             @if($ps->file_identitas)
                                 <a href="{{ route('pemesanan.berkas', [$pemesanan, 'identitas', $ps->id]) }}" target="_blank" class="btn-adm ghost sm">Lihat Dokumen</a>
                             @endif
@@ -126,28 +130,43 @@
             </div>
         </div>
 
-        <div class="adm-card adm-card-body">
-            <h3 style="font-size:12.5px;margin:0 0 8px">Keputusan Verifikasi</h3>
-            <form method="POST" action="{{ route('admin.verifikasi.setujui', $pemesanan) }}" onsubmit="return confirm('Konfirmasi pemesanan dan terbitkan voucher?')">
-                @csrf
-                <button class="btn-adm teal" style="width:100%;justify-content:center" @disabled($pemesanan->status_pemesanan !== 'menunggu_verifikasi')>
-                    @include('partials.icon', ['name' => 'check', 'size' => 13]) Setujui &amp; Terbitkan E-Tiket
-                </button>
-            </form>
+        @if(in_array($pemesanan->status_pemesanan, ['dibatalkan', 'kedaluwarsa']))
+            <div class="adm-card adm-card-body" style="background:#f8fafc;border:1.5px solid #e2e8f0;text-align:center;padding:24px 18px">
+                <div style="font-size:32px;margin-bottom:8px">🚫</div>
+                <h3 style="font-size:14px;color:#0f172a;margin:0 0 6px">Pemesanan {{ ucfirst($pemesanan->status_pemesanan) }}</h3>
+                <p class="sub" style="margin:0;line-height:1.5;font-size:11.5px">
+                    Pemesanan ini berstatus <strong>{{ strtoupper($pemesanan->status_pemesanan) }}</strong>. Kuota telah dikembalikan dan berkas peserta tidak memerlukan tindakan verifikasi admin.
+                </p>
+                @if($pemesanan->catatan_status)
+                    <div class="tiny" style="background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:8px 12px;margin-top:14px;color:#475569;text-align:left">
+                        <strong>Catatan Status:</strong> {{ $pemesanan->catatan_status }}
+                    </div>
+                @endif
+            </div>
+        @else
+            <div class="adm-card adm-card-body">
+                <h3 style="font-size:12.5px;margin:0 0 8px">Keputusan Verifikasi</h3>
+                <form method="POST" action="{{ route('admin.verifikasi.setujui', $pemesanan) }}" onsubmit="return confirm('Konfirmasi pemesanan dan terbitkan voucher?')">
+                    @csrf
+                    <button class="btn-adm teal" style="width:100%;justify-content:center" @disabled($pemesanan->status_pemesanan !== 'menunggu_verifikasi')>
+                        @include('partials.icon', ['name' => 'check', 'size' => 13]) Setujui &amp; Terbitkan E-Tiket
+                    </button>
+                </form>
 
-            <form method="POST" action="{{ route('admin.verifikasi.tolak', $pemesanan) }}" class="mt-8">
-                @csrf
-                <div class="field">
-                    <label for="alasan">Alasan penolakan / perbaikan</label>
-                    <textarea id="alasan" name="alasan" rows="2" placeholder="Contoh: Bukti transfer buram, mohon unggah ulang." required></textarea>
-                </div>
-                <button class="btn-adm red mt-8" style="width:100%;justify-content:center" type="submit">Tolak / Minta Bukti Ulang</button>
-            </form>
+                <form method="POST" action="{{ route('admin.verifikasi.tolak', $pemesanan) }}" class="mt-8">
+                    @csrf
+                    <div class="field">
+                        <label for="alasan">Alasan penolakan / perbaikan</label>
+                        <textarea id="alasan" name="alasan" rows="2" placeholder="Contoh: Bukti transfer buram, mohon unggah ulang." required></textarea>
+                    </div>
+                    <button class="btn-adm red mt-8" style="width:100%;justify-content:center" type="submit">Tolak / Minta Bukti Ulang</button>
+                </form>
 
-            @if($pemesanan->status_pemesanan === 'terkonfirmasi')
-                <a href="{{ route('pemesanan.voucher', $pemesanan) }}" class="btn-adm ghost mt-8" style="width:100%;justify-content:center">Lihat E-Voucher</a>
-            @endif
-        </div>
+                @if($pemesanan->status_pemesanan === 'terkonfirmasi')
+                    <a href="{{ route('pemesanan.voucher', $pemesanan) }}" class="btn-adm ghost mt-8" style="width:100%;justify-content:center">Lihat E-Voucher</a>
+                @endif
+            </div>
+        @endif
     </div>
 </div>
 @endsection

@@ -202,6 +202,7 @@ class PemesananController extends Controller
                 'status_pemesanan' => 'kedaluwarsa',
                 'catatan_status' => 'Batas waktu pembayaran 1 jam terlewati.',
             ]);
+            $pemesanan->peserta()->update(['status' => 'kedaluwarsa']);
             $pemesanan->jadwal->sinkronSisaKuota();
 
             return back()->withErrors(['bukti' => 'Batas waktu pembayaran sudah lewat. Pemesanan kedaluwarsa.']);
