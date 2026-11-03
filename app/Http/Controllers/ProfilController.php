@@ -70,11 +70,11 @@ class ProfilController extends Controller
             'jenis_identitas' => ['required', 'in:KTP,Paspor'],
             'no_identitas' => ['required', 'string', 'max:30'],
             'kewarganegaraan' => ['nullable', 'string', 'max:50'],
-            'file_identitas' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'file_identitas' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
             'no_identitas.required' => 'Nomor identitas (NIK / Paspor) wajib diisi.',
             'file_identitas.mimes' => 'Berkas identitas harus berformat JPG, PNG, atau PDF.',
-            'file_identitas.max' => 'Ukuran berkas identitas maksimal 2 MB.',
+            'file_identitas.max' => 'Ukuran berkas identitas maksimal 5 MB.',
         ]);
 
         if ($request->hasFile('file_identitas')) {

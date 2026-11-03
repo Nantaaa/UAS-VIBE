@@ -146,10 +146,10 @@
                             <label class="dropzone" for="bukti" style="display:block;cursor:pointer">
                                 <div class="ico">{!! view('partials.icon', ['name' => 'cloud-up', 'size' => 15])->render() !!}</div>
                                 <div class="cap">Tarik berkas ke sini atau klik untuk memilih</div>
-                                <div class="sub">Format JPG, PNG, atau PDF — maksimal 2 MB</div>
+                                <div class="sub">Format JPG, PNG, atau PDF — maksimal 5 MB</div>
                             </label>
                             <input id="bukti" type="file" name="bukti" accept=".jpg,.jpeg,.png,.pdf" required style="display:none"
-                                   onchange="const c=this.closest('form').querySelector('.dropzone .cap'); c.textContent = this.files[0] ? '{!! view('partials.icon', ['name' => 'paperclip', 'size' => 15])->render() !!} '+this.files[0].name : 'Tarik berkas ke sini atau klik untuk memilih'; c.style.color = this.files[0] ? '#1d4ed8' : '';">
+                                   onchange="const file=this.files[0]; const c=this.closest('form').querySelector('.dropzone .cap'); if(file && file.size > 5*1024*1024){ alert('Ukuran berkas ('+(file.size/1024/1024).toFixed(2)+' MB) melebihi batas maksimal 5 MB.'); this.value=''; c.textContent='Tarik berkas ke sini atau klik untuk memilih'; c.style.color=''; } else { c.textContent = file ? '{!! view('partials.icon', ['name' => 'paperclip', 'size' => 15])->render() !!} '+file.name+' ('+(file.size/1024/1024).toFixed(2)+' MB)' : 'Tarik berkas ke sini atau klik untuk memilih'; c.style.color = file ? '#1d4ed8' : ''; }">
                             <button class="btn btn-primary btn-block mt-16" type="submit">Kirim Bukti Pembayaran</button>
                         </form>
                     </div>

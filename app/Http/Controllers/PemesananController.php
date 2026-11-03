@@ -52,7 +52,7 @@ class PemesananController extends Controller
             'peserta.*.nama_peserta' => ['required', 'string', 'max:100'],
             'peserta.*.jenis_identitas' => ['required', 'in:KTP,Paspor'],
             'peserta.*.no_identitas' => ['required', 'string', 'max:30'],
-            'peserta.*.file_identitas' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'peserta.*.file_identitas' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
             'jumlah_peserta.required' => 'Jumlah peserta wajib diisi.',
             'jumlah_peserta.min' => "Pemesanan paket wisata ini minimal {$minPeserta} peserta.",
@@ -61,7 +61,7 @@ class PemesananController extends Controller
             'peserta.*.no_identitas.required' => 'Nomor identitas wajib diisi.',
             'peserta.*.file_identitas.required' => 'Berkas KTP/Paspor wajib diunggah.',
             'peserta.*.file_identitas.mimes' => 'Berkas identitas harus JPG, PNG, atau PDF.',
-            'peserta.*.file_identitas.max' => 'Ukuran berkas identitas maksimal 2 MB.',
+            'peserta.*.file_identitas.max' => 'Ukuran berkas identitas maksimal 5 MB.',
         ]);
 
         // Kategori peserta: dewasa & anak dihitung terpisah karena tarifnya berbeda
@@ -208,11 +208,11 @@ class PemesananController extends Controller
         }
 
         $request->validate([
-            'bukti' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'bukti' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
             'bukti.required' => 'Bukti pembayaran wajib diunggah.',
             'bukti.mimes' => 'Bukti pembayaran harus JPG, PNG, atau PDF.',
-            'bukti.max' => 'Ukuran bukti pembayaran maksimal 2 MB.',
+            'bukti.max' => 'Ukuran bukti pembayaran maksimal 5 MB.',
         ]);
 
         $path = $request->file('bukti')->store('pembayaran', 'local');
@@ -251,12 +251,12 @@ class PemesananController extends Controller
         }
 
         $request->validate([
-            'file_identitas' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'file_identitas' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'no_identitas' => ['nullable', 'string', 'max:30'],
         ], [
             'file_identitas.required' => 'Berkas identitas pengganti wajib diunggah.',
             'file_identitas.mimes' => 'Format berkas harus JPG, PNG, atau PDF.',
-            'file_identitas.max' => 'Ukuran berkas maksimal 2 MB.',
+            'file_identitas.max' => 'Ukuran berkas maksimal 5 MB.',
         ]);
 
         $path = $request->file('file_identitas')->store('identitas', 'local');

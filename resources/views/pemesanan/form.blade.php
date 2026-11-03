@@ -261,9 +261,9 @@
                     <input type="text" data-name="provinsi">
                 </div>
                 <div class="field full">
-                    <label>Berkas KTP/Paspor</label>
-                    <input type="file" data-name="file_identitas" accept=".jpg,.jpeg,.png,.pdf" required>
-                    <span class="hint">JPG/PNG/PDF, maks 2 MB.</span>
+                    <label>Berkas KTP/Paspor *</label>
+                    <input type="file" data-name="file_identitas" accept=".jpg,.jpeg,.png,.pdf" required onchange="validasiUkuranKtp(this)">
+                    <span class="hint file-hint">Format JPG, PNG, atau PDF · maksimal 5 MB.</span>
                 </div>
             </div>
         </div>
@@ -281,14 +281,65 @@ const tpl = document.getElementById('tplPeserta');
 const inputDewasa = document.getElementById('dewasa');
 const inputAnak = document.getElementById('anak');
 const inputJumlah = document.getElementById('jumlah_peserta');
+const draftKey = 'nanta_booking_draft_{{ $jadwal->id }}_{{ auth()->id() }}';
+
+// 1. Data lama dari session Laravel (jika submit gagal / validasi balik)
+const oldPeserta = @json(old('peserta', []));
+
+// 2. Data draft dari sessionStorage browser jika ada
+let savedDraft = [];
+try {
+    const raw = sessionStorage.getItem(draftKey);
+    if (raw) savedDraft = JSON.parse(raw);
+} catch (e) {}
+
+function validasiUkuranKtp(input) {
+    const file = input.files && input.files[0];
+    const hintEl = input.parentElement.querySelector('.file-hint');
+    if (!file) return;
+
+    // Batas 5 MB (5 * 1024 * 1024 bytes)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+        const mb = (file.size / (1024 * 1024)).toFixed(2);
+        alert(`Ukuran berkas "${file.name}" (${mb} MB) terlalu besar! Maksimal ukuran berkas identitas adalah 5 MB.\n\nData formulir Anda (nama, no. telepon, email, alamat) tetap aman tersimpan.`);
+        input.value = '';
+        if (hintEl) {
+            hintEl.textContent = `❌ Berkas "${file.name}" (${mb} MB) melebihi batas 5 MB! Harap pilih berkas lain.`;
+            hintEl.style.color = '#dc2626';
+            hintEl.style.fontWeight = '700';
+        }
+        return;
+    }
+
+    if (hintEl) {
+        const mb = (file.size / (1024 * 1024)).toFixed(2);
+        hintEl.textContent = `✓ Berkas terpilih: ${file.name} (${mb} MB)`;
+        hintEl.style.color = '#15803d';
+        hintEl.style.fontWeight = '600';
+    }
+}
+
+function simpanDraft() {
+    const data = [];
+    wrap.querySelectorAll('[data-peserta]').forEach((card, idx) => {
+        data[idx] = {};
+        card.querySelectorAll('[data-name]').forEach(inp => {
+            if (inp.type !== 'file') data[idx][inp.dataset.name] = inp.value;
+        });
+    });
+    try {
+        sessionStorage.setItem(draftKey, JSON.stringify(data));
+    } catch (e) {}
+}
 
 function render() {
-    // Simpan input yang sudah diketik agar tidak hilang saat ubah jumlah
-    const existing = [];
+    // Simpan input yang sedang diketik
+    const current = [];
     wrap.querySelectorAll('[data-peserta]').forEach((card, idx) => {
-        existing[idx] = {};
+        current[idx] = {};
         card.querySelectorAll('[data-name]').forEach(inp => {
-            if (inp.type !== 'file') existing[idx][inp.dataset.name] = inp.value;
+            if (inp.type !== 'file') current[idx][inp.dataset.name] = inp.value;
         });
     });
 
@@ -308,16 +359,28 @@ function render() {
     const n = Math.max(MIN_TOTAL, dewasa + anak);
     inputJumlah.value = n;
     wrap.innerHTML = '';
+
     for (let i = 0; i < n; i++) {
         const node = tpl.content.cloneNode(true);
         const kategori = i < dewasa ? 'Dewasa' : 'Anak';
         node.querySelector('[data-nomor]').textContent = i + 1;
         node.querySelector('[data-peran]').textContent = i === 0 ? '— Data Pemesan' : '— ' + kategori;
+        
         node.querySelectorAll('[data-name]').forEach(el => {
-            el.name = `peserta[${i}][${el.dataset.name}]`;
             const name = el.dataset.name;
-            if (existing[i] && existing[i][name] !== undefined) {
-                el.value = existing[i][name];
+            el.name = `peserta[${i}][${name}]`;
+
+            // Prioritas isi nilai:
+            // 1. Current yang sedang ada di DOM saat stepper diubah
+            // 2. old('peserta') dari redirect validation Laravel
+            // 3. Draft dari sessionStorage browser
+            // 4. Profil default auth user untuk peserta 0
+            if (current[i] && current[i][name] !== undefined && current[i][name] !== '') {
+                el.value = current[i][name];
+            } else if (oldPeserta[i] && oldPeserta[i][name] !== undefined && oldPeserta[i][name] !== '') {
+                el.value = oldPeserta[i][name];
+            } else if (savedDraft[i] && savedDraft[i][name] !== undefined && savedDraft[i][name] !== '') {
+                el.value = savedDraft[i][name];
             } else if (i === 0) {
                 if (name === 'nama_peserta') el.value = @json(auth()->user()->nama_lengkap ?? '');
                 if (name === 'email') el.value = @json(auth()->user()->email ?? '');
@@ -327,9 +390,16 @@ function render() {
                 if (name === 'kota') el.value = @json(auth()->user()->kota ?? '');
                 if (name === 'alamat') el.value = @json(auth()->user()->alamat ?? '');
             }
+
+            // Pasang event auto-save saat user mengetik
+            if (el.tagName === 'INPUT' || el.tagName === 'SELECT') {
+                el.addEventListener('input', simpanDraft);
+                el.addEventListener('change', simpanDraft);
+            }
         });
         wrap.appendChild(node);
     }
+
     document.getElementById('txtJumlah').textContent = dewasa + ' dewasa' + (anak > 0 ? ' + ' + anak + ' anak' : '');
     const dipilih = document.querySelector('input[name="id_titik_jemput"]:checked');
     const biayaJemput = dipilih ? parseFloat(dipilih.dataset.biaya || 0) : 0;
@@ -340,6 +410,7 @@ function render() {
     }
     document.getElementById('txtTotal').textContent = 'Rp ' + (TARIF * dewasa + TARIF_ANAK * anak + biayaJemput).toLocaleString('id-ID');
 }
+
 inputDewasa.addEventListener('input', render);
 inputAnak.addEventListener('input', render);
 inputDewasa.addEventListener('change', () => {
@@ -359,7 +430,27 @@ inputAnak.addEventListener('change', () => {
     render();
 });
 document.querySelectorAll('input[name="id_titik_jemput"]').forEach(r => r.addEventListener('change', render));
+
 render();
 
+// Cegah submit jika ada file melebihi 5 MB
+document.getElementById('formBooking')?.addEventListener('submit', function (e) {
+    let fileKebesaran = null;
+    document.querySelectorAll('input[type="file"]').forEach(inp => {
+        if (inp.files && inp.files[0] && inp.files[0].size > 5 * 1024 * 1024) {
+            fileKebesaran = inp.files[0];
+        }
+    });
+
+    if (fileKebesaran) {
+        e.preventDefault();
+        const mb = (fileKebesaran.size / (1024 * 1024)).toFixed(2);
+        alert(`Berkas "${fileKebesaran.name}" (${mb} MB) melebihi batas 5 MB!\n\nFormulir tidak dikirim agar halaman tidak ter-refresh. Data yang sudah Anda ketik tetap aman tersimpan.`);
+        return false;
+    }
+
+    // Jika valid, hapus draft penyimpanan lokal
+    try { sessionStorage.removeItem(draftKey); } catch (e) {}
+});
 </script>
 @endsection

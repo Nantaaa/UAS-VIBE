@@ -125,11 +125,11 @@
                     <label class="dropzone" for="bukti" style="display:block;cursor:pointer">
                         <div class="ico">{!! view('partials.icon', ['name' => 'cloud-up', 'size' => 15])->render() !!}</div>
                         <div class="cap">Tarik berkas ke sini atau klik untuk memilih</div>
-                        <div class="sub">Format JPG, PNG, atau PDF · maksimal 2 MB</div>
+                        <div class="sub">Format JPG, PNG, atau PDF · maksimal 5 MB</div>
                         <div class="tiny mt-8" id="namaFile" style="color:#1d4ed8;font-weight:700"></div>
                     </label>
                     <input id="bukti" type="file" name="bukti" accept=".jpg,.jpeg,.png,.pdf" required
-                           style="display:none" onchange="document.getElementById('namaFile').textContent = this.files[0] ? this.files[0].name : ''">
+                           style="display:none" onchange="cekUkuranBukti(this)">
 
                     <button class="btn btn-primary btn-block mt-16" type="submit">Unggah Bukti Pembayaran</button>
                 </form>
@@ -207,6 +207,24 @@ if (clock) {
         s--; setTimeout(tick, 1000);
     };
     tick();
+}
+
+function cekUkuranBukti(input) {
+    const file = input.files && input.files[0];
+    const namaEl = document.getElementById('namaFile');
+    if (!file) {
+        namaEl.textContent = '';
+        return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+        alert('Ukuran berkas bukti pembayaran (' + (file.size / 1024 / 1024).toFixed(2) + ' MB) melebihi batas maksimal 5 MB. Harap pilih foto/dokumen yang lebih kecil.');
+        input.value = '';
+        namaEl.textContent = '❌ Ukuran file terlalu besar (maks. 5 MB)';
+        namaEl.style.color = '#dc2626';
+        return;
+    }
+    namaEl.textContent = '✓ ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+    namaEl.style.color = '#15803d';
 }
 </script>
 @endsection
