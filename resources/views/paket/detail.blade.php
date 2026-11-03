@@ -285,16 +285,29 @@
                         </select>
                     </div>
 
-                    <div class="field mt-16">
-                        <label>Pilihan Tipe Perjalanan</label>
-                        <select name="opsi" id="pilihOpsiPaket" onchange="gantiOpsiPaket(this.value)">
-                            <option value="open">Open Trip — Rp {{ number_format($paket->tarif, 0, ',', '.') }} / org</option>
-                            <option value="private">Private Group — Rp {{ number_format($paket->tarifPrivate(), 0, ',', '.') }} / org</option>
-                        </select>
-                        <div id="descOpsiPaket" class="tiny" style="color:var(--ink-soft);background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-top:6px;line-height:1.45">
-                            <strong>Open Trip:</strong> Gabung dengan peserta lain, minimal kuota terpenuhi.
+                    @if($paket->isEksklusifPrivate())
+                        <div class="field mt-16">
+                            <label>Pilihan Tipe Perjalanan</label>
+                            <select name="opsi" id="pilihOpsiPaket" disabled style="background:#faf5ff;border-color:#d8b4fe;color:#6b21a8;font-weight:700">
+                                <option value="private">{{ $paket->tipe_trip }} Eksklusif — Rp {{ number_format($paket->tarifPrivate(), 0, ',', '.') }} / org</option>
+                            </select>
+                            <input type="hidden" name="opsi" value="private">
+                            <div id="descOpsiPaket" class="tiny" style="color:#6b21a8;background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:8px 10px;margin-top:6px;line-height:1.45">
+                                <strong>{{ $paket->tipe_trip }}:</strong> Eksklusif untuk rombongan Anda sendiri tanpa gabung orang lain, bebas tentukan tanggal fleksibel.
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="field mt-16">
+                            <label>Pilihan Tipe Perjalanan</label>
+                            <select name="opsi" id="pilihOpsiPaket" onchange="gantiOpsiPaket(this.value)">
+                                <option value="open">Open Trip — Rp {{ number_format($paket->tarif, 0, ',', '.') }} / org</option>
+                                <option value="private">Private Group — Rp {{ number_format($paket->tarifPrivate(), 0, ',', '.') }} / org</option>
+                            </select>
+                            <div id="descOpsiPaket" class="tiny" style="color:var(--ink-soft);background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-top:6px;line-height:1.45">
+                                <strong>Open Trip:</strong> Gabung dengan peserta lain, minimal kuota terpenuhi.
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="book-meet" id="bookMeet">
                         {!! view('partials.icon', ['name' => 'map-pin', 'size' => 12])->render() !!}
@@ -346,11 +359,12 @@ const TARIF_PRIVATE = {{ (int) $paket->tarifPrivate() }};
 const MIN_OPEN = {{ (int) $paket->minPeserta() }};
 const MIN_PRIVATE = 2;
 
-let opsiPaket = 'open';
-let TARIF = TARIF_OPEN;
-let TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) $paket->tarif, 'anak') }};
-let MIN_TOTAL = MIN_OPEN;
-let dewasa = MIN_OPEN, anak = 0;
+const IS_EKSKLUSIF_PRIVATE = {{ $paket->isEksklusifPrivate() ? 'true' : 'false' }};
+let opsiPaket = IS_EKSKLUSIF_PRIVATE ? 'private' : 'open';
+let TARIF = IS_EKSKLUSIF_PRIVATE ? TARIF_PRIVATE : TARIF_OPEN;
+let TARIF_ANAK = {{ (int) \App\Models\Pemesanan::tarifKategori((float) ($paket->isEksklusifPrivate() ? $paket->tarifPrivate() : $paket->tarif), 'anak') }};
+let MIN_TOTAL = IS_EKSKLUSIF_PRIVATE ? MIN_PRIVATE : MIN_OPEN;
+let dewasa = MIN_TOTAL, anak = 0;
 const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
 
 function gantiOpsiPaket(val) {

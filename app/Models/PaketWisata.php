@@ -14,7 +14,7 @@ class PaketWisata extends Model
     protected $fillable = [
         'id_destinasi', 'nama_paket', 'deskripsi', 'highlight', 'fasilitas',
         'itinerary', 'durasi_hari', 'min_peserta', 'tipe_trip', 'include_penerbangan',
-        'termasuk', 'tidak_termasuk', 'tarif', 'harga_asli',
+        'termasuk', 'tidak_termasuk', 'tarif', 'tarif_private', 'harga_asli',
         'foto', 'is_active', 'is_bestseller',
     ];
 
@@ -22,6 +22,7 @@ class PaketWisata extends Model
         'min_peserta' => 'integer',
         'include_penerbangan' => 'boolean',
         'tarif' => 'decimal:2',
+        'tarif_private' => 'decimal:2',
         'harga_asli' => 'decimal:2',
         'is_active' => 'boolean',
         'is_bestseller' => 'boolean',
@@ -81,13 +82,23 @@ class PaketWisata extends Model
 
     public function tarifPrivate(): float
     {
+        if ($this->tarif_private && (float) $this->tarif_private > 0) {
+            return (float) $this->tarif_private;
+        }
+
         $tipe = strtolower(trim((string) $this->tipe_trip));
         if (str_contains($tipe, 'private') || str_contains($tipe, 'honeymoon')) {
             return (float) $this->tarif;
         }
 
-        // Private Group: kenaikan 35% mencerminkan armada carter privat & guide eksklusif
-        $raw = (float) $this->tarif * 1.35;
+        // Default Private Group: kenaikan 40% (carter armada & guide eksklusif)
+        $raw = (float) $this->tarif * 1.40;
         return (float) (round($raw / 50000) * 50000);
+    }
+
+    public function isEksklusifPrivate(): bool
+    {
+        $tipe = strtolower(trim((string) $this->tipe_trip));
+        return str_contains($tipe, 'private') || str_contains($tipe, 'honeymoon');
     }
 }

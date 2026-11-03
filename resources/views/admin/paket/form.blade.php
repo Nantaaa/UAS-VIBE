@@ -55,8 +55,13 @@
                     <span class="hint">1 untuk Open Trip (solo traveler), 2 untuk Honeymoon/Private.</span>
                 </div>
                 <div class="field">
-                    <label for="tarif">Tarif / Orang (Rp) *</label>
+                    <label for="tarif">Tarif Open Trip / Orang (Rp) *</label>
                     <input id="tarif" type="number" name="tarif" min="0" step="1000" value="{{ old('tarif', (int) $paket->tarif) }}" required>
+                </div>
+                <div class="field">
+                    <label for="tarif_private">Tarif Private Group / Orang (Rp)</label>
+                    <input id="tarif_private" type="number" name="tarif_private" min="0" step="1000" value="{{ old('tarif_private', (int) ($paket->tarif_private ?: $paket->tarifPrivate())) }}">
+                    <span class="hint">Biaya carter armada & guide eksklusif rombongan sendiri.</span>
                 </div>
                 <div class="field">
                     <label for="harga_asli">Harga Sebelum Diskon (Rp)</label>

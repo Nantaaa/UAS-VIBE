@@ -101,6 +101,7 @@ class PaketController extends Controller
             'durasi_hari' => ['required', 'integer', 'min:1', 'max:30'],
             'min_peserta' => ['nullable', 'integer', 'min:1', 'max:20'],
             'tarif' => ['required', 'numeric', 'min:0'],
+            'tarif_private' => ['nullable', 'numeric', 'min:0'],
             'harga_asli' => ['nullable', 'numeric', 'min:0'],
             'include_penerbangan' => ['nullable', 'boolean'],
             'is_bestseller' => ['nullable', 'boolean'],
