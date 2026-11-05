@@ -33,6 +33,24 @@ class PaketController extends Controller
     public function store(Request $request)
     {
         $data = $this->validasi($request);
+
+        if ($request->input('id_destinasi') === 'baru') {
+            $destData = [
+                'nama_destinasi' => $request->input('destinasi_baru_nama'),
+                'lokasi' => $request->input('destinasi_baru_lokasi'),
+                'deskripsi' => $request->input('destinasi_baru_deskripsi') ?: 'Destinasi wisata unggulan ' . $request->input('destinasi_baru_nama') . '.',
+            ];
+            if ($request->hasFile('destinasi_baru_foto')) {
+                $destData['foto'] = $request->file('destinasi_baru_foto')->store('destinasi', 'public');
+            } elseif ($request->hasFile('foto')) {
+                $destData['foto'] = $request->file('foto')->store('destinasi', 'public');
+            }
+            $destinasiBaru = Destinasi::create($destData);
+            $data['id_destinasi'] = $destinasiBaru->id;
+        }
+
+        unset($data['destinasi_baru_nama'], $data['destinasi_baru_lokasi'], $data['destinasi_baru_deskripsi'], $data['destinasi_baru_foto']);
+
         $data['is_active'] = $request->boolean('is_active');
         $data['is_bestseller'] = $request->boolean('is_bestseller');
         $data['include_penerbangan'] = $request->boolean('include_penerbangan');
@@ -44,7 +62,11 @@ class PaketController extends Controller
 
         PaketWisata::create($data);
 
-        return redirect()->route('admin.paket.index')->with('sukses', 'Paket wisata berhasil ditambahkan.');
+        $pesan = isset($destinasiBaru)
+            ? 'Paket wisata dan destinasi baru "' . $destinasiBaru->nama_destinasi . '" berhasil ditambahkan.'
+            : 'Paket wisata berhasil ditambahkan.';
+
+        return redirect()->route('admin.paket.index')->with('sukses', $pesan);
     }
 
     public function edit(PaketWisata $paket)
@@ -58,6 +80,24 @@ class PaketController extends Controller
     public function update(Request $request, PaketWisata $paket)
     {
         $data = $this->validasi($request);
+
+        if ($request->input('id_destinasi') === 'baru') {
+            $destData = [
+                'nama_destinasi' => $request->input('destinasi_baru_nama'),
+                'lokasi' => $request->input('destinasi_baru_lokasi'),
+                'deskripsi' => $request->input('destinasi_baru_deskripsi') ?: 'Destinasi wisata unggulan ' . $request->input('destinasi_baru_nama') . '.',
+            ];
+            if ($request->hasFile('destinasi_baru_foto')) {
+                $destData['foto'] = $request->file('destinasi_baru_foto')->store('destinasi', 'public');
+            } elseif ($request->hasFile('foto')) {
+                $destData['foto'] = $request->file('foto')->store('destinasi', 'public');
+            }
+            $destinasiBaru = Destinasi::create($destData);
+            $data['id_destinasi'] = $destinasiBaru->id;
+        }
+
+        unset($data['destinasi_baru_nama'], $data['destinasi_baru_lokasi'], $data['destinasi_baru_deskripsi'], $data['destinasi_baru_foto']);
+
         $data['is_active'] = $request->boolean('is_active');
         $data['is_bestseller'] = $request->boolean('is_bestseller');
         $data['include_penerbangan'] = $request->boolean('include_penerbangan');
@@ -88,8 +128,7 @@ class PaketController extends Controller
 
     private function validasi(Request $request): array
     {
-        return $request->validate([
-            'id_destinasi' => ['required', 'exists:destinasi,id'],
+        $rules = [
             'nama_paket' => ['required', 'string', 'max:150'],
             'deskripsi' => ['nullable', 'string'],
             'fasilitas' => ['nullable', 'string'],
@@ -106,8 +145,21 @@ class PaketController extends Controller
             'include_penerbangan' => ['nullable', 'boolean'],
             'is_bestseller' => ['nullable', 'boolean'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
-        ], [
-            'id_destinasi.required' => 'Destinasi wajib dipilih.',
+        ];
+
+        if ($request->input('id_destinasi') === 'baru') {
+            $rules['destinasi_baru_nama'] = ['required', 'string', 'max:150'];
+            $rules['destinasi_baru_lokasi'] = ['required', 'string', 'max:150'];
+            $rules['destinasi_baru_deskripsi'] = ['nullable', 'string'];
+            $rules['destinasi_baru_foto'] = ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'];
+        } else {
+            $rules['id_destinasi'] = ['required', 'exists:destinasi,id'];
+        }
+
+        return $request->validate($rules, [
+            'id_destinasi.required' => 'Destinasi wajib dipilih atau buat destinasi baru.',
+            'destinasi_baru_nama.required' => 'Nama destinasi baru wajib diisi.',
+            'destinasi_baru_lokasi.required' => 'Lokasi / wilayah destinasi baru wajib diisi.',
             'nama_paket.required' => 'Nama paket wajib diisi.',
             'durasi_hari.required' => 'Durasi wajib diisi.',
             'tarif.required' => 'Tarif wajib diisi.',

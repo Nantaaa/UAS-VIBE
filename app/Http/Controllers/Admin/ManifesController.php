@@ -12,14 +12,39 @@ use Illuminate\Http\Request;
 
 class ManifesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $jadwal = JadwalKeberangkatan::with(['paket.destinasi', 'penugasan.petugas'])
-            ->withCount(['pemesanan as peserta_terkonfirmasi' => fn ($q) => $q->where('status_pemesanan', 'terkonfirmasi')])
-            ->orderByDesc('tanggal_berangkat')
-            ->paginate(12);
+        $q = $request->input('q');
+        $destinasiId = $request->input('destinasi');
+        $status = $request->input('status');
 
-        return view('admin.manifes.index', compact('jadwal'));
+        $query = JadwalKeberangkatan::with(['paket.destinasi', 'penugasan.petugas'])
+            ->withCount(['pemesanan as peserta_terkonfirmasi' => fn ($sub) => $sub->where('status_pemesanan', 'terkonfirmasi')]);
+
+        if ($q) {
+            $query->where(function ($sub) use ($q) {
+                $sub->whereHas('paket', fn ($p) => $p->where('nama_paket', 'like', "%{$q}%")
+                    ->orWhereHas('destinasi', fn ($d) => $d->where('nama_destinasi', 'like', "%{$q}%")))
+                    ->orWhereHas('penugasan.petugas', fn ($pt) => $pt->where('nama_petugas', 'like', "%{$q}%"))
+                    ->orWhere('kota_kumpul', 'like', "%{$q}%")
+                    ->orWhere('titik_kumpul', 'like', "%{$q}%");
+            });
+        }
+
+        if ($destinasiId) {
+            $query->whereHas('paket', fn ($p) => $p->where('id_destinasi', $destinasiId));
+        }
+
+        if ($status === 'siap') {
+            $query->whereHas('pemesanan', fn ($sub) => $sub->where('status_pemesanan', 'terkonfirmasi'));
+        } elseif ($status === 'kosong') {
+            $query->whereDoesntHave('pemesanan', fn ($sub) => $sub->where('status_pemesanan', 'terkonfirmasi'));
+        }
+
+        $jadwal = $query->orderByDesc('tanggal_berangkat')->paginate(12)->withQueryString();
+        $daftarDestinasi = \App\Models\Destinasi::orderBy('nama_destinasi')->get();
+
+        return view('admin.manifes.index', compact('jadwal', 'daftarDestinasi'));
     }
 
     public function show(JadwalKeberangkatan $jadwal)

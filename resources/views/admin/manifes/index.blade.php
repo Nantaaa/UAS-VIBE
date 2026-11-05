@@ -37,6 +37,42 @@
     </div>
 </div>
 
+{{-- FORM PENCARIAN & FILTER MANIFES --}}
+<div class="adm-card" style="margin-bottom:18px;padding:16px 18px">
+    <form method="GET" action="{{ route('admin.manifes.index') }}" class="row wrap" style="gap:10px;align-items:center">
+        <div style="flex:1 1 240px;position:relative">
+            <input type="text" name="q" value="{{ request('q') }}"
+                   placeholder="Cari armada, paket wisata, destinasi, atau kru/guide..."
+                   style="width:100%;font-size:12px;padding:9px 12px 9px 34px;border:1px solid var(--adm-line);border-radius:8px">
+            <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.5">
+                @include('partials.icon', ['name' => 'search', 'size' => 14])
+            </span>
+        </div>
+
+        <div style="flex:0 0 190px">
+            <select name="destinasi" style="width:100%;font-size:12px;padding:9px 10px;border:1px solid var(--adm-line);border-radius:8px">
+                <option value="">Semua Destinasi</option>
+                @foreach($daftarDestinasi ?? [] as $d)
+                    <option value="{{ $d->id }}" @selected(request('destinasi') == $d->id)>{{ $d->nama_destinasi }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div style="flex:0 0 160px">
+            <select name="status" style="width:100%;font-size:12px;padding:9px 10px;border:1px solid var(--adm-line);border-radius:8px">
+                <option value="">Semua Jadwal</option>
+                <option value="siap" @selected(request('status') === 'siap')>Ada Penumpang (Siap)</option>
+                <option value="kosong" @selected(request('status') === 'kosong')>Belum Ada Penumpang</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-adm orange" style="padding:9px 18px">Cari Manifes</button>
+        @if(request()->anyFilled(['q', 'destinasi', 'status']))
+            <a href="{{ route('admin.manifes.index') }}" class="btn-adm ghost" style="padding:9px 14px">Reset</a>
+        @endif
+    </form>
+</div>
+
 <div class="adm-card">
     <div class="adm-card-head">
         <div><h3>Daftar Manifes Keberangkatan</h3><p>Pilih jadwal untuk melihat dan mengunduh manifes resmi.</p></div>

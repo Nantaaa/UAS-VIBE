@@ -26,12 +26,45 @@
             <div class="form-grid">
                 <div class="field">
                     <label for="id_destinasi">Destinasi *</label>
-                    <select id="id_destinasi" name="id_destinasi" required>
+                    <select id="id_destinasi" name="id_destinasi" required onchange="toggleDestinasiBaru(this.value)">
                         <option value="">— Pilih destinasi —</option>
+                        <option value="baru" style="font-weight:700;color:#d97706" @selected(old('id_destinasi') === 'baru')>✨ + Tambah Destinasi Baru Langsung...</option>
                         @foreach($destinasi as $d)
                             <option value="{{ $d->id }}" @selected(old('id_destinasi', $paket->id_destinasi) == $d->id)>{{ $d->nama_destinasi }} — {{ $d->lokasi }}</option>
                         @endforeach
                     </select>
+                </div>
+
+                {{-- Form Tambah Destinasi Baru (Muncul jika admin memilih + Tambah Destinasi Baru) --}}
+                <div id="boxDestinasiBaru" class="adm-card" style="grid-column:1 / -1;background:#fffbeb;border:1.5px dashed #f59e0b;padding:16px 20px;border-radius:10px;margin:4px 0 16px;display:{{ old('id_destinasi') === 'baru' ? 'block' : 'none' }}">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                        <span style="font-size:20px">📍</span>
+                        <div>
+                            <strong style="color:#92400e;font-size:13.5px">Form Input Destinasi Baru</strong>
+                            <div class="sub" style="font-size:11.5px;color:#b45309">Destinasi baru ini akan otomatis disimpan ke database master destinasi dan langsung terhubung dengan paket ini.</div>
+                        </div>
+                    </div>
+                    <div class="form-grid" style="margin-bottom:0">
+                        <div class="field">
+                            <label for="destinasi_baru_nama" style="color:#92400e">Nama Destinasi Baru *</label>
+                            <input id="destinasi_baru_nama" type="text" name="destinasi_baru_nama" value="{{ old('destinasi_baru_nama') }}" placeholder="Contoh: Banda Neira, Kepulauan Derawan, Danau Toba">
+                            @error('destinasi_baru_nama') <span class="hint" style="color:#dc2626">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="field">
+                            <label for="destinasi_baru_lokasi" style="color:#92400e">Lokasi / Wilayah *</label>
+                            <input id="destinasi_baru_lokasi" type="text" name="destinasi_baru_lokasi" value="{{ old('destinasi_baru_lokasi') }}" placeholder="Contoh: Maluku Tengah, Maluku">
+                            @error('destinasi_baru_lokasi') <span class="hint" style="color:#dc2626">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="field" style="grid-column:1 / -1">
+                            <label for="destinasi_baru_deskripsi" style="color:#92400e">Deskripsi Singkat Destinasi</label>
+                            <textarea id="destinasi_baru_deskripsi" name="destinasi_baru_deskripsi" rows="2" placeholder="Daya tarik keindahan alam, pesona bawah laut, atau sejarah destinasi...">{{ old('destinasi_baru_deskripsi') }}</textarea>
+                        </div>
+                        <div class="field" style="grid-column:1 / -1">
+                            <label for="destinasi_baru_foto" style="color:#92400e">Foto Sampul Destinasi (Opsional)</label>
+                            <input id="destinasi_baru_foto" type="file" name="destinasi_baru_foto" accept="image/*">
+                            <span class="hint" style="color:#92400e">Format JPG/PNG/WebP maks 3 MB. Jika tidak diunggah, foto paket wisata akan otomatis dijadikan foto destinasi.</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="field">
                     <label for="nama_paket">Nama Paket *</label>
@@ -120,4 +153,22 @@
         </form>
     </div>
 </div>
+
+<script>
+function toggleDestinasiBaru(val) {
+    const box = document.getElementById('boxDestinasiBaru');
+    const nama = document.getElementById('destinasi_baru_nama');
+    const lokasi = document.getElementById('destinasi_baru_lokasi');
+    if (val === 'baru') {
+        box.style.display = 'block';
+        nama.required = true;
+        lokasi.required = true;
+        nama.focus();
+    } else {
+        box.style.display = 'none';
+        nama.required = false;
+        lokasi.required = false;
+    }
+}
+</script>
 @endsection

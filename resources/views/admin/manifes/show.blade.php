@@ -104,12 +104,26 @@
 </div>
 
 <div class="adm-card">
-    <div class="adm-card-head">
-        <div><h3>Daftar Manifes Resmi Penumpang</h3><p>{{ $totalPeserta }} peserta terkonfirmasi</p></div>
-        <span class="pill ok">{{ $pemesanan->count() }} pemesanan</span>
+    <div class="adm-card-head" style="align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+            <h3 style="margin:0">Daftar Manifes Resmi Penumpang</h3>
+            <p style="margin:2px 0 0">{{ $totalPeserta }} peserta terkonfirmasi</p>
+        </div>
+        <div class="row" style="gap:10px;margin-left:auto;align-items:center">
+            {{-- Instant Search Penumpang --}}
+            <div style="position:relative;width:260px">
+                <input type="text" id="cariPenumpang" onkeyup="filterTabelPenumpang()"
+                       placeholder="Cari nama, NIK, booking, pemesan..."
+                       style="width:100%;font-size:11.5px;padding:6px 10px 6px 30px;border:1px solid var(--adm-line);border-radius:6px">
+                <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);opacity:.5">
+                    @include('partials.icon', ['name' => 'search', 'size' => 12])
+                </span>
+            </div>
+            <span class="pill ok">{{ $pemesanan->count() }} pemesanan</span>
+        </div>
     </div>
     <div style="overflow-x:auto">
-        <table class="adm-table">
+        <table id="tabelPenumpang" class="adm-table">
             <thead>
                 <tr><th>No</th><th>Nama Lengkap</th><th>Kategori</th><th>NIK / Paspor</th><th>Domisili</th><th>Kode Booking</th><th>Kontak Pemesan</th></tr>
             </thead>
@@ -117,7 +131,7 @@
                 @php($no = 1)
                 @forelse($pemesanan as $p)
                     @foreach($p->peserta as $ps)
-                        <tr>
+                        <tr class="penumpang-row">
                             <td>{{ str_pad($no++, 2, '0', STR_PAD_LEFT) }}</td>
                             <td><div class="nm">{{ $ps->nama_peserta }}</div><div class="sub">{{ $ps->jenis_kelamin === 'P' ? 'Perempuan' : 'Laki-laki' }}</div></td>
                             <td><span class="pill {{ ($ps->kategori ?? 'dewasa') === 'anak' ? 'info' : 'gray' }}">{{ ucfirst($ps->kategori ?? 'dewasa') }}</span></td>
@@ -131,12 +145,23 @@
                         </tr>
                     @endforeach
                 @empty
-                    <tr><td colspan="7" class="empty" style="padding:28px">Belum ada peserta terkonfirmasi pada keberangkatan ini.</td></tr>
+                    <tr class="empty-row"><td colspan="7" class="empty" style="padding:28px">Belum ada peserta terkonfirmasi pada keberangkatan ini.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+function filterTabelPenumpang() {
+    const query = document.getElementById('cariPenumpang').value.toLowerCase().trim();
+    const rows = document.querySelectorAll('#tabelPenumpang tbody tr.penumpang-row');
+    rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(query) ? '' : 'none';
+    });
+}
+</script>
 
 <div class="adm-card adm-dark" style="margin-top:16px;padding:18px 20px">
     <div class="row between wrap" style="gap:16px">
