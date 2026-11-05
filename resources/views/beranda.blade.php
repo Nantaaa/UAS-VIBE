@@ -323,8 +323,11 @@
                                 @endif
 
                                 <span class="thumb-shade"></span>
-                                @if(($p->jadwalTersedia->first()->sisa_kuota ?? 0) > 0)
-                                    <span class="pill-tersedia">● Tersedia</span>
+                                @php($jadwalAktifKatalog = $p->jadwalTersedia->first())
+                                @if(!$jadwalAktifKatalog)
+                                    <span class="pill-tersedia" style="background:#f1f5f9;color:#64748b">● Segera Hadir</span>
+                                @elseif($jadwalAktifKatalog->sisa_kuota > 0)
+                                    <span class="pill-tersedia">● Tersedia ({{ $jadwalAktifKatalog->sisa_kuota }} Kursi)</span>
                                 @else
                                     <span class="pill-tersedia" style="background:#fee2e2;color:#b91c1c">● Penuh</span>
                                 @endif

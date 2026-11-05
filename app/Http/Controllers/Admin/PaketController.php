@@ -34,6 +34,7 @@ class PaketController extends Controller
     {
         return view('admin.paket.form', [
             'paket' => new PaketWisata(['durasi_hari' => 1, 'is_active' => true]),
+            'jadwalPertama' => null,
             'destinasi' => Destinasi::orderBy('nama_destinasi')->get(),
         ]);
     }
@@ -59,6 +60,16 @@ class PaketController extends Controller
 
         unset($data['destinasi_baru_nama'], $data['destinasi_baru_lokasi'], $data['destinasi_baru_deskripsi'], $data['destinasi_baru_foto']);
 
+        // Data inisialisasi jadwal
+        $tglBerangkatStr = $request->input('tanggal_berangkat');
+        $kuotaPeserta = (int) $request->input('kuota_peserta', 20);
+        $kotaKumpul = $request->input('kota_kumpul');
+        $jamKumpul = $request->input('jam_kumpul', '08:00');
+        $titikKumpul = $request->input('titik_kumpul');
+        $catatanKumpul = $request->input('catatan_keberangkatan');
+
+        unset($data['tanggal_berangkat'], $data['kuota_peserta'], $data['kota_kumpul'], $data['jam_kumpul'], $data['titik_kumpul'], $data['catatan_keberangkatan']);
+
         $data['is_active'] = $request->boolean('is_active');
         $data['is_bestseller'] = $request->boolean('is_bestseller');
         $data['include_penerbangan'] = $request->boolean('include_penerbangan');
@@ -68,11 +79,30 @@ class PaketController extends Controller
             $data['foto'] = $request->file('foto')->store('paket', 'public');
         }
 
-        PaketWisata::create($data);
+        $paketBaru = PaketWisata::create($data);
+
+        // Buat jadwal keberangkatan perdana otomatis agar paket langsung TERSEDIA dan memiliki kuota & titik kumpul
+        if ($tglBerangkatStr) {
+            $tglBerangkat = \Carbon\Carbon::parse($tglBerangkatStr);
+            $durasi = max(1, (int) $paketBaru->durasi_hari);
+            $tglKembali = (clone $tglBerangkat)->addDays(max(0, $durasi - 1));
+
+            \App\Models\JadwalKeberangkatan::create([
+                'id_paket' => $paketBaru->id,
+                'tanggal_berangkat' => $tglBerangkat,
+                'tanggal_kembali' => $tglKembali,
+                'kuota_peserta' => $kuotaPeserta > 0 ? $kuotaPeserta : 20,
+                'sisa_kuota' => $kuotaPeserta > 0 ? $kuotaPeserta : 20,
+                'kota_kumpul' => $kotaKumpul ?: ($paketBaru->destinasi->nama_destinasi ?? 'Area Destinasi'),
+                'titik_kumpul' => $titikKumpul ?: 'Bandara / Titik Kumpul Utama ' . ($paketBaru->destinasi->nama_destinasi ?? ''),
+                'jam_kumpul' => $jamKumpul,
+                'catatan_keberangkatan' => $catatanKumpul,
+            ]);
+        }
 
         $pesan = isset($destinasiBaru)
-            ? 'Paket wisata dan destinasi baru "' . $destinasiBaru->nama_destinasi . '" berhasil ditambahkan.'
-            : 'Paket wisata berhasil ditambahkan.';
+            ? 'Paket wisata, kuota kursi (' . $kuotaPeserta . ' pax), dan destinasi baru "' . $destinasiBaru->nama_destinasi . '" berhasil ditambahkan.'
+            : 'Paket wisata dan kuota kursi (' . $kuotaPeserta . ' pax) berhasil ditambahkan.';
 
         return redirect()->route('admin.paket.index')->with('sukses', $pesan);
     }
@@ -81,6 +111,7 @@ class PaketController extends Controller
     {
         return view('admin.paket.form', [
             'paket' => $paket,
+            'jadwalPertama' => $paket->jadwalTersedia->first() ?? $paket->jadwal()->orderByDesc('tanggal_berangkat')->first(),
             'destinasi' => Destinasi::orderBy('nama_destinasi')->get(),
         ]);
     }
@@ -106,6 +137,16 @@ class PaketController extends Controller
 
         unset($data['destinasi_baru_nama'], $data['destinasi_baru_lokasi'], $data['destinasi_baru_deskripsi'], $data['destinasi_baru_foto']);
 
+        // Data inisialisasi jadwal
+        $tglBerangkatStr = $request->input('tanggal_berangkat');
+        $kuotaPeserta = (int) $request->input('kuota_peserta', 20);
+        $kotaKumpul = $request->input('kota_kumpul');
+        $jamKumpul = $request->input('jam_kumpul', '08:00');
+        $titikKumpul = $request->input('titik_kumpul');
+        $catatanKumpul = $request->input('catatan_keberangkatan');
+
+        unset($data['tanggal_berangkat'], $data['kuota_peserta'], $data['kota_kumpul'], $data['jam_kumpul'], $data['titik_kumpul'], $data['catatan_keberangkatan']);
+
         $data['is_active'] = $request->boolean('is_active');
         $data['is_bestseller'] = $request->boolean('is_bestseller');
         $data['include_penerbangan'] = $request->boolean('include_penerbangan');
@@ -119,6 +160,41 @@ class PaketController extends Controller
         }
 
         $paket->update($data);
+
+        // Update atau buat jadwal perdana jika diisi
+        if ($tglBerangkatStr) {
+            $jadwalAktif = $paket->jadwalTersedia->first() ?? $paket->jadwal()->orderByDesc('tanggal_berangkat')->first();
+            $tglBerangkat = \Carbon\Carbon::parse($tglBerangkatStr);
+            $durasi = max(1, (int) $paket->durasi_hari);
+            $tglKembali = (clone $tglBerangkat)->addDays(max(0, $durasi - 1));
+
+            if ($jadwalAktif) {
+                $terpakai = $jadwalAktif->kuotaTerpakai();
+                $kuotaBaru = max($kuotaPeserta, $terpakai);
+                $jadwalAktif->update([
+                    'tanggal_berangkat' => $tglBerangkat,
+                    'tanggal_kembali' => $tglKembali,
+                    'kuota_peserta' => $kuotaBaru,
+                    'sisa_kuota' => max(0, $kuotaBaru - $terpakai),
+                    'kota_kumpul' => $kotaKumpul ?: $jadwalAktif->kota_kumpul,
+                    'titik_kumpul' => $titikKumpul ?: $jadwalAktif->titik_kumpul,
+                    'jam_kumpul' => $jamKumpul ?: $jadwalAktif->jam_kumpul,
+                    'catatan_keberangkatan' => $catatanKumpul,
+                ]);
+            } else {
+                \App\Models\JadwalKeberangkatan::create([
+                    'id_paket' => $paket->id,
+                    'tanggal_berangkat' => $tglBerangkat,
+                    'tanggal_kembali' => $tglKembali,
+                    'kuota_peserta' => $kuotaPeserta > 0 ? $kuotaPeserta : 20,
+                    'sisa_kuota' => $kuotaPeserta > 0 ? $kuotaPeserta : 20,
+                    'kota_kumpul' => $kotaKumpul ?: ($paket->destinasi->nama_destinasi ?? 'Area Destinasi'),
+                    'titik_kumpul' => $titikKumpul ?: 'Bandara / Titik Kumpul Utama ' . ($paket->destinasi->nama_destinasi ?? ''),
+                    'jam_kumpul' => $jamKumpul,
+                    'catatan_keberangkatan' => $catatanKumpul,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.paket.index')->with('sukses', 'Paket wisata berhasil diperbarui.');
     }
@@ -287,6 +363,12 @@ class PaketController extends Controller
             'include_penerbangan' => ['nullable', 'boolean'],
             'is_bestseller' => ['nullable', 'boolean'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
+            'kuota_peserta' => ['nullable', 'integer', 'min:1', 'max:500'],
+            'tanggal_berangkat' => ['nullable', 'date'],
+            'kota_kumpul' => ['nullable', 'string', 'max:100'],
+            'jam_kumpul' => ['nullable', 'string'],
+            'titik_kumpul' => ['nullable', 'string', 'max:255'],
+            'catatan_keberangkatan' => ['nullable', 'string'],
         ];
 
         if ($request->input('id_destinasi') === 'baru') {

@@ -124,6 +124,65 @@
                     <label for="itinerary">Itinerary (satu hari per baris)</label>
                     <textarea id="itinerary" name="itinerary" rows="4" placeholder="Hari 1: ...&#10;Hari 2: ...">{{ old('itinerary', $paket->itinerary) }}</textarea>
                 </div>
+
+                {{-- INSIALISASI JADWAL, KUOTA KURSI, & TITIK KUMPUL --}}
+                <div class="adm-card" style="grid-column:1 / -1;background:#f0fdf4;border:1.5px solid #86efac;padding:18px 20px;border-radius:10px;margin:10px 0 6px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                        <span style="font-size:22px">📅</span>
+                        <div>
+                            <strong style="color:#166534;font-size:14px">Kapasitas Kursi &amp; Jadwal Keberangkatan Perdana</strong>
+                            <div class="sub" style="font-size:11.5px;color:#15803d">
+                                Tentukan kuota kapasitas kursi (untuk berapa orang) dan titik kumpul agar paket langsung berstatus <strong>Tersedia</strong> dan dapat langsung dipesan wisatawan.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid" style="margin-bottom:0">
+                        <div class="field">
+                            <label for="kuota_peserta" style="color:#166534">Kapasitas Kuota Peserta (Untuk Berapa Orang) *</label>
+                            <input id="kuota_peserta" type="number" name="kuota_peserta" min="1" max="200"
+                                   value="{{ old('kuota_peserta', $jadwalPertama?->kuota_peserta ?? 20) }}"
+                                   placeholder="Contoh: 15 atau 20" required>
+                            <span class="hint" style="color:#15803d">Jumlah total kursi maksimal yang tersedia untuk jadwal keberangkatan ini.</span>
+                        </div>
+
+                        <div class="field">
+                            <label for="tanggal_berangkat" style="color:#166534">Tanggal Keberangkatan Perdana *</label>
+                            <input id="tanggal_berangkat" type="date" name="tanggal_berangkat"
+                                   value="{{ old('tanggal_berangkat', $jadwalPertama?->tanggal_berangkat?->format('Y-m-d') ?? now()->addDays(7)->format('Y-m-d')) }}" required>
+                            <span class="hint" style="color:#15803d">Tanggal trip dimulai. Tanggal kepulangan dihitung otomatis sesuai durasi hari.</span>
+                        </div>
+
+                        <div class="field">
+                            <label for="kota_kumpul" style="color:#166534">Kota Titik Kumpul *</label>
+                            <input id="kota_kumpul" type="text" name="kota_kumpul"
+                                   value="{{ old('kota_kumpul', $jadwalPertama?->kota_kumpul ?? '') }}"
+                                   placeholder="Contoh: Labuan Bajo, Medan, Denpasar, Malang" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="jam_kumpul" style="color:#166534">Jam Kumpul *</label>
+                            <input id="jam_kumpul" type="time" name="jam_kumpul"
+                                   value="{{ old('jam_kumpul', $jadwalPertama?->jam_kumpul ? $jadwalPertama->jam_kumpul->format('H:i') : '08:00') }}" required>
+                        </div>
+
+                        <div class="field full">
+                            <label for="titik_kumpul" style="color:#166534">Lokasi Titik Kumpul Lengkap *</label>
+                            <input id="titik_kumpul" type="text" name="titik_kumpul"
+                                   value="{{ old('titik_kumpul', $jadwalPertama?->titik_kumpul ?? '') }}"
+                                   placeholder="Contoh: Bandara Internasional (Area Penjemputan Gate Kedatangan) / Meeting Point Hotel" required>
+                            <span class="hint" style="color:#15803d">Alamat/lokasi detail berkumpul yang akan tercetak resmi di E-Ticket wisatawan dan manifes.</span>
+                        </div>
+
+                        <div class="field full">
+                            <label for="catatan_keberangkatan" style="color:#166534">Catatan Tambahan Keberangkatan (Opsional)</label>
+                            <input id="catatan_keberangkatan" type="text" name="catatan_keberangkatan"
+                                   value="{{ old('catatan_keberangkatan', $jadwalPertama?->catatan_keberangkatan ?? '') }}"
+                                   placeholder="Contoh: Harap tiba 30 menit sebelum jam kumpul, gunakan pakaian santai & siapkan identitas asli.">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="field">
                     <label for="foto">Foto Paket</label>
                     <input id="foto" type="file" name="foto" accept="image/*">
