@@ -162,7 +162,6 @@
                 <span class="bank-pill">MANDIRI</span>
                 <span class="bank-pill">BNI</span>
                 <span class="bank-pill">BRI</span>
-                <span class="bank-pill" style="background:#0284c7;color:#fff">QRIS</span>
             </div>
         </div>
 
