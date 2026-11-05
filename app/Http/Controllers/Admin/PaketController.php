@@ -5,8 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Destinasi;
 use App\Models\PaketWisata;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PaketController extends Controller
 {
@@ -117,13 +125,147 @@ class PaketController extends Controller
 
     public function destroy(PaketWisata $paket)
     {
-        if ($paket->jadwal()->whereHas('pemesanan', fn ($q) => $q->whereIn('status_pemesanan', ['terkonfirmasi']))->exists()) {
-            return back()->withErrors(['paket' => 'Paket memiliki pemesanan terkonfirmasi. Nonaktifkan saja, jangan dihapus.']);
+        $adaPesananTerkonfirmasi = $paket->jadwal()
+            ->whereHas('pemesanan', fn ($q) => $q->whereIn('status_pemesanan', ['terkonfirmasi']))
+            ->exists();
+
+        if ($adaPesananTerkonfirmasi) {
+            return back()->withErrors([
+                'paket' => 'Paket wisata tidak dapat dihapus permanen karena sudah memiliki riwayat pemesanan terkonfirmasi. Silakan nonaktifkan saja statusnya agar tidak tampil di katalog.',
+            ]);
         }
 
-        $paket->update(['is_active' => false]);
+        $namaPaket = $paket->nama_paket;
 
-        return back()->with('sukses', 'Paket wisata dinonaktifkan.');
+        DB::transaction(function () use ($paket) {
+            if ($paket->foto) {
+                Storage::disk('public')->delete($paket->foto);
+            }
+
+            foreach ($paket->jadwal as $j) {
+                foreach ($j->pemesanan as $p) {
+                    $p->peserta()->delete();
+                    $p->pembayaran()->delete();
+                    $p->delete();
+                }
+                $j->penugasan()->delete();
+                $j->titikJemput()->delete();
+                $j->delete();
+            }
+
+            Wishlist::where('id_paket', $paket->id)->delete();
+            $paket->delete();
+        });
+
+        return redirect()->route('admin.paket.index')->with('sukses', "Paket wisata \"{$namaPaket}\" berhasil dihapus permanen dari sistem.");
+    }
+
+    public function exportExcel(): StreamedResponse
+    {
+        $daftarPaket = PaketWisata::with('destinasi')->withCount('jadwal')->orderBy('nama_paket')->get();
+
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()
+            ->setCreator('Nanta Travel System')
+            ->setTitle('Katalog Master Paket Wisata Nanta Travel');
+
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Katalog Paket Wisata');
+        $sheet->setShowGridLines(true);
+
+        // Header Title
+        $sheet->setCellValue('A1', 'PT NANTA EKSPEDISI NUSANTARA — NANTA TRAVEL');
+        $sheet->getStyle('A1')->getFont()->setName('Arial')->setSize(14)->setBold(true)->getColor()->setARGB('FF0F2C4A');
+
+        $sheet->setCellValue('A2', 'KATALOG MASTER DATA PAKET WISATA & TARIF RESMI');
+        $sheet->getStyle('A2')->getFont()->setName('Arial')->setSize(11)->setBold(true)->getColor()->setARGB('FF334155');
+
+        $sheet->setCellValue('A3', 'Total Paket: ' . $daftarPaket->count() . ' paket | Dicetak: ' . now()->translatedFormat('d F Y H:i') . ' WIB');
+        $sheet->getStyle('A3')->getFont()->setName('Arial')->setSize(9)->setItalic(true)->getColor()->setARGB('FF64748B');
+
+        $headers = [
+            'A5' => ['No', 6, Alignment::HORIZONTAL_CENTER],
+            'B5' => ['ID', 8, Alignment::HORIZONTAL_CENTER],
+            'C5' => ['Nama Paket Wisata', 34, Alignment::HORIZONTAL_LEFT],
+            'D5' => ['Destinasi', 20, Alignment::HORIZONTAL_LEFT],
+            'E5' => ['Wilayah / Lokasi', 24, Alignment::HORIZONTAL_LEFT],
+            'F5' => ['Tipe Trip', 14, Alignment::HORIZONTAL_CENTER],
+            'G5' => ['Durasi', 12, Alignment::HORIZONTAL_CENTER],
+            'H5' => ['Min Pax', 10, Alignment::HORIZONTAL_RIGHT],
+            'I5' => ['Tarif Open Trip (Rp)', 18, Alignment::HORIZONTAL_RIGHT],
+            'J5' => ['Tarif Private (Rp)', 18, Alignment::HORIZONTAL_RIGHT],
+            'K5' => ['Harga Asli (Rp)', 18, Alignment::HORIZONTAL_RIGHT],
+            'L5' => ['Termasuk Pesawat', 16, Alignment::HORIZONTAL_CENTER],
+            'M5' => ['Best Seller', 12, Alignment::HORIZONTAL_CENTER],
+            'N5' => ['Status Katalog', 14, Alignment::HORIZONTAL_CENTER],
+            'O5' => ['Jadwal Aktif', 12, Alignment::HORIZONTAL_RIGHT],
+        ];
+
+        foreach ($headers as $cell => [$label, $width, $align]) {
+            $sheet->setCellValue($cell, $label);
+            $sheet->getColumnDimension(preg_replace('/[0-9]/', '', $cell))->setWidth($width);
+        }
+
+        $headerRange = 'A5:O5';
+        $sheet->getStyle($headerRange)->getFont()->setName('Arial')->setSize(9.5)->setBold(true)->getColor()->setARGB('FFFFFFFF');
+        $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF0F2C4A');
+        $sheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle($headerRange)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setARGB('FF0F2C4A');
+        $sheet->getRowDimension(5)->setRowHeight(25);
+
+        $row = 6;
+        foreach ($daftarPaket as $idx => $p) {
+            $sheet->setCellValue("A{$row}", $idx + 1);
+            $sheet->setCellValue("B{$row}", "#{$p->id}");
+            $sheet->setCellValue("C{$row}", $p->nama_paket);
+            $sheet->setCellValue("D{$row}", $p->destinasi->nama_destinasi ?? '—');
+            $sheet->setCellValue("E{$row}", $p->destinasi->lokasi ?? '—');
+            $sheet->setCellValue("F{$row}", $p->tipe_trip ?: 'Open Trip');
+            $sheet->setCellValue("G{$row}", "{$p->durasi_hari}H" . max(0, $p->durasi_hari - 1) . "M");
+            $sheet->setCellValue("H{$row}", $p->min_peserta ?? 1);
+            $sheet->setCellValue("I{$row}", (float) $p->tarif);
+            $sheet->setCellValue("J{$row}", (float) ($p->tarif_private ?: $p->tarifPrivate()));
+            $sheet->setCellValue("K{$row}", (float) ($p->harga_asli ?: $p->tarif));
+            $sheet->setCellValue("L{$row}", $p->include_penerbangan ? 'Ya' : 'Tidak');
+            $sheet->setCellValue("M{$row}", $p->is_bestseller ? 'Ya' : 'Tidak');
+            $sheet->setCellValue("N{$row}", $p->is_active ? 'Aktif' : 'Nonaktif');
+            $sheet->setCellValue("O{$row}", $p->jadwal_count);
+
+            $sheet->getStyle("A{$row}:B{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("C{$row}:E{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle("F{$row}:G{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("H{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle("I{$row}:K{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle("L{$row}:N{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("O{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+            $sheet->getStyle("H{$row}")->getNumberFormat()->setFormatCode('#,##0');
+            $sheet->getStyle("I{$row}:K{$row}")->getNumberFormat()->setFormatCode('"Rp "#,##0');
+            $sheet->getStyle("O{$row}")->getNumberFormat()->setFormatCode('#,##0');
+
+            if ($idx % 2 == 1) {
+                $sheet->getStyle("A{$row}:O{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF8FAFC');
+            }
+
+            $sheet->getStyle("A{$row}:O{$row}")->getFont()->setName('Arial')->setSize(9);
+            $sheet->getStyle("A{$row}:O{$row}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setARGB('FFE2E8F0');
+            $sheet->getRowDimension($row)->setRowHeight(19);
+
+            $row++;
+        }
+
+        $sheet->freezePane('A6');
+
+        $filename = "Katalog-Paket-Wisata-Nanta-Travel-" . now()->format('Y-m-d') . ".xlsx";
+
+        return response()->streamDownload(function () use ($spreadsheet) {
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 
     private function validasi(Request $request): array

@@ -17,7 +17,7 @@
         <p>Periksa bukti pembayaran dan dokumen identitas peserta sebelum menerbitkan e-ticket.</p>
     </div>
     <div class="actions">
-        <a href="{{ route('admin.laporan.excel', ['bulan' => now()->month, 'tahun' => now()->year]) }}" class="btn-adm ghost">@include('partials.icon', ['name' => 'download', 'size' => 13]) Ekspor Laporan</a>
+        <a href="{{ route('admin.verifikasi.export', ['status' => $status, 'q' => request('q')]) }}" class="btn-adm ghost">@include('partials.icon', ['name' => 'download', 'size' => 13]) Ekspor Log Verifikasi (XLSX)</a>
     </div>
 </div>
 

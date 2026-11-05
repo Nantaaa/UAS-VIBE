@@ -58,9 +58,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('destinasi', DestinasiController::class)->except('show');
+    Route::get('paket/export', [PaketController::class, 'exportExcel'])->name('paket.export');
     Route::resource('paket', PaketController::class)->except('show');
     Route::resource('jadwal', JadwalController::class)->except('show');
 
+    Route::get('verifikasi/export', [VerifikasiController::class, 'exportExcel'])->name('verifikasi.export');
     Route::get('verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.index');
     Route::get('verifikasi/{pemesanan}', [VerifikasiController::class, 'show'])->name('verifikasi.show');
     Route::post('verifikasi/{pemesanan}/setujui', [VerifikasiController::class, 'setujui'])->name('verifikasi.setujui');

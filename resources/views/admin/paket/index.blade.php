@@ -19,8 +19,7 @@
     </div>
     <div class="actions">
         <a href="{{ route('admin.paket.index') }}" class="btn-adm dark">@include('partials.icon', ['name' => 'list', 'size' => 13]) Daftar Paket</a>
-        <a href="{{ route('admin.paket.create') }}" class="btn-adm ghost">Formulir Editor</a>
-        <a href="{{ route('admin.laporan.excel', ['bulan' => now()->month, 'tahun' => now()->year]) }}" class="btn-adm ghost">@include('partials.icon', ['name' => 'download', 'size' => 13]) Export</a>
+        <a href="{{ route('admin.paket.export') }}" class="btn-adm ghost">@include('partials.icon', ['name' => 'download', 'size' => 13]) Ekspor Katalog (XLSX)</a>
         <a href="{{ route('admin.paket.create') }}" class="btn-adm orange">@include('partials.icon', ['name' => 'plus', 'size' => 13]) Tambah Paket Baru</a>
     </div>
 </div>
@@ -105,9 +104,9 @@
                             <div class="row" style="gap:6px">
                                 <a href="{{ route('admin.paket.edit', $p) }}" class="btn-adm ghost sm" title="Ubah">@include('partials.icon', ['name' => 'edit', 'size' => 12])</a>
                                 <a href="{{ route('paket.detail', $p) }}" class="btn-adm ghost sm" title="Lihat di situs" target="_blank">@include('partials.icon', ['name' => 'arrow-right', 'size' => 12])</a>
-                                <form method="POST" action="{{ route('admin.paket.destroy', $p) }}" onsubmit="return confirm('Nonaktifkan paket ini?')">
+                                <form method="POST" action="{{ route('admin.paket.destroy', $p) }}" onsubmit="return confirm('Hapus permanen paket \'{{ addslashes($p->nama_paket) }}\'? Tindakan ini tidak dapat dibatalkan.')">
                                     @csrf @method('DELETE')
-                                    <button class="btn-adm red sm" type="submit" title="Nonaktifkan">@include('partials.icon', ['name' => 'trash', 'size' => 12])</button>
+                                    <button class="btn-adm red sm" type="submit" title="Hapus Permanen">@include('partials.icon', ['name' => 'trash', 'size' => 12])</button>
                                 </form>
                             </div>
                         </td>
